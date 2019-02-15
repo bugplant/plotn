@@ -1,7 +1,7 @@
 plotn
 ====
 
-Overview
+通常のRのコマンドの書式でggplot風の作図をおこなうためのコマンド集
 
 ## Description
 
