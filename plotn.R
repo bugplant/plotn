@@ -34,37 +34,37 @@ col_genelator <- function (palette = "d3",
         cols <- ggColorHue(n = number)
         al <- sub("#FF0000", "", rgb(1, 0, 0, alpha = alpha))
         default <- paste(cols, al, sep = "")
-
+        
       }
-    
+      
     } else {
       pal_type <- switch(palette,
-                     "npg" = "nrc",
-                     "aaas" = "default",
-                     "nejm" = "default",
-                     "lancet" = "lanonc",
-                     "jama" = "default",
-                     "jco" = "default",
-                     "ucscgb" = "default",
-                     "d3" = palette_types,
-                     "locuszoom" = "default",
-                     "igv" = palette_types,
-                     "uchicago" = palette_types,
-                     "startrek" = "uniform",
-                     "tron" = "legacy",
-                     "futurama" = "planetexpress",
-                     "rickandmorty" = "schwifty",
-                     "simpsons" = "springfield",
-                     "gsea" = "default",
-                     "material" = palette_types,
-                     stop("invalid palette name"))
+                         "npg" = "nrc",
+                         "aaas" = "default",
+                         "nejm" = "default",
+                         "lancet" = "lanonc",
+                         "jama" = "default",
+                         "jco" = "default",
+                         "ucscgb" = "default",
+                         "d3" = palette_types,
+                         "locuszoom" = "default",
+                         "igv" = palette_types,
+                         "uchicago" = palette_types,
+                         "startrek" = "uniform",
+                         "tron" = "legacy",
+                         "futurama" = "planetexpress",
+                         "rickandmorty" = "schwifty",
+                         "simpsons" = "springfield",
+                         "gsea" = "default",
+                         "material" = palette_types,
+                         stop("invalid palette name"))
       
       if(length(palette_types) == 0){
         palette_types <- switch(palette,
-                           "d3" = "category10",
-                           "igv" = "default",
-                           "uchicago" = "default",
-                           "material" = "red")
+                                "d3" = "category10",
+                                "igv" = "default",
+                                "uchicago" = "default",
+                                "material" = "red")
       }
       
       command <- paste0("pal_", palette,"(pal_type", ", alpha = ", alpha, ")(", number,")")
@@ -189,7 +189,7 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
              col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd)
         
       } else {
-
+        
         error <- NULL
         error <- try(plot(x, ..., xlim = xlim, ylim = ylim,las = las, cex.axis = cex.axis, 
                           col = col.dot[1], cex.lab = cex.lab, font.lab = font.lab,
@@ -2022,9 +2022,12 @@ vioplotn <- function(formula, data = NULL,
 
 
 
-month.axis <- function(leap = F, period = 1,
-                       year = NULL, start = c(1,1),
-                       lwd = 1, month.lab = "a",
+month.axis <- function(leap = F, 
+                       period = 1,
+                       year = NULL, 
+                       start = c(1,1),
+                       lwd = 1, 
+                       month.lab = "a",
                        cex.axis = 1.1, 
                        las = 1,
                        mar = c(3.8,3.8,1,1), 
@@ -2086,14 +2089,17 @@ month.axis <- function(leap = F, period = 1,
     }
   }
   
-  monthn <- switch(month.lab,
-                   "a" = rep(c("Jan","Feb","Mar","Apr","May","June","July","Aug","Sept","Oct","Nov","Dec"), period),
-                   "n" = rep(1:12, period),
-                   "i" = rep(c("J","F","M","A","M","J","J","A","S","O","N","D"), period),
-                   "f" = rep(c("January","February","March","April","May","June","July",
-                               "August","September","October","November","December"), period),
-                   month.lab
+  if (length(month.lab) > 1) {
+    monthn <- month.lab
+  } else {
+    monthn <- switch(month.lab,
+                     "a" = rep(c("Jan","Feb","Mar","Apr","May","June","July","Aug","Sept","Oct","Nov","Dec"), period),
+                     "n" = rep(1:12, period),
+                     "i" = rep(c("J","F","M","A","M","J","J","A","S","O","N","D"), period),
+                     "f" = rep(c("January","February","March","April","May","June","July",
+                                 "August","September","October","November","December"), period)
     )
+  }
   monthp <- rep(0, 12*period)
   for (i in 1:(12*period)){
     if (i == 1) {
@@ -2130,7 +2136,7 @@ Mean.pt <- function(x, data = NULL,
                     horizontal = F,
                     plot = T, 
                     mar = c(2,3.8,1,1)
-                    ){
+){
   
   #内部関数の定義
   is.formula <- function(x){
