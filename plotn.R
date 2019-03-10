@@ -2024,7 +2024,7 @@ vioplotn <- function(formula, data = NULL,
 
 month.axis <- function(leap = F, period = 1,
                        year = NULL, start = c(1,1),
-                       lwd = 1,
+                       lwd = 1, month.lab = "a",
                        cex.axis = 1.1, 
                        las = 1,
                        mar = c(3.8,3.8,1,1), 
@@ -2086,7 +2086,14 @@ month.axis <- function(leap = F, period = 1,
     }
   }
   
-  monthn <- rep(c("Jan","Feb","Mar","Apr","May","June","July","Aug","Sept","Oct","Nov","Dec"), period)
+  monthn <- switch(month.lab,
+                   "a" = rep(c("Jan","Feb","Mar","Apr","May","June","July","Aug","Sept","Oct","Nov","Dec"), period),
+                   "n" = rep(1:12, period),
+                   "i" = rep(c("J","F","M","A","M","J","J","A","S","O","N","D"), period),
+                   "f" = rep(c("January","February","March","April","May","June","July",
+                               "August","September","October","November","December"), period),
+                   month.lab
+    )
   monthp <- rep(0, 12*period)
   for (i in 1:(12*period)){
     if (i == 1) {
