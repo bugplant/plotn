@@ -582,17 +582,11 @@ boxplotn <- function(formula, data = NULL, ...,
                  "right" = side,
                  "left" = side,
                  "center")
-  if(horizontal == T){
-    g <- switch(side,
-                "center" = 0,
-                "right" = -side.sp,
-                "left" = side.sp)
-  } else {
-    g <- switch(side,
-                "center" = 0,
-                "right" = side.sp,
-                "left" = -side.sp)
-  }
+  
+  g <- switch(side,
+              "center" = 0,
+              "right" = side.sp,
+              "left" = -side.sp)
   
   noise <- noise*10
   
@@ -1645,17 +1639,11 @@ vioplotn <- function(formula, data = NULL,
                  "left" = side,
                  "both")
   
-  if(horizontal == T){
-    g <- switch(side,
-                "both" = 0,
-                "right" = -side.sp,
-                "left" = side.sp)
-  } else {
-    g <- switch(side,
-                "both" = 0,
-                "right" = side.sp,
-                "left" = -side.sp)
-  }
+  g <- switch(side,
+              "both" = 0,
+              "right" = side.sp,
+              "left" = -side.sp) 
+
   
   #ラベル名取得
   if (!is.formula(formula)){
@@ -1810,7 +1798,7 @@ vioplotn <- function(formula, data = NULL,
       if(horizontal == T){
         ls <- list(yd,xd)
         xd <- ls[[1]]
-        yd <- -(ls[[2]] - i) + i
+        yd <- (ls[[2]] - i) + i
       }
       
       polygon(xd, yd, col = col.fill[i], border = col.mar[i], 
