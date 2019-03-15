@@ -485,6 +485,7 @@ boxplotn <- function(formula, data = NULL, ...,
                      lwd.dot = 1,
                      noise = 1,
                      side = "center",
+                     side.sp = 0.3,
                      reflect = T,
                      Mean = F,
                      SE = F,
@@ -584,13 +585,13 @@ boxplotn <- function(formula, data = NULL, ...,
   if(horizontal == T){
     g <- switch(side,
                 "center" = 0,
-                "right" = -boxwex/1.7,
-                "left" = boxwex/1.7)
+                "right" = -side.sp,
+                "left" = side.sp)
   } else {
     g <- switch(side,
                 "center" = 0,
-                "right" = boxwex/1.7,
-                "left" = -boxwex/1.7)
+                "right" = side.sp,
+                "left" = -side.sp)
   }
   
   noise <- noise*10
@@ -1533,6 +1534,7 @@ vioplotn <- function(formula, data = NULL,
                      trim = F,
                      horizontal = F, 
                      side = "both",
+                     side.sp = 0.05,
                      noise = 1,
                      reflect = T,
                      legend = F,
@@ -1646,13 +1648,13 @@ vioplotn <- function(formula, data = NULL,
   if(horizontal == T){
     g <- switch(side,
                 "both" = 0,
-                "right" = -boxwex/2,
-                "left" = boxwex/2)
+                "right" = -side.sp,
+                "left" = side.sp)
   } else {
     g <- switch(side,
                 "both" = 0,
-                "right" = boxwex/2,
-                "left" = -boxwex/2)
+                "right" = side.sp,
+                "left" = -side.sp)
   }
   
   #ラベル名取得
