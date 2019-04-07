@@ -1221,7 +1221,7 @@ barplotn <- function(formula, data = NULL, ...,
         aj <- par()$mfcol[2]
       }
       
-      length <- 1/(2*length(pos)) * (pos[2] - pos[1])
+      length <- 1/(2 * length(pos) * aj) * (pos[2] - pos[1])
     }
     
     arrows(p1, p2, p3, p4, col = col.stat, 
