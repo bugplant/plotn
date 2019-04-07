@@ -1216,9 +1216,9 @@ barplotn <- function(formula, data = NULL, ...,
     if(length == "auto"){
       
       if(horizontal == T){
-        aj <- par()$mfcol[1]
+        aj <- par()$mfrow[1]
       } else {
-        aj <- par()$mfcol[2]
+        aj <- par()$mfrow[2]
       }
       
       length <- 1/(2 * length(pos) * aj) * (pos[2] - pos[1])
