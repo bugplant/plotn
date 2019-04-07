@@ -466,6 +466,7 @@ boxplotn <- function(formula, data = NULL, ...,
                      xlab = NULL,
                      ylab = NULL,
                      names = NULL,
+                     xlim = NULL,
                      ylim = NULL,
                      notch = F,
                      horizontal = F,
@@ -600,15 +601,37 @@ boxplotn <- function(formula, data = NULL, ...,
     if(length(names)==0){
       names <- nn
     }
-    if(length(xlab)==0){
-      xlab <- "group"
+    
+    if(horizontal == T){
+      if(length(ylab)==0){
+        ylab <- "group"
+      }
+      if(length(xlab)==0){
+        xlab <- "data"
+      }
+    } else {
+      if(length(xlab)==0){
+        xlab <- "group"
+      }
+      if(length(ylab)==0){
+        ylab <- "data"
+      }
     }
-    if(length(ylab)==0){
-      ylab <- "data"
+    
+    if(horizontal == T){
+      ylim_t <- ylim
+      if(length(xlim)==0){
+        ylim <- range(y, na.rm = T)
+      } else {
+        ylim <- xlim
+      }
+      xlim <- ylim_t
+    } else {
+      if(length(ylim)==0){
+        ylim <- range(y, na.rm = T)
+      }
     }
-    if(length(ylim)==0){
-      ylim <- range(formula, na.rm = T)
-    }
+    
   } else {
     if(is.null(data)){
       
@@ -626,10 +649,16 @@ boxplotn <- function(formula, data = NULL, ...,
       }
       group <- factor(group, levels = nn)
       
-      
-      if(length(ylab)==0){
-        n <- as.character(attr(terms(formula), "variables")[[2]])
-        ylab <- paste(n[2], n[1], n[3], sep = "")
+      if(horizontal == T){
+        if(length(xlab)==0){
+          n <- as.character(attr(terms(formula), "variables")[[2]])
+          xlab <- paste(n[2], n[1], n[3], sep = "")
+        }
+      } else {
+        if(length(ylab)==0){
+          n <- as.character(attr(terms(formula), "variables")[[2]])
+          ylab <- paste(n[2], n[1], n[3], sep = "")
+        }
       }
       
     } else {
@@ -648,29 +677,44 @@ boxplotn <- function(formula, data = NULL, ...,
       }
       group <- factor(group, levels = nn)
       
-      if(length(ylab)==0){
-        ylab <- as.character(attr(terms(formula), "variables")[[2]])
+      if(horizontal == T){
+        if(length(xlab)==0){
+          xlab <- as.character(attr(terms(formula), "variables")[[2]])
+        }
+      } else {
+        if(length(ylab)==0){
+          ylab <- as.character(attr(terms(formula), "variables")[[2]])
+        }
       }
-      
     }
     
     if(length(names)==0){
       names <- nn
     }
-    if(length(xlab)==0){
-      xlab <- "group"
-    }
-    if(length(ylim)==0){
-      ylim <- range(y, na.rm = T)
+    
+    if(horizontal == T){
+      if(length(ylab)==0){
+        ylab <- "group"
+      }
+    } else {
+      if(length(xlab)==0){
+        xlab <- "group"
+      }
     }
     
-  }
-  
-  
-  if(horizontal == T){
-    ls <- c(ylab,xlab)
-    xlab <- ls[1]
-    ylab <- ls[2]
+    if(horizontal == T){
+      ylim_t <- ylim
+      if(length(xlim)==0){
+        ylim <- range(y, na.rm = T)
+      } else {
+        ylim <- xlim
+      }
+      xlim <- ylim_t
+    } else {
+      if(length(ylim)==0){
+        ylim <- range(y, na.rm = T)
+      }
+    }
   }
   
   col.fill <- rep(col.fill, length = length(names))
@@ -680,7 +724,7 @@ boxplotn <- function(formula, data = NULL, ...,
   col.bg <- rep(col.bg, length = length(names))
   
   #軸の設定
-  boxplot(formula, data = data, ..., ylim = ylim, 
+  boxplot(formula, data = data, ..., xlim = xlim, ylim = ylim, 
           outline = F, las = las, horizontal = horizontal,
           bty = "n", axes = F, add = add, 
           col = NA, border = NA)
@@ -698,7 +742,7 @@ boxplotn <- function(formula, data = NULL, ...,
     xaxt <- "n"
   }
   
-  boxplot(formula, data = data, ..., ylim = ylim, 
+  boxplot(formula, data = data, ..., xlim = xlim, ylim = ylim, 
           cex.axis = cex.axis, cex.lab = cex.lab, 
           col.axis = col, col.lab = col,
           font.lab = font.lab,
@@ -992,29 +1036,43 @@ barplotn <- function(formula, data = NULL, ...,
   
   #ラベル名取得
   if (!is.formula(formula)){
+    nn <- "x"
     
     if(length(names)==0){
-      names <- colnames(formula)
-      if(length(names)==0){
-        if(is.vector(formula)){
-          names <- c(1:length(formula))
-        } else {
-          names <- c(1:ncol(formula))
-        }
+      names <- nn
+    }
+    
+    if(horizontal == T){
+      if(length(ylab)==0){
+        ylab <- "group"
+      }
+      if(length(xlab)==0){
+        xlab <- "data"
+      }
+    } else {
+      if(length(xlab)==0){
+        xlab <- "group"
+      }
+      if(length(ylab)==0){
+        ylab <- "data"
       }
     }
-    if(length(xlab)==0){
-      xlab <- "group"
-    }
-    if(length(ylab)==0){
-      ylab <- "data"
+    
+    if(horizontal == T){
+      ylim_t <- ylim
+      if(length(xlim)==0){
+        ylim <- range(y, na.rm = T)
+      } else {
+        ylim <- xlim
+      }
+      xlim <- ylim_t
+    } else {
+      if(length(ylim)==0){
+        ylim <- range(y, na.rm = T)
+      }
     }
     
-    if(is.data.frame(formula)){
-      formula <- as.matrix(formula)
-    }
-    
-  } else  {
+  } else {
     if(is.null(data)){
       
       y <- eval(attr(terms(formula), "variables")[[2]])
@@ -1031,9 +1089,16 @@ barplotn <- function(formula, data = NULL, ...,
       }
       group <- factor(group, levels = nn)
       
-      if(length(ylab)==0){
-        n <- as.character(attr(terms(formula), "variables")[[2]])
-        ylab <- paste(n[2], n[1], n[3], sep = "")
+      if(horizontal == T){
+        if(length(xlab)==0){
+          n <- as.character(attr(terms(formula), "variables")[[2]])
+          xlab <- paste(n[2], n[1], n[3], sep = "")
+        }
+      } else {
+        if(length(ylab)==0){
+          n <- as.character(attr(terms(formula), "variables")[[2]])
+          ylab <- paste(n[2], n[1], n[3], sep = "")
+        }
       }
       
     } else {
@@ -1052,19 +1117,44 @@ barplotn <- function(formula, data = NULL, ...,
       }
       group <- factor(group, levels = nn)
       
-      if(length(ylab)==0){
-        ylab <- as.character(attr(terms(formula), "variables")[[2]])
+      if(horizontal == T){
+        if(length(xlab)==0){
+          xlab <- as.character(attr(terms(formula), "variables")[[2]])
+        }
+      } else {
+        if(length(ylab)==0){
+          ylab <- as.character(attr(terms(formula), "variables")[[2]])
+        }
       }
-      
     }
     
     if(length(names)==0){
       names <- nn
     }
-    if(length(xlab)==0){
-      xlab <- "group"
+    
+    if(horizontal == T){
+      if(length(ylab)==0){
+        ylab <- "group"
+      }
+    } else {
+      if(length(xlab)==0){
+        xlab <- "group"
+      }
     }
     
+    if(horizontal == T){
+      ylim_t <- ylim
+      if(length(xlim)==0){
+        ylim <- range(y, na.rm = T)
+      } else {
+        ylim <- xlim
+      }
+      xlim <- ylim_t
+    } else {
+      if(length(ylim)==0){
+        ylim <- range(y, na.rm = T)
+      }
+    }
   }
   
   
@@ -1083,6 +1173,7 @@ barplotn <- function(formula, data = NULL, ...,
     }
     
   }
+  
   
   pos <- barplot(m, ..., col = col.fill, las = las, names.arg = names, space = space,
                  cex.axis = cex.axis, cex.lab = cex.lab, cex.names = cex.axis,
@@ -1496,6 +1587,7 @@ vioplotn <- function(formula, data = NULL,
                      xlab = NULL,
                      ylab = NULL,
                      names = NULL,
+                     xlim = NULL, 
                      ylim = NULL, 
                      xaxt = "s",
                      yaxt = "s",
@@ -1658,15 +1750,37 @@ vioplotn <- function(formula, data = NULL,
     if(length(names)==0){
       names <- nn
     }
-    if(length(xlab)==0){
-      xlab <- "group"
+    
+    if(horizontal == T){
+      if(length(ylab)==0){
+        ylab <- "group"
+      }
+      if(length(xlab)==0){
+        xlab <- "data"
+      }
+    } else {
+      if(length(xlab)==0){
+        xlab <- "group"
+      }
+      if(length(ylab)==0){
+        ylab <- "data"
+      }
     }
-    if(length(ylab)==0){
-      ylab <- "data"
+    
+    if(horizontal == T){
+      ylim_t <- ylim
+      if(length(xlim)==0){
+        ylim <- range(y, na.rm = T)
+      } else {
+        ylim <- xlim
+      }
+      xlim <- ylim_t
+    } else {
+      if(length(ylim)==0){
+        ylim <- range(y, na.rm = T)
+      }
     }
-    if(length(ylim)==0){
-      ylim <- range(formula, na.rm = T)
-    }
+    
   } else {
     if(is.null(data)){
       
@@ -1684,9 +1798,16 @@ vioplotn <- function(formula, data = NULL,
       }
       group <- factor(group, levels = nn)
       
-      if(length(ylab)==0){
-        n <- as.character(attr(terms(formula), "variables")[[2]])
-        ylab <- paste(n[2], n[1], n[3], sep = "")
+      if(horizontal == T){
+        if(length(xlab)==0){
+          n <- as.character(attr(terms(formula), "variables")[[2]])
+          xlab <- paste(n[2], n[1], n[3], sep = "")
+        }
+      } else {
+        if(length(ylab)==0){
+          n <- as.character(attr(terms(formula), "variables")[[2]])
+          ylab <- paste(n[2], n[1], n[3], sep = "")
+        }
       }
       
     } else {
@@ -1705,29 +1826,46 @@ vioplotn <- function(formula, data = NULL,
       }
       group <- factor(group, levels = nn)
       
-      if(length(ylab)==0){
-        ylab <- as.character(attr(terms(formula), "variables")[[2]])
+      if(horizontal == T){
+        if(length(xlab)==0){
+          xlab <- as.character(attr(terms(formula), "variables")[[2]])
+        }
+      } else {
+        if(length(ylab)==0){
+          ylab <- as.character(attr(terms(formula), "variables")[[2]])
+        }
       }
-      
     }
     
     if(length(names)==0){
       names <- nn
     }
-    if(length(xlab)==0){
-      xlab <- "group"
-    }
-    if(length(ylim)==0){
-      ylim <- range(y, na.rm = T)
+    
+    if(horizontal == T){
+      if(length(ylab)==0){
+        ylab <- "group"
+      }
+    } else {
+      if(length(xlab)==0){
+        xlab <- "group"
+      }
     }
     
+    if(horizontal == T){
+      ylim_t <- ylim
+      if(length(xlim)==0){
+        ylim <- range(y, na.rm = T)
+      } else {
+        ylim <- xlim
+      }
+      xlim <- ylim_t
+    } else {
+      if(length(ylim)==0){
+        ylim <- range(y, na.rm = T)
+      }
+    }
   }
   
-  if(horizontal == T){
-    ls <- c(ylab,xlab)
-    xlab <- ls[1]
-    ylab <- ls[2]
-  }
   
   col.fill <- rep(col.fill, length = length(names))
   col.mar <- rep(col.mar, length = length(names))
@@ -1739,7 +1877,7 @@ vioplotn <- function(formula, data = NULL,
   density <- rep(density, length = length(names))
   angle <- rep(angle, length = length(names))
   
-  boxplot(formula, data = data ,..., ylim = ylim, las = las,
+  boxplot(formula, data = data ,..., xlim = xlim, ylim = ylim, las = las,
           outline = F, bty = "n", axes = F, add = F, 
           col = NA, border = NA,  horizontal = horizontal)
   
@@ -1825,7 +1963,7 @@ vioplotn <- function(formula, data = NULL,
     xaxt <- "n"
   }
   
-  boxplot(formula, data = data, ..., ylim = ylim, 
+  boxplot(formula, data = data, ..., xlim = xlim, ylim = ylim, 
           xlab = xlab, ylab = ylab,
           lty = 1, outline = F, lwd = lwd.bor,
           cex.axis = cex.axis, cex.lab = cex.lab, 
