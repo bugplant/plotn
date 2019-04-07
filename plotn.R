@@ -901,7 +901,7 @@ barplotn <- function(formula, data = NULL, ...,
                      col.fill = default_fill,
                      col.bor = default_bor,
                      col.stat = "default",
-                     length = 0.15,
+                     length = "auto",
                      space = 0.5,
                      names = NULL,
                      xlab = NULL,
@@ -1067,11 +1067,6 @@ barplotn <- function(formula, data = NULL, ...,
     
   }
   
-  if(horizontal == T){
-    ls <- c(ylab,xlab)
-    xlab <- ls[1]
-    ylab <- ls[2]
-  }
   
   if (!is.formula(formula)){
     m <- formula
@@ -1125,6 +1120,17 @@ barplotn <- function(formula, data = NULL, ...,
       p6 <- m
       p7 <- pos
       p8 <- em
+    }
+    
+    if(length == "auto"){
+      
+      if(horizontal == T){
+        aj <- par()$mfcol[1]
+      } else {
+        aj <- par()$mfcol[2]
+      }
+      
+      length <- 1/(2*length(pos)) * (pos[2] - pos[1])
     }
     
     arrows(p1, p2, p3, p4, col = col.stat, 
@@ -1643,7 +1649,7 @@ vioplotn <- function(formula, data = NULL,
               "both" = 0,
               "right" = side.sp,
               "left" = -side.sp) 
-
+  
   
   #ラベル名取得
   if (!is.formula(formula)){
