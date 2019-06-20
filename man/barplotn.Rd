@@ -6,11 +6,12 @@
 \usage{
 barplotn(formula, data = NULL, ..., las = 1, cex.axis = 1.1,
   cex.lab = 1.3, font.lab = 2, lwd.bor = 2, lwd.axis = 1,
-  lwd.stat = 1, col.fill = c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F",
-  "#D627287F", "#9467BD7F", "#8C564B7F", "#E377C27F", "#7F7F7F7F",
-  "#BCBD227F", "#17BECF7F"), col.bor = c("#1F77B4FF", "#FF7F0EFF",
-  "#2CA02CFF", "#D62728FF", "#9467BDFF", "#8C564BFF", "#E377C2FF",
-  "#7F7F7FFF", "#BCBD22FF", "#17BECFFF"), col.stat = "default",
+  lwd.0 = 1, lwd.stat = 1, lty.0 = 3, col.fill = c("#1F77B47F",
+  "#FF7F0E7F", "#2CA02C7F", "#D627287F", "#9467BD7F", "#8C564B7F",
+  "#E377C27F", "#7F7F7F7F", "#BCBD227F", "#17BECF7F"),
+  col.bor = c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF", "#D62728FF",
+  "#9467BDFF", "#8C564BFF", "#E377C2FF", "#7F7F7FFF", "#BCBD22FF",
+  "#17BECFFF"), col.stat = "default", col.0 = "#0000007F",
   length = "auto", space = 0.5, names = NULL, xlim = NULL,
   ylim = NULL, xlab = NULL, ylab = NULL, SE = F, SD = F,
   horizontal = F, beside = F, legend = F, pos.leg = "outright",
@@ -40,13 +41,19 @@ barplotn(formula, data = NULL, ..., las = 1, cex.axis = 1.1,
 
 \item{lwd.axis}{axis lwd, default is 1}
 
+\item{lwd.0}{Zero line lwd, default is 1}
+
 \item{lwd.stat}{Error bar lwd, default is 1}
+
+\item{lty.0}{Line type of zero line, default is 3}
 
 \item{col.fill}{fill color}
 
 \item{col.bor}{border color}
 
 \item{col.stat}{Mean and error bar color}
+
+\item{col.0}{Zero line color}
 
 \item{length}{Length of vertical bar of tip in error bar}
 

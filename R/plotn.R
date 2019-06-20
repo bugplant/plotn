@@ -130,7 +130,7 @@ col_genelator <- function (palette = "d3",
 #' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
 #'
 #' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
-#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon
+#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
 #' @importFrom stats density na.omit sd terms var
 #'
 #' @export
@@ -575,7 +575,7 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
 #' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
 #'
 #' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
-#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon
+#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
 #' @importFrom stats density na.omit sd terms var
 #'
 #' @export
@@ -1063,10 +1063,13 @@ boxplotn <- function(formula, data = NULL, ...,
 #' @param font.lab label font size, default is 2
 #' @param lwd.bor box border lwd, default is 2
 #' @param lwd.axis axis lwd, default is 1
+#' @param lwd.0 Zero line lwd, default is 1
 #' @param lwd.stat Error bar lwd, default is 1
+#' @param lty.0 Line type of zero line, default is 3
 #' @param col.fill fill color
 #' @param col.bor border color
 #' @param col.stat Mean and error bar color
+#' @param col.0 Zero line color
 #' @param length Length of vertical bar of tip in error bar
 #' @param space Barplot space. Default is 0.5
 #' @param names names
@@ -1100,7 +1103,7 @@ boxplotn <- function(formula, data = NULL, ...,
 #' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
 #'
 #' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
-#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon
+#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
 #' @importFrom stats density na.omit sd terms var
 #'
 #' @export
@@ -1112,7 +1115,9 @@ barplotn <- function(formula, data = NULL, ...,
                      font.lab = 2,
                      lwd.bor = 2,
                      lwd.axis = 1,
+                     lwd.0 = 1,
                      lwd.stat = 1,
+                     lty.0 = 3,
                      col.fill = c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F",
                                   "#D627287F", "#9467BD7F", "#8C564B7F",
                                   "#E377C27F", "#7F7F7F7F", "#BCBD227F", "#17BECF7F"),
@@ -1120,6 +1125,7 @@ barplotn <- function(formula, data = NULL, ...,
                                  "#D62728FF", "#9467BDFF", "#8C564BFF",
                                  "#E377C2FF", "#7F7F7FFF", "#BCBD22FF", "#17BECFFF"),
                      col.stat = "default",
+                     col.0 = "#0000007F",
                      length = "auto",
                      space = 0.5,
                      names = NULL,
@@ -1152,13 +1158,12 @@ barplotn <- function(formula, data = NULL, ...,
                      inversion = F,
                      inv.col = "#FFFFFF"){
 
-  #内部関数の定義
   is.formula <- function(x){
     class(x)=="formula"
   }
 
   se  <-  function(x){
-    y  <-  x[!is.na(x)]  #  remove  the  missing  values
+    y  <-  x[!is.na(x)]
     sqrt(var(as.vector(y))/length(y))
   }
 
@@ -1190,7 +1195,6 @@ barplotn <- function(formula, data = NULL, ...,
     }
   }
 
-  #水平？
   if(horizontal == T){
     ls <- c(mar[2],mar[1])
     mar[1] <- ls[1]
@@ -1211,7 +1215,6 @@ barplotn <- function(formula, data = NULL, ...,
   par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col, lwd = lwd.bor)
   on.exit(par(par.old))
 
-  #ラベル名取得
   if (!is.formula(formula)){
     nn <- "x"
 
@@ -1235,17 +1238,32 @@ barplotn <- function(formula, data = NULL, ...,
       }
     }
 
+    cross0 <- min(formula, na.rm = T) * max(formula, na.rm = T) > 0
+
     if(horizontal == T){
-      ylim_t <- ylim
       if(length(xlim)==0){
-        ylim <- range(y, na.rm = T)
-      } else {
-        ylim <- xlim
+        if(cross0 > 0) {
+          if(max(formula, na.rm = T) > 0) {
+            xlim <- c(0 - max(formula, na.rm = T) * 0.05, max(formula, na.rm = T) * 1.05)
+          } else {
+            xlim <- c(min(formula, na.rm = T) * 1.05, 0 + min(formula, na.rm = T) * 0.05)
+          }
+        } else {
+          xlim <- c(min(formula, na.rm = T) * 1.05, max(formula, na.rm = T) * 1.05)
+        }
       }
-      xlim <- ylim_t
     } else {
       if(length(ylim)==0){
-        ylim <- range(y, na.rm = T)
+        if(cross0 > 0) {
+          if(max(formula, na.rm = T) > 0) {
+            ylim <- c(-max(formula, na.rm = T) * 0.05, max(formula, na.rm = T) * 1.05)
+          } else {
+            ylim <- c(min(formula, na.rm = T) * 1.05, -min(formula, na.rm = T) * 0.05)
+          }
+        } else {
+          ylim <- c(min(formula, na.rm = T) - (max(formula, na.rm = T) - min(formula, na.rm = T)) * 0.05,
+                    max(formula, na.rm = T) + (max(formula, na.rm = T) - min(formula, na.rm = T)) * 0.05)
+        }
       }
     }
 
@@ -1319,17 +1337,38 @@ barplotn <- function(formula, data = NULL, ...,
       }
     }
 
+    cross0 <- min(tapply(y, list(group), mean, na.rm = T)) *
+      max(tapply(y, list(group), mean, na.rm = T)) > 0
+
     if(horizontal == T){
-      ylim_t <- ylim
       if(length(xlim)==0){
-        ylim <- range(y, na.rm = T)
-      } else {
-        ylim <- xlim
+        if(cross0 > 0) {
+          if(max(tapply(y, list(group), mean, na.rm = T)) > 0) {
+            xlim <- c(0 - max(tapply(y, list(group), sd, na.rm = T)) * 0.5,
+                      max(tapply(y, list(group), mean, na.rm = T)) + max(tapply(y, list(group), sd, na.rm = T)) * 1.5)
+          } else {
+            xlim <- c(min(tapply(y, list(group), mean, na.rm = T)) - max(tapply(y, list(group), sd, na.rm = T)) * 1.5,
+                      0 + max(tapply(y, list(group), sd, na.rm = T)) * 0.5)
+          }
+        } else {
+          xlim <- c(min(tapply(y, list(group), mean, na.rm = T)) - max(tapply(y, list(group), sd, na.rm = T)) * 1.5,
+                    max(tapply(y, list(group), mean, na.rm = T)) + max(tapply(y, list(group), sd, na.rm = T)) * 1.5)
+        }
       }
-      xlim <- ylim_t
     } else {
       if(length(ylim)==0){
-        ylim <- range(y, na.rm = T)
+        if(cross0 > 0) {
+          if(max(tapply(y, list(group), mean, na.rm = T)) > 0) {
+            ylim <- c(-max(tapply(y, list(group), sd, na.rm = T)) * 0.5,
+                      max(tapply(y, list(group), mean, na.rm = T)) + max(tapply(y, list(group), sd, na.rm = T)) * 1.5)
+          } else {
+            ylim <- c(min(tapply(y, list(group), mean, na.rm = T)) - max(tapply(y, list(group), sd, na.rm = T)) * 1.5,
+                      max(tapply(y, list(group), sd, na.rm = T)) * 0.5)
+          }
+        } else {
+          ylim <- c(min(tapply(y, list(group), mean, na.rm = T)) - max(tapply(y, list(group), sd, na.rm = T)) * 1.5,
+                    max(tapply(y, list(group), mean, na.rm = T)) + max(tapply(y, list(group), sd, na.rm = T)) * 1.5)
+        }
       }
     }
   }
@@ -1355,10 +1394,17 @@ barplotn <- function(formula, data = NULL, ...,
   pos <- barplot(m, ..., col = col.fill, las = las, names.arg = names, space = space,
                  cex.axis = cex.axis, cex.lab = cex.lab, cex.names = cex.axis,
                  font.lab = font.lab, border = col.bor, horiz = horizontal,
-                 col.axis = col, col.lab = col, xlab = xlab, ylab = ylab, beside = beside)
+                 col.axis = col, col.lab = col, xlab = xlab, ylab = ylab,
+                 xlim = xlim, ylim = ylim, beside = beside)
+
+  if (horizontal == T){
+    abline(v = 0, col = col.0, lty = lty.0)
+  } else {
+    abline(h = 0, col = col.0, lty = lty.0)
+  }
+
   box(lty=1, lwd = lwd.axis)
 
-  #SD、SE
   if ( is.formula(formula) && !(!(SE == T)&&!(SD == T))){
 
     if (SE == T){
@@ -1408,7 +1454,6 @@ barplotn <- function(formula, data = NULL, ...,
 
   }
 
-  #凡例
   if(legend == T){
 
     par(xpd=T)
@@ -1511,7 +1556,7 @@ barplotn <- function(formula, data = NULL, ...,
 #' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
 #'
 #' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
-#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon
+#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
 #' @importFrom stats density na.omit sd terms var
 #'
 #' @export
@@ -1886,7 +1931,7 @@ histn <- function(formula, data = NULL, ...,
 #' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
 #'
 #' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
-#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon
+#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
 #' @importFrom stats density na.omit sd terms var
 #'
 #' @export
@@ -2472,7 +2517,7 @@ vioplotn <- function(formula, data = NULL,
 #' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
 #'
 #' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
-#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon
+#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
 #' @importFrom stats density na.omit sd terms var
 #'
 #' @export
@@ -2594,7 +2639,7 @@ month.axis <- function(leap = F,
 #' @param mar mar, default is c(2,3.8,1,1).
 #'
 #' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
-#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon
+#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
 #' @importFrom stats density na.omit sd terms var
 #'
 #' @export
@@ -2812,7 +2857,7 @@ leap.year <- function(year){
 #' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
 #'
 #' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
-#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon
+#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
 #' @importFrom stats density na.omit sd terms var
 #'
 #' @export
