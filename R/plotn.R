@@ -2618,7 +2618,7 @@ month.axis <- function(leap = F,
 
 #' Drawing mean points
 #'
-#' @param x Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
+#' @param formula Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
 #' @param data If formula is inputted in "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
 #' @param at Drawing position
 #' @param SD If set "T", standard deviation is drawn. Default is "F".
@@ -2644,7 +2644,7 @@ month.axis <- function(leap = F,
 #'
 #' @export
 #'
-Mean.pt <- function(x, data = NULL,
+Mean.pt <- function(formula, data = NULL,
                     at = NULL,
                     SD = F,
                     SE = F,
@@ -2677,7 +2677,7 @@ Mean.pt <- function(x, data = NULL,
   on.exit(par(par.old))
 
   calculate <- F
-  if(is.formula(x)) {
+  if(is.formula(formula)) {
     calculate <- T
   } else {
     if(is.vector(group)){
@@ -2686,16 +2686,16 @@ Mean.pt <- function(x, data = NULL,
   }
 
   if(calculate == T){
-    if(is.formula(x)) {
+    if(is.formula(formula)) {
       if(is.null(data)){
 
-        xx <- eval(attr(terms(x), "variables")[[2]])
-        group <- eval(attr(terms(x), "variables")[[3]])
+        xx <- eval(attr(terms(formula), "variables")[[2]])
+        group <- eval(attr(terms(formula), "variables")[[3]])
 
       } else {
 
-        xx <- data[,as.character(attr(terms(x), "variables")[[2]])]
-        group <- data[,as.character(attr(terms(x), "variables")[[3]])]
+        xx <- data[,as.character(attr(terms(formula), "variables")[[2]])]
+        group <- data[,as.character(attr(terms(formula), "variables")[[3]])]
 
       }
 
@@ -2704,15 +2704,15 @@ Mean.pt <- function(x, data = NULL,
 
       if(is.null(data)){
 
-        xx <- as.matrix(x)[,1]
+        xx <- as.matrix(formula)[,1]
 
         if(length(group) == 1){
-          group <- as.matrix(x)[,group]
+          group <- as.matrix(formula)[,group]
         }
 
       } else {
 
-        xx <- data[,x]
+        xx <- data[,formula]
 
         if(length(group) == 1){
           group <- data[,group]
@@ -2738,8 +2738,8 @@ Mean.pt <- function(x, data = NULL,
 
   } else {
 
-    m <- x[,mean.column]
-    d <- x[,3 - mean.column]
+    m <- formula[,mean.column]
+    d <- formula[,3 - mean.column]
     n <- length(m)
 
   }
