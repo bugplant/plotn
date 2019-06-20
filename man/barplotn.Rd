@@ -11,14 +11,15 @@ barplotn(formula, data = NULL, ..., las = 1, cex.axis = 1.1,
   "#BCBD227F", "#17BECF7F"), col.bor = c("#1F77B4FF", "#FF7F0EFF",
   "#2CA02CFF", "#D62728FF", "#9467BDFF", "#8C564BFF", "#E377C2FF",
   "#7F7F7FFF", "#BCBD22FF", "#17BECFFF"), col.stat = "default",
-  length = "auto", space = 0.5, names = NULL, xlab = NULL,
-  ylab = NULL, SE = F, SD = F, horizontal = F, beside = F,
-  legend = F, pos.leg = "outright", pch.leg = 22, bty.leg = "n",
-  bg.leg = "transparent", pt.cex.leg = 2, tx.cex.leg = 1.1,
-  pt.col.leg = NULL, pt.bg.leg = NULL, tx.col.leg = NULL,
-  leg.lab = NULL, leg.sp = 2.5, inset = 1, leg.title = NULL,
-  tit.col.leg = NULL, mar = c(2, 3.8, 1, 1), mgp = c(2.5, 0.5, 0),
-  tcl = -0.2, inversion = F, inv.col = "#FFFFFF")
+  length = "auto", space = 0.5, names = NULL, xlim = NULL,
+  ylim = NULL, xlab = NULL, ylab = NULL, SE = F, SD = F,
+  horizontal = F, beside = F, legend = F, pos.leg = "outright",
+  pch.leg = 22, bty.leg = "n", bg.leg = "transparent",
+  pt.cex.leg = 2, tx.cex.leg = 1.1, pt.col.leg = NULL,
+  pt.bg.leg = NULL, tx.col.leg = NULL, leg.lab = NULL,
+  leg.sp = 2.5, inset = 1, leg.title = NULL, tit.col.leg = NULL,
+  mar = c(2, 3.8, 1, 1), mgp = c(2.5, 0.5, 0), tcl = -0.2,
+  inversion = F, inv.col = "#FFFFFF")
 }
 \arguments{
 \item{formula}{Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result}
@@ -52,6 +53,10 @@ barplotn(formula, data = NULL, ..., las = 1, cex.axis = 1.1,
 \item{space}{Barplot space. Default is 0.5}
 
 \item{names}{names}
+
+\item{xlim}{x limit}
+
+\item{ylim}{y limit}
 
 \item{xlab}{x label}
 

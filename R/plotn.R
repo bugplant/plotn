@@ -1070,6 +1070,8 @@ boxplotn <- function(formula, data = NULL, ...,
 #' @param length Length of vertical bar of tip in error bar
 #' @param space Barplot space. Default is 0.5
 #' @param names names
+#' @param xlim x limit
+#' @param ylim y limit
 #' @param xlab x label
 #' @param ylab y label
 #' @param SD If set "T", standard deviation is drawn. Default is "F".
@@ -1121,6 +1123,8 @@ barplotn <- function(formula, data = NULL, ...,
                      length = "auto",
                      space = 0.5,
                      names = NULL,
+                     xlim = NULL,
+                     ylim = NULL,
                      xlab = NULL,
                      ylab = NULL,
                      SE = F,
@@ -1148,12 +1152,13 @@ barplotn <- function(formula, data = NULL, ...,
                      inversion = F,
                      inv.col = "#FFFFFF"){
 
+  #内部関数の定義
   is.formula <- function(x){
     class(x)=="formula"
   }
 
   se  <-  function(x){
-    y  <-  x[!is.na(x)]
+    y  <-  x[!is.na(x)]  #  remove  the  missing  values
     sqrt(var(as.vector(y))/length(y))
   }
 
@@ -1185,6 +1190,7 @@ barplotn <- function(formula, data = NULL, ...,
     }
   }
 
+  #水平？
   if(horizontal == T){
     ls <- c(mar[2],mar[1])
     mar[1] <- ls[1]
@@ -1205,6 +1211,7 @@ barplotn <- function(formula, data = NULL, ...,
   par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col, lwd = lwd.bor)
   on.exit(par(par.old))
 
+  #ラベル名取得
   if (!is.formula(formula)){
     nn <- "x"
 
@@ -1351,6 +1358,7 @@ barplotn <- function(formula, data = NULL, ...,
                  col.axis = col, col.lab = col, xlab = xlab, ylab = ylab, beside = beside)
   box(lty=1, lwd = lwd.axis)
 
+  #SD、SE
   if ( is.formula(formula) && !(!(SE == T)&&!(SD == T))){
 
     if (SE == T){
@@ -1400,6 +1408,7 @@ barplotn <- function(formula, data = NULL, ...,
 
   }
 
+  #凡例
   if(legend == T){
 
     par(xpd=T)
