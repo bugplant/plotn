@@ -3,7 +3,7 @@
 col_genelator <- function (palette = "d3",
                            palette_types = NULL,
                            number = 10, 
-                           alpha = 0.5){
+                           alpha = 1){
   targetPackages <- c('ggplot2', 'ggsci', 'scales') 
   newPackages <- targetPackages[!(targetPackages %in% installed.packages()[,"Package"])]
   if(length(newPackages)) install.packages(newPackages, repos = "http://cran.us.r-project.org")
@@ -87,7 +87,7 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
                   col.dot = default_bor,
                   col.fill = default_fill,
                   col.line = default_bor,
-                  col.bor = "default",
+                  col.bor = "transparent",
                   col.bg = "#FFFFFF",
                   legend = F,
                   pos.leg = "outright",
@@ -95,13 +95,15 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
                   bty.leg = "n",
                   bg.leg = "transparent",
                   lty = 1,
-                  lwd = 1,
+                  lwd.dot = 1,
+                  lwd.line = 1,
                   pt.cex.leg = 1.5,
                   tx.cex.leg = 1.1,                     
                   pt.col.leg = NULL,
                   pt.bg.leg = NULL,
                   lty.leg = NULL,
-                  lwd.leg = NULL,
+                  pt.lwd.leg = NULL,
+                  ln.lwd.leg = NULL,
                   tx.col.leg = NULL,
                   leg.lab = NULL,
                   leg.sp = 2.5,
@@ -111,6 +113,7 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
                   mode = "s",
                   group = NULL,
                   fill = F,
+                  line = F,
                   density = NA,
                   angle = 45,
                   mar = c(3.8,3.8,1,1), 
@@ -131,30 +134,6 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
   } else {
     bg <- "#FFFFFF"
     col <- "#000000"
-  }
-  
-  if(!is.na(col.dot[1])){
-    if(col.dot[1] == "default"){
-      col.dot <- col
-    }
-  }
-  
-  if(!is.na(col.fill[1])){
-    if(col.fill[1] == "default"){
-      col.fill <- bg
-    }
-  }
-  
-  if(!is.na(col.bor[1])){
-    if(col.bor[1] == "default"){
-      col.bor <- "transparent"
-    }
-  }
-  
-  if(!is.na(col.line[1])){
-    if(col.line[1] == "default"){
-      col.line <- col
-    }
   }
   
   
@@ -186,7 +165,7 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
         plot(x = x, y = y, ..., xlim = xlim, ylim = ylim,
              las = las, cex.axis = cex.axis, col = col.dot[1],
              cex.lab = cex.lab, font.lab = font.lab,
-             col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd)
+             col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd.dot)
         
       } else {
         
@@ -194,7 +173,7 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
         error <- try(plot(x, ..., xlim = xlim, ylim = ylim,las = las, cex.axis = cex.axis, 
                           col = col.dot[1], cex.lab = cex.lab, font.lab = font.lab,
                           col.axis = col, col.lab = col, pch = pch, lty = lty, 
-                          lwd = lwd), 
+                          lwd = lwd.dot), 
                      silent = T)
         
         if (class(error) == "try-error") {
@@ -202,7 +181,7 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
           plot(x, ..., las = las, cex.axis = cex.axis, 
                col = col.dot,cex.lab = cex.lab, font.lab = font.lab,
                col.axis = col, col.lab = col, pch = pch, lty = lty, 
-               lwd = lwd)
+               lwd = lwd.dot)
         }
         
       }
@@ -225,13 +204,16 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
            xlim = xlim, ylim = ylim, col = col.dot[1],
            las = las, cex.axis = cex.axis, 
            cex.lab = cex.lab, font.lab = font.lab,
-           col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd)
+           col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd.dot)
     }
     
     if (fill == T) {
-      polygon(x, y, col = col.fill, border = col.bor,
-              density = density, angle = angle)
-      lines(x, y, col = col.line, lty = lty, lwd = lwd)
+      polygon(x, y, col = col.fill[1], border = col.bor,
+              density = density, angle = angle, lwd = lwd.line)
+    }
+    
+    if (line == T) {
+      lines(x, y, col = col.line, lty = lty, lwd = lwd.line)
     }
     
   } else {
@@ -265,26 +247,33 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
                 las = las, cex.axis = cex.axis, xlim = xlim, ylim = ylim,
                 cex.lab = cex.lab, font.lab = font.lab, col = col.dot,
                 col.axis = col, col.lab = col,
-                lty = lty, lwd = lwd)
+                lty = lty, lwd = lwd.dot)
       } else {
         matplot(x = x, ..., pch = pch,
                 las = las, cex.axis = cex.axis, xlim = xlim, ylim = ylim,
                 cex.lab = cex.lab, font.lab = font.lab, col = col.dot,
                 col.axis = col, col.lab = col,
-                lty = lty, lwd = lwd)
+                lty = lty, lwd = lwd.dot)
       }
       
-      if (fill == T) {
-        for(i in 1:n){
-          if(ncol(x) > 1){
+      for(i in 1:n){
+        if(ncol(x) > 1){
+          if(fill == T){
             polygon(c(1:length(x[,1])), x[,i], col = col.fill[i], border = col.bor[i],
-                    density = density[i], angle = angle[i])
-            lines(c(1:length(x[,1])), x[,i], col = col.line[i], lty = lty[i], lwd = lwd)
-          } else {
-            polygon(x, y[,i], col = col.fill[i], border = col.bor[i],
-                    density = density[i], angle = angle[i])
-            lines(x, y[,i], col = col.line[i], lty = lty[i], lwd = lwd)
+                    density = density[i], angle = angle[i], lwd = lwd.line)
           }
+          if(line == T){
+            lines(c(1:length(x[,1])), x[,i], col = col.line[i], lty = lty[i], lwd = lwd.line)
+          }
+        } else {
+          if(fill == T){
+            polygon(x, y[,i], col = col.fill[i], border = col.bor[i],
+                    density = density[i], angle = angle[i], lwd = lwd.line)
+          }
+          if(line == T){
+            lines(x, y[,i], col = col.line[i], lty = lty[i], lwd = lwd.line)
+          }
+          
         }
       }
       
@@ -318,8 +307,9 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
         
         plot(x = x, y = y, ..., 
              las = las, cex.axis = cex.axis, xlim = xlim, ylim = ylim,
-             cex.lab = cex.lab, font.lab = font.lab, col = NA,
-             col.axis = col, col.lab = col)
+             cex.lab = cex.lab, font.lab = font.lab, col = col.dot[as.factor(g)],
+             bg = col.bg, pch = pch[as.factor(g)], col.axis = col, col.lab = col,
+             lwd = lwd.dot)
         
       } else {
         
@@ -344,8 +334,9 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
         
         plot(formula = formula, data = data, ...,
              las = las, cex.axis = cex.axis, xlim = xlim, ylim = ylim,
-             cex.lab = cex.lab, font.lab = font.lab, col = NA,
-             col.axis = col, col.lab = col)
+             cex.lab = cex.lab, font.lab = font.lab, col = col.dot[as.factor(g)],
+             bg = col.bg, pch = pch[as.factor(g)], col.axis = col, col.lab = col,
+             lwd = lwd.dot)
         
       }
       
@@ -353,18 +344,14 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
         xx <- x[g == names[i]]
         yy <- y[g == names[i]]
         
-        par(new = T)
-        
-        plot(x = xx, y = yy, ..., axes = F,
-             col = col.dot[i], bg = col.bg, col.lab = NA, pch = pch[i], 
-             lty = lty[i], lwd = lwd, xlim = xlim, ylim = ylim)
-        
         if (fill == T) {
-          polygon(xx, yy, col = col.fill[i], border = col.bor[i],
-                  density = density[i], angle = angle[i])
-          lines(xx, yy, col = col.line[i], lty = lty[i], lwd = lwd)
-          
+          polygon(x = xx, y = yy, col = col.fill[i], border = col.bor[i],
+                  density = density[i], angle = angle[i], lwd = lwd.line)
         }
+        if (line == T) {
+          lines(x = xx, y = yy, col = col.line[i], lty = lty[i], lwd = lwd.line)
+        }
+        
       }
       
     }
@@ -374,7 +361,7 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
   #凡例
   if(legend == T){
     
-    par(xpd=T)
+    par(xpd = T)
     par.old$xpd <- F
     
     if (length(leg.lab) == 0){
@@ -410,11 +397,19 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
     }
     
     if (length(lty.leg) == 0){
-      lty.leg <- lty
+      if(line == T){
+        lty.leg <- lty
+      } else {
+        lty.leg <- 0
+      }
     }
     
-    if (length(lwd.leg) == 0){
-      lwd.leg <- lwd
+    if (length(pt.lwd.leg) == 0){
+      pt.lwd.leg <- lwd.dot
+    }
+    
+    if (length(ln.lwd.leg) == 0){
+      ln.lwd.leg <- lwd.line
     }
     
     if (length(tit.col.leg) == 0){
@@ -444,7 +439,8 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
     
     legend(pos.leg[1] , pos.leg[2], inset = ins,
            legend = leg.lab, col = pt.col.leg, lty = lty.leg, 
-           pt.bg = pt.bg.leg, pch = pch.leg, lwd = lwd.leg, x.intersp = x.intersp,
+           pt.bg = pt.bg.leg, pch = pch.leg, pt.lwd = pt.lwd.leg, 
+           lwd = ln.lwd.leg, x.intersp = x.intersp,
            bty = bty.leg, bg = bg.leg, text.col = tx.col.leg,
            pt.cex = pt.cex.leg, cex = tx.cex.leg, horiz = horiz,
            title = leg.title, title.col = tit.col.leg)
