@@ -722,7 +722,11 @@ boxplotn <- function(formula, data = NULL, ...,
   on.exit(par(par.old))
 
   if (!is.formula(formula)){
-    nn <- "x"
+    if (ncol(as.data.frame(formula)) > 1) {
+      nn <- colnames(formula)
+    } else {
+      nn <- "x"
+    }
 
     if(length(names)==0){
       names <- nn
@@ -747,14 +751,14 @@ boxplotn <- function(formula, data = NULL, ...,
     if(horizontal == T){
       ylim_t <- ylim
       if(length(xlim)==0){
-        ylim <- range(y, na.rm = T)
+        ylim <- range(formula, na.rm = T)
       } else {
         ylim <- xlim
       }
       xlim <- ylim_t
     } else {
       if(length(ylim)==0){
-        ylim <- range(y, na.rm = T)
+        ylim <- range(formula, na.rm = T)
       }
     }
 
@@ -882,7 +886,7 @@ boxplotn <- function(formula, data = NULL, ...,
     for (i in 1:length(nn)){
 
       if (!is.formula(formula)){
-        xx <- formula
+        xx <- as.data.frame(formula)[,i]
       } else {
         xx <- y[group == nn[i]]
       }
@@ -917,7 +921,7 @@ boxplotn <- function(formula, data = NULL, ...,
     for (i in 1:length(nn)){
 
       if (!is.formula(formula)){
-        xx <- formula
+        xx <- as.data.frame(formula)[,i]
       } else {
         xx <- y[group == nn[i]]
       }
@@ -942,7 +946,12 @@ boxplotn <- function(formula, data = NULL, ...,
   if (!(!(Mean == T)&&!(SE == T)&&!(SD == T))){
 
     if (!is.formula(formula)){
-      m <- mean(formula, na.rm = T)
+      if (ncol(as.data.frame(formula)) > 1){
+        m <- apply(formula, 2, mean, na.rm = T)
+      } else {
+        m <- mean(formula, na.rm = T)
+      }
+
     } else {
       m <- tapply(y, list(group), mean, na.rm = T)
     }
@@ -953,7 +962,11 @@ boxplotn <- function(formula, data = NULL, ...,
       if (SE == T){
 
         if (!is.formula(formula)){
-          d <- se(formula)
+          if (ncol(as.data.frame(formula)) > 1){
+            d <- apply(formula, 2, se)
+          } else {
+            d <- se(formula)
+          }
         } else {
           d <- tapply(y, list(group), se)
         }
@@ -961,7 +974,11 @@ boxplotn <- function(formula, data = NULL, ...,
       } else {
 
         if (!is.formula(formula)){
-          d <- sd(formula, na.rm = T)
+          if (ncol(as.data.frame(formula)) > 1){
+            d <- apply(formula, 2, sd, na.rm = T)
+          } else {
+            d <- sd(formula, na.rm = T)
+          }
         } else {
           d <- tapply(y, list(group), sd, na.rm = T)
         }
@@ -2097,7 +2114,11 @@ vioplotn <- function(formula, data = NULL,
               "left" = -side.sp)
 
   if (!is.formula(formula)){
-    nn <- "x"
+    if (ncol(as.data.frame(formula)) > 1){
+      nn <- colnames(formula)
+    } else {
+      nn <- "x"
+    }
 
     if(length(names)==0){
       names <- nn
@@ -2122,14 +2143,14 @@ vioplotn <- function(formula, data = NULL,
     if(horizontal == T){
       ylim_t <- ylim
       if(length(xlim)==0){
-        ylim <- range(y, na.rm = T)
+        ylim <- range(formula, na.rm = T)
       } else {
         ylim <- xlim
       }
       xlim <- ylim_t
     } else {
       if(length(ylim)==0){
-        ylim <- range(y, na.rm = T)
+        ylim <- range(formula, na.rm = T)
       }
     }
 
@@ -2241,7 +2262,7 @@ vioplotn <- function(formula, data = NULL,
   for (i in 1:length(nn)){
 
     if (!is.formula(formula)){
-      xx <- formula
+      xx <- as.data.frame(formula)[,i]
     } else {
       xx <- y[group == nn[i]]
     }
@@ -2272,7 +2293,7 @@ vioplotn <- function(formula, data = NULL,
   for (i in 1:length(nn)){
 
     if (!is.formula(formula)){
-      xx <- formula
+      xx <- as.data.frame(formula)[,i]
     } else {
       xx <- y[group == nn[i]]
     }
@@ -2327,7 +2348,7 @@ vioplotn <- function(formula, data = NULL,
     for (i in 1:length(nn)){
 
       if (!is.formula(formula)){
-        xx <- formula
+        xx <- as.data.frame(formula)[,i]
       } else {
         xx <- y[group == nn[i]]
       }
@@ -2362,7 +2383,7 @@ vioplotn <- function(formula, data = NULL,
     for (i in 1:length(nn)){
 
       if (!is.formula(formula)){
-        xx <- formula
+        xx <- as.data.frame(formula)[,i]
       } else {
         xx <- y[group == nn[i]]
       }
@@ -2387,7 +2408,11 @@ vioplotn <- function(formula, data = NULL,
   if (!(!(Mean == T)&&!(SE == T)&&!(SD == T))){
 
     if (!is.formula(formula)){
-      m <- mean(formula, na.rm = T)
+      if (ncol(as.data.frame(formula)) > 1){
+        m <- apply(formula, 2, mean, na.rm = T)
+      } else {
+        m <- mean(formula, na.rm = T)
+      }
     } else {
       m <- tapply(y, list(group), mean, na.rm = T)
     }
@@ -2396,9 +2421,12 @@ vioplotn <- function(formula, data = NULL,
 
     if (!(!(SE == T)&&!(SD == T))) {
       if (SE == T){
-
         if (!is.formula(formula)){
-          d <- se(formula)
+          if (ncol(as.data.frame(formula)) > 1){
+            d <- apply(formula, 2, se)
+          } else {
+            d <- se(formula)
+          }
         } else {
           d <- tapply(y, list(group), se)
         }
@@ -2406,7 +2434,11 @@ vioplotn <- function(formula, data = NULL,
       } else {
 
         if (!is.formula(formula)){
-          d <- sd(formula, na.rm = T)
+          if (ncol(as.data.frame(formula)) > 1){
+            d <- apply(formula, 2, sd, na.rm = T)
+          } else {
+            d <- sd(formula, na.rm = T)
+          }
         } else {
           d <- tapply(y, list(group), sd, na.rm = T)
         }
