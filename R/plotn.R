@@ -44,38 +44,75 @@ col_genelator <- function (palette = "d3",
 
     } else {
       pal_type <- switch(palette,
-                     "npg" = "nrc",
-                     "aaas" = "default",
-                     "nejm" = "default",
-                     "lancet" = "lanonc",
-                     "jama" = "default",
-                     "jco" = "default",
-                     "ucscgb" = "default",
-                     "d3" = palette_types,
-                     "locuszoom" = "default",
-                     "igv" = palette_types,
-                     "uchicago" = palette_types,
-                     "startrek" = "uniform",
-                     "tron" = "legacy",
-                     "futurama" = "planetexpress",
-                     "rickandmorty" = "schwifty",
-                     "simpsons" = "springfield",
-                     "gsea" = "default",
-                     "material" = palette_types,
-                     stop("invalid palette name"))
+                         "npg" = "nrc",
+                         "aaas" = "default",
+                         "nejm" = "default",
+                         "lancet" = "lanonc",
+                         "jama" = "default",
+                         "jco" = "default",
+                         "ucscgb" = "default",
+                         "d3" = palette_types,
+                         "locuszoom" = "default",
+                         "igv" = palette_types,
+                         "uchicago" = palette_types,
+                         "startrek" = "uniform",
+                         "tron" = "legacy",
+                         "futurama" = "planetexpress",
+                         "rickandmorty" = "schwifty",
+                         "simpsons" = "springfield",
+                         "gsea" = "default",
+                         "material" = palette_types,
+                         stop("invalid palette name"))
 
       if(length(palette_types) == 0){
         palette_types <- switch(palette,
-                           "d3" = "category10",
-                           "igv" = "default",
-                           "uchicago" = "default",
-                           "material" = "red")
+                                "d3" = "category10",
+                                "igv" = "default",
+                                "uchicago" = "default",
+                                "material" = "red")
       }
 
       command <- paste0("pal_", palette,"(pal_type", ", alpha = ", alpha, ")(", number,")")
       eval(parse(text = command))
     }
   }
+}
+
+#' Color theme change
+#'
+#' @param default_col Default setting colors which is used for dot, line and border colors
+#' @param default_fill  Default setting colors which is used for fill colors
+#' @param palette Color palette, "default", "ggplot2" and palettes in ggsci. Please see col_genelator().
+#' @param palette_types "Continuous" or "discrete" in ggplot2 palette or palette types in ggsci
+#' @param number Number of colors to generate
+#' @param col.alpha Transparency of default color
+#' @param fill.alpha Transparency of default fill color
+#'
+#' @importFrom ggsci pal_npg pal_aaas pal_nejm pal_lancet pal_jama pal_jco pal_ucscgb pal_d3 pal_locuszoom pal_igv pal_uchicago pal_startrek pal_tron pal_futurama pal_rickandmorty pal_simpsons pal_gsea pal_material
+#'
+#' @export
+#'
+theme_change <- function(default_col = NULL,
+                         default_fill = NULL,
+                         palette = "d3",
+                         palette_types = NULL,
+                         number = 10,
+                         col.alpha = 1,
+                         fill.alpha = 0.5){
+
+  if(length(default_col) == 0)
+    default_col <- col_genelator(palette = palette,
+                                 palette_types = palette_types,
+                                 number = number,
+                                 alpha = col.alpha)
+  if(length(default_fill) == 0)
+    default_fill <- col_genelator(palette = palette,
+                                  palette_types = palette_types,
+                                  number = number,
+                                  alpha = fill.alpha)
+
+  assign(".default_col", default_col, envir = .GlobalEnv)
+  assign(".default_fill", default_fill, envir = .GlobalEnv)
 }
 
 #' Drawing a figure like plot()
@@ -187,9 +224,15 @@ plotn <- function(x = NULL, y = NULL,
     class(x)=="formula"
   }
 
+  error1 <- NULL
+  error2 <- NULL
+  error1 <- try(.default_col, silent = T)
+  error2 <- try(.default_fill, silent = T)
+  if(class(error1) == "try-error" || class(error2) == "try-error")
+    theme_change()
 
   if (inversion == T){
-    bg <- "transparent"
+    bg <- "000000"
     col <- inv.col
   } else {
     bg <- "#FFFFFF"
@@ -224,12 +267,10 @@ plotn <- function(x = NULL, y = NULL,
 
         if (is.factor(x)){
           if (length(col.fill) == 0)
-            col.fill <- c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F",
-                          "#D627287F", "#9467BD7F", "#8C564B7F",
-                          "#E377C27F", "#7F7F7F7F", "#BCBD227F", "#17BECF7F")
+            col.fill <- .default_fill
           col.dot <- col.fill
         } else {
-          if (length(col.dot) == 0) col.dot <- "#000000FF"
+          if (length(col.dot) == 0) col.dot <- col
         }
 
         plot(x = x, y = y, ..., xlim = xlim, ylim = ylim,
@@ -242,9 +283,8 @@ plotn <- function(x = NULL, y = NULL,
         if(is.factor(x)){
 
           if (length(col.fill) == 0)
-            col.fill <- c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F",
-                          "#D627287F", "#9467BD7F", "#8C564B7F",
-                          "#E377C27F", "#7F7F7F7F", "#BCBD227F", "#17BECF7F")
+            col.fill <- .default_fill
+
           col.dot <- col.fill
 
           plot(x, ..., las = las, cex.axis = cex.axis,
@@ -254,7 +294,7 @@ plotn <- function(x = NULL, y = NULL,
 
         } else {
 
-          if (length(col.dot) == 0) col.dot <- "#000000FF"
+          if (length(col.dot) == 0) col.dot <- col
 
           error <- NULL
           error <- try(plot(x, ..., xlim = xlim, ylim = ylim, las = las, cex.axis = cex.axis,
@@ -290,13 +330,12 @@ plotn <- function(x = NULL, y = NULL,
       if(is.factor(x)){
 
         if (length(col.fill) == 0)
-          col.fill <- c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F",
-                        "#D627287F", "#9467BD7F", "#8C564B7F",
-                        "#E377C27F", "#7F7F7F7F", "#BCBD227F", "#17BECF7F")
+          col.fill <- .default_fill
+
         col.dot <- col.fill
 
       } else {
-        if (length(col.dot) == 0) col.dot <- "#000000FF"
+        if (length(col.dot) == 0) col.dot <- col
       }
 
       plot(formula, data = data, ...,
@@ -307,14 +346,14 @@ plotn <- function(x = NULL, y = NULL,
     }
 
     if (fill == T) {
-      if (length(col.fill) == 0) col.fill <- "#0000007F"
+      if (length(col.fill) == 0) col.fill <- paste(col, "7F", sep ="")
 
       polygon(x, y, col = col.fill, border = col.bor,
               density = density, angle = angle, lwd = lwd.line)
     }
 
     if (line == T) {
-      if (length(col.dot) == 0) col.line <- "#000000FF"
+      if (length(col.line) == 0) col.line <- col
 
       lines(x, y, col = col.line, lty = lty, lwd = lwd.line)
     }
@@ -322,18 +361,13 @@ plotn <- function(x = NULL, y = NULL,
   } else {
 
     if (length(col.dot) == 0)
-      col.dot <- c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF",
-                    "#D62728FF", "#9467BDFF", "#8C564BFF",
-                    "#E377C2FF", "#7F7F7FFF", "#BCBD22FF", "#17BECFFF")
-    if (length(col.fill) == 0)
-      col.fill <- c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F",
-                    "#D627287F", "#9467BD7F", "#8C564B7F",
-                    "#E377C27F", "#7F7F7F7F", "#BCBD227F", "#17BECF7F")
-    if (length(col.line) == 0)
-      col.line <- c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF",
-                    "#D62728FF", "#9467BDFF", "#8C564BFF",
-                    "#E377C2FF", "#7F7F7FFF", "#BCBD22FF", "#17BECFFF")
+      col.dot <- .default_col
 
+    if (length(col.fill) == 0)
+      col.fill <- .default_fill
+
+    if (length(col.line) == 0)
+      col.line <- .default_col
 
     j <- (ncol(formula) > 1)||(ncol(y) > 1)
     j[is.na(j)] <- F
@@ -656,16 +690,10 @@ boxplotn <- function(x = NULL, formula = NULL,
                      horizontal = F,
                      xaxt = "s",
                      yaxt = "s",
-                     col.fill = c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F",
-                                  "#D627287F", "#9467BD7F", "#8C564B7F",
-                                  "#E377C27F", "#7F7F7F7F", "#BCBD227F", "#17BECF7F"),
-                     col.bor = c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF",
-                                 "#D62728FF", "#9467BDFF", "#8C564BFF",
-                                 "#E377C2FF", "#7F7F7FFF", "#BCBD22FF", "#17BECFFF"),
-                     col.dot = c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF",
-                                 "#D62728FF", "#9467BDFF", "#8C564BFF",
-                                 "#E377C2FF", "#7F7F7FFF", "#BCBD22FF", "#17BECFFF"),
-                     col.stat = "default",
+                     col.fill = NULL,
+                     col.bor = NULL,
+                     col.dot = NULL,
+                     col.stat = NULL,
                      col.bg = "#FFFFFF",
                      pch.dot = 16,
                      pch.stat = 21,
@@ -712,33 +740,23 @@ boxplotn <- function(x = NULL, formula = NULL,
     sqrt(var(as.vector(y))/length(y))
   }
 
+  error1 <- NULL
+  error2 <- NULL
+  error1 <- try(.default_col, silent = T)
+  error2 <- try(.default_fill, silent = T)
+  if(class(error1) == "try-error" || class(error2) == "try-error")
+    theme_change()
+
   if (inversion == T){
-    bg <- "transparent"
+    bg <- "#000000"
     col <- inv.col
   } else {
     bg <- "#FFFFFF"
     col <- "#000000"
   }
 
-  if(!is.na(col.fill[1])){
-    if(col.fill[1] == "default"){
-      col.fill <- bg
-    }
-  }
-  if(!is.na(col.bor[1])){
-    if(col.bor[1] == "default"){
-      col.bor <- col
-    }
-  }
-  if(!is.na(col.dot[1])){
-    if(col.dot[1] == "default"){
-      col.dot <- col
-    }
-  }
-  if(!is.na(col.stat[1])){
-    if(col.stat[1] == "default"){
-      col.stat <- col
-    }
+  if(length(col.stat) == 0){
+    col.stat <- col
   }
 
   if(horizontal == T){
@@ -782,9 +800,21 @@ boxplotn <- function(x = NULL, formula = NULL,
 
   if (!is.formula(x)){
     if (ncol(as.data.frame(x)) > 1) {
+
+      if (length(col.fill) == 0) col.fill <- .default_fill
+      if (length(col.bor) == 0) col.bor <- .default_col
+      if (length(col.dot) == 0) col.dot <- .default_col
+
       nn <- colnames(x)
+
     } else {
+
+      if (length(col.fill) == 0) col.fill <- paste(col, "7F", sep = "")
+      if (length(col.bor) == 0) col.bor <- col
+      if (length(col.dot) == 0) col.dot <- col
+
       nn <- "x"
+
     }
 
     if(length(names)==0){
@@ -822,6 +852,11 @@ boxplotn <- function(x = NULL, formula = NULL,
     }
 
   } else {
+
+    if (length(col.fill) == 0) col.fill <- .default_fill
+    if (length(col.bor) == 0) col.bor <- .default_col
+    if (length(col.dot) == 0) col.dot <- .default_col
+
     if(is.null(data)){
 
       y <- eval(attr(terms(x), "variables")[[2]])
@@ -1196,14 +1231,10 @@ barplotn <- function(x = NULL, formula = NULL,
                      lwd.0 = 1,
                      lwd.stat = 1,
                      lty.0 = 3,
-                     col.fill = c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F",
-                                  "#D627287F", "#9467BD7F", "#8C564B7F",
-                                  "#E377C27F", "#7F7F7F7F", "#BCBD227F", "#17BECF7F"),
-                     col.bor = c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF",
-                                 "#D62728FF", "#9467BDFF", "#8C564BFF",
-                                 "#E377C2FF", "#7F7F7FFF", "#BCBD22FF", "#17BECFFF"),
-                     col.stat = "default",
-                     col.0 = "#0000007F",
+                     col.fill = NULL,
+                     col.bor = NULL,
+                     col.stat = NULL,
+                     col.0 = NULL,
                      length = "auto",
                      space = 0.5,
                      names = NULL,
@@ -1245,31 +1276,30 @@ barplotn <- function(x = NULL, formula = NULL,
     sqrt(var(as.vector(y))/length(y))
   }
 
+  error1 <- NULL
+  error2 <- NULL
+  error1 <- try(.default_col, silent = T)
+  error2 <- try(.default_fill, silent = T)
+  if(class(error1) == "try-error" || class(error2) == "try-error")
+    theme_change()
 
   if (inversion == T){
-    bg <- "transparent"
+    bg <- "#000000"
     col <- inv.col
   } else {
     bg <- "#FFFFFF"
     col <- "#000000"
   }
 
-
-  if(!is.na(col.fill[1])){
-    if(col.fill[1] == "default"){
-      col.fill <- bg
-    }
+  if(length(col.stat) == 0){
+    col.stat <- col
   }
 
-  if(!is.na(col.bor[1])){
-    if(col.bor[1] == "default"){
-      col.bor <- col
-    }
-  }
-
-  if(!is.na(col.stat[1])){
-    if(col.stat[1] == "default"){
-      col.stat <- col
+  if(length(col.0) == 0){
+    if (inversion == T){
+      col.0 <- "#FFFFFF7F"
+    } else {
+      col.0 <- "#0000007F"
     }
   }
 
@@ -1297,6 +1327,9 @@ barplotn <- function(x = NULL, formula = NULL,
 
   if (!is.formula(x)){
     nn <- "x"
+
+    if (length(col.fill) == 0) col.fill <- paste(col, "7F", sep = "")
+    if (length(col.bor) == 0) col.bor <- col
 
     if(length(names)==0){
       names <- nn
@@ -1348,6 +1381,10 @@ barplotn <- function(x = NULL, formula = NULL,
     }
 
   } else {
+
+    if (length(col.fill) == 0) col.fill <- .default_fill
+    if (length(col.bor) == 0) col.bor <- .default_col
+
     if(is.null(data)){
 
       y <- eval(attr(terms(x), "variables")[[2]])
@@ -1651,19 +1688,13 @@ histn <- function(x = NULL, formula = NULL,
                   cex.axis = 1.1,
                   cex.lab = 1.3,
                   font.lab = 2,
-                  col.fill = c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F",
-                               "#D627287F", "#9467BD7F", "#8C564B7F",
-                               "#E377C27F", "#7F7F7F7F", "#BCBD227F", "#17BECF7F"),
-                  col.bor = c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF",
-                              "#D62728FF", "#9467BDFF", "#8C564BFF",
-                              "#E377C2FF", "#7F7F7FFF", "#BCBD22FF", "#17BECFFF"),
+                  col.fill = NULL,
+                  col.bor = NULL,
                   hist.dens = NA,
                   hist.ang = 45,
                   kernel = F,
                   freq = T,
-                  col.line = c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF",
-                               "#D62728FF", "#9467BDFF", "#8C564BFF",
-                               "#E377C2FF", "#7F7F7FFF", "#BCBD22FF", "#17BECFFF"),
+                  col.line = NULL,
                   col.ker = "transparent",
                   ker.dens = NA,
                   ker.ang = 45,
@@ -1696,30 +1727,19 @@ histn <- function(x = NULL, formula = NULL,
     class(x)=="formula"
   }
 
+  error1 <- NULL
+  error2 <- NULL
+  error1 <- try(.default_col, silent = T)
+  error2 <- try(.default_fill, silent = T)
+  if(class(error1) == "try-error" || class(error2) == "try-error")
+    theme_change()
+
   if (inversion == T){
-    bg <- "transparent"
+    bg <- "#000000"
     col <- inv.col
   } else {
     bg <- "#FFFFFF"
     col <- "#000000"
-  }
-
-  if(!is.na(col.fill[1])){
-    if(col.fill[1] == "default"){
-      col.fill <- bg
-    }
-  }
-
-  if(!is.na(col.bor[1])){
-    if(col.bor[1] == "default"){
-      col.bor <- col
-    }
-  }
-
-  if(!is.na(col.line[1])){
-    if(col.line[1] == "default"){
-      col.line <- col
-    }
   }
 
   if (kernel == T){
@@ -1750,6 +1770,10 @@ histn <- function(x = NULL, formula = NULL,
 
   if (!is.formula(x)){
 
+    if (length(col.fill) == 0) col.fill <- paste(col, "7F", sep = "")
+    if (length(col.bor) == 0) col.bor <- col
+    if (length(col.line) == 0) col.line <- col
+
     if(length(xlab)==0){
       xlab <- "index"
     }
@@ -1758,6 +1782,10 @@ histn <- function(x = NULL, formula = NULL,
     names <- n
 
   } else {
+
+    if (length(col.fill) == 0) col.fill <- .default_fill
+    if (length(col.bor) == 0) col.bor <- .default_col
+    if (length(col.line) == 0) col.line <- .default_col
 
     if(is.null(data)){
 
@@ -2046,18 +2074,12 @@ vioplotn <- function(x = NULL, formula = NULL,
                      notch = F,
                      density = NA,
                      angle = 45,
-                     col.fill = c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F",
-                                  "#D627287F", "#9467BD7F", "#8C564B7F",
-                                  "#E377C27F", "#7F7F7F7F", "#BCBD227F", "#17BECF7F"),
-                     col.mar = c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF",
-                                 "#D62728FF", "#9467BDFF", "#8C564BFF",
-                                 "#E377C2FF", "#7F7F7FFF", "#BCBD22FF", "#17BECFFF"),
+                     col.fill = NULL,
+                     col.mar = NULL,
                      col.box = "#FFFFFF",
                      col.bor = "#000000",
-                     col.stat = "default",
-                     col.dot = c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF",
-                                 "#D62728FF", "#9467BDFF", "#8C564BFF",
-                                 "#E377C2FF", "#7F7F7FFF", "#BCBD22FF", "#17BECFFF"),
+                     col.stat = NULL,
+                     col.dot = NULL,
                      col.bg = "#FFFFFF",
                      lwd.mar = 1,
                      lwd.bor = 1,
@@ -2106,8 +2128,15 @@ vioplotn <- function(x = NULL, formula = NULL,
     sqrt(var(as.vector(y))/length(y))
   }
 
+  error1 <- NULL
+  error2 <- NULL
+  error1 <- try(.default_col, silent = T)
+  error2 <- try(.default_fill, silent = T)
+  if(class(error1) == "try-error" || class(error2) == "try-error")
+    theme_change()
+
   if (inversion == T){
-    bg <- "transparent"
+    bg <- "#000000"
     col <- inv.col
   } else {
     bg <- "#FFFFFF"
@@ -2126,25 +2155,8 @@ vioplotn <- function(x = NULL, formula = NULL,
     pos <- 1
   }
 
-  if(!is.na(col.fill[1])){
-    if(col.fill[1] == "default"){
-      col.fill <- bg
-    }
-  }
-  if(!is.na(col.mar[1])){
-    if(col.mar[1] == "default"){
-      col.mar <- col
-    }
-  }
-  if(!is.na(col.stat[1])){
-    if(col.stat[1] == "default"){
-      col.stat <- col
-    }
-  }
-  if(!is.na(col.dot[1])){
-    if(col.dot[1] == "default"){
-      col.dot <- col
-    }
+  if(length(col.stat) == 0){
+    col.stat <- col
   }
 
   if (!trim == T){
@@ -2186,8 +2198,18 @@ vioplotn <- function(x = NULL, formula = NULL,
 
   if (!is.formula(x)){
     if (ncol(as.data.frame(x)) > 1){
+
+      if (length(col.fill) == 0) col.fill <- .default_fill
+      if (length(col.mar) == 0) col.mar <- .default_col
+      if (length(col.dot) == 0) col.dot <- .default_col
+
       nn <- colnames(x)
     } else {
+
+      if (length(col.fill) == 0) col.fill <- paste(col, "7F", sep = "")
+      if (length(col.mar) == 0) col.mar <- col
+      if (length(col.dot) == 0) col.dot <- col
+
       nn <- "x"
     }
 
@@ -2226,6 +2248,11 @@ vioplotn <- function(x = NULL, formula = NULL,
     }
 
   } else {
+
+    if (length(col.fill) == 0) col.fill <- .default_fill
+    if (length(col.mar) == 0) col.mar <- .default_col
+    if (length(col.dot) == 0) col.dot <- .default_col
+
     if(is.null(data)){
 
       y <- eval(attr(terms(x), "variables")[[2]])
@@ -2987,7 +3014,7 @@ category.axis <- function(main, sub, data = NULL,
                           inv.col = "#FFFFFF"){
 
   if (inversion == T){
-    bg <- "transparent"
+    bg <- "000000"
     col <- inv.col
   } else {
     bg <- "#FFFFFF"
@@ -3074,7 +3101,7 @@ par.set <- function(x,
                     inv.col = "#FFFFFF"){
 
   if (inversion == T){
-    bg <- "transparent"
+    bg <- "000000"
     col <- inv.col
   } else {
     bg <- "#FFFFFF"
