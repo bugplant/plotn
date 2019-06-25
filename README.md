@@ -1,5 +1,5 @@
 plotn
 ====
 
-通常のRのコマンドの書式でggplot風の作図をおこなうためのコマンド集
+Drawing a figure similar to ggplot style using a default command
 
