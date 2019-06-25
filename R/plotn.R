@@ -80,9 +80,10 @@ col_genelator <- function (palette = "d3",
 
 #' Drawing a figure like plot()
 #'
-#' @param formula Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
+#' @param x Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
 #' @param y If numeric vector is inputted in "formula" parameter, numeric vector is also inputted in y
-#' @param data If formula is inputted in "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
+#' @param formula formula
+#' @param data If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
 #' @param ... Argument to be passed to methods. Please see plot().
 #' @param xlim x limit
 #' @param ylim y limit
@@ -135,7 +136,8 @@ col_genelator <- function (palette = "d3",
 #'
 #' @export
 #'
-plotn <- function(formula, y = NULL, data = NULL, ...,
+plotn <- function(x = NULL, y = NULL,
+                  formula = NULL, data = NULL, ...,
                   xlim = NULL,
                   ylim = NULL,
                   las = 1,
@@ -143,15 +145,9 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
                   cex.lab = 1.3,
                   font.lab = 2,
                   pch = 16,
-                  col.dot = c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF",
-                              "#D62728FF", "#9467BDFF", "#8C564BFF",
-                              "#E377C2FF", "#7F7F7FFF", "#BCBD22FF", "#17BECFFF"),
-                  col.fill = c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F",
-                               "#D627287F", "#9467BD7F", "#8C564B7F",
-                               "#E377C27F", "#7F7F7F7F", "#BCBD227F", "#17BECF7F"),
-                  col.line = c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF",
-                               "#D62728FF", "#9467BDFF", "#8C564BFF",
-                               "#E377C2FF", "#7F7F7FFF", "#BCBD22FF", "#17BECFFF"),
+                  col.dot = NULL,
+                  col.fill = NULL,
+                  col.line = NULL,
                   col.bor = "transparent",
                   col.bg = "#FFFFFF",
                   legend = F,
@@ -218,38 +214,66 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
   par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
   on.exit(par(par.old))
 
-  if ( mode == "s"){
+  if (length(x) == 0) x <- formula
 
-    if(!is.formula(formula)) {
+  if (mode == "s"){
 
-      x <- formula
+    if(!is.formula(x)) {
 
       if(!length(y) == 0){
+
+        if (is.factor(x)){
+          if (length(col.fill) == 0)
+            col.fill <- c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F",
+                          "#D627287F", "#9467BD7F", "#8C564B7F",
+                          "#E377C27F", "#7F7F7F7F", "#BCBD227F", "#17BECF7F")
+          col.dot <- col.fill
+        } else {
+          if (length(col.dot) == 0) col.dot <- "#000000FF"
+        }
+
         plot(x = x, y = y, ..., xlim = xlim, ylim = ylim,
-             las = las, cex.axis = cex.axis, col = col.dot[1],
+             las = las, cex.axis = cex.axis, col = col.dot,
              cex.lab = cex.lab, font.lab = font.lab,
              col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd.dot)
 
       } else {
 
-        error <- NULL
-        error <- try(plot(x, ..., xlim = xlim, ylim = ylim,las = las, cex.axis = cex.axis,
-                          col = col.dot[1], cex.lab = cex.lab, font.lab = font.lab,
-                          col.axis = col, col.lab = col, pch = pch, lty = lty,
-                          lwd = lwd.dot),
-                     silent = T)
+        if(is.factor(x)){
 
-        if (class(error) == "try-error") {
-          warning("Data wasn't plotted with default settings, so trying to plot with different settings.")
+          if (length(col.fill) == 0)
+            col.fill <- c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F",
+                          "#D627287F", "#9467BD7F", "#8C564B7F",
+                          "#E377C27F", "#7F7F7F7F", "#BCBD227F", "#17BECF7F")
+          col.dot <- col.fill
+
           plot(x, ..., las = las, cex.axis = cex.axis,
-               col = col.dot,cex.lab = cex.lab, font.lab = font.lab,
-               col.axis = col, col.lab = col, pch = pch, lty = lty,
-               lwd = lwd.dot)
-        }
+               col = col.dot, cex.lab = cex.lab, font.lab = font.lab,
+               col.axis = col, col.lab = col, pch = pch, lwd = lwd.dot)
+          box(lty = 1)
 
+        } else {
+
+          if (length(col.dot) == 0) col.dot <- "#000000FF"
+
+          error <- NULL
+          error <- try(plot(x, ..., xlim = xlim, ylim = ylim, las = las, cex.axis = cex.axis,
+                            col = col.dot, cex.lab = cex.lab, font.lab = font.lab,
+                            col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd.dot),
+                       silent = T)
+
+          if (class(error) == "try-error") {
+            warning("Data wasn't plotted with default settings, so trying to plot with different settings.")
+            plot(x, ..., las = las, cex.axis = cex.axis,
+                 col = col.dot, cex.lab = cex.lab, font.lab = font.lab,
+                 col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd.dot)
+          }
+        }
       }
 
     } else {
+
+      formula <- x
 
       if(is.null(data)){
 
@@ -263,30 +287,60 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
 
       }
 
+      if(is.factor(x)){
+
+        if (length(col.fill) == 0)
+          col.fill <- c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F",
+                        "#D627287F", "#9467BD7F", "#8C564B7F",
+                        "#E377C27F", "#7F7F7F7F", "#BCBD227F", "#17BECF7F")
+        col.dot <- col.fill
+
+      } else {
+        if (length(col.dot) == 0) col.dot <- "#000000FF"
+      }
+
       plot(formula, data = data, ...,
-           xlim = xlim, ylim = ylim, col = col.dot[1],
+           xlim = xlim, ylim = ylim, col = col.dot,
            las = las, cex.axis = cex.axis,
            cex.lab = cex.lab, font.lab = font.lab,
            col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd.dot)
     }
 
     if (fill == T) {
-      polygon(x, y, col = col.fill[1], border = col.bor,
+      if (length(col.fill) == 0) col.fill <- "#0000007F"
+
+      polygon(x, y, col = col.fill, border = col.bor,
               density = density, angle = angle, lwd = lwd.line)
     }
 
     if (line == T) {
+      if (length(col.dot) == 0) col.line <- "#000000FF"
+
       lines(x, y, col = col.line, lty = lty, lwd = lwd.line)
     }
 
   } else {
+
+    if (length(col.dot) == 0)
+      col.dot <- c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF",
+                    "#D62728FF", "#9467BDFF", "#8C564BFF",
+                    "#E377C2FF", "#7F7F7FFF", "#BCBD22FF", "#17BECFFF")
+    if (length(col.fill) == 0)
+      col.fill <- c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F",
+                    "#D627287F", "#9467BD7F", "#8C564B7F",
+                    "#E377C27F", "#7F7F7F7F", "#BCBD227F", "#17BECF7F")
+    if (length(col.line) == 0)
+      col.line <- c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF",
+                    "#D62728FF", "#9467BDFF", "#8C564BFF",
+                    "#E377C2FF", "#7F7F7FFF", "#BCBD22FF", "#17BECFFF")
+
 
     j <- (ncol(formula) > 1)||(ncol(y) > 1)
     j[is.na(j)] <- F
 
     if(j){
 
-      x <- as.matrix(formula)
+      x <- as.matrix(x)
 
       if(ncol(x) > 1){
         n <- ncol(x)
@@ -326,7 +380,8 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
                     density = density[i], angle = angle[i], lwd = lwd.line)
           }
           if(line == T){
-            lines(c(1:length(x[,1])), x[,i], col = col.line[i], lty = lty[i], lwd = lwd.line)
+            lines(c(1:length(x[,1])), x[,i], col = col.line[i],
+                  lty = lty[i], lwd = lwd.line)
           }
         } else {
           if(fill == T){
@@ -357,9 +412,7 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
       density <- rep(density, length = length(names))
       angle <- rep(angle, length = length(names))
 
-      if(!is.formula(formula)) {
-
-        x <- formula
+      if(!is.formula(x)) {
 
         if(length(xlim)==0){
           xlim <- range(x, na.rm = T)
@@ -375,6 +428,8 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
              lwd = lwd.dot)
 
       } else {
+
+        formula <- x
 
         if(is.null(data)){
 
@@ -512,8 +567,9 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
 
 #' Drawing a figure like boxplot()
 #'
-#' @param formula Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
-#' @param data If formula is inputted in "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
+#' @param x Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
+#' @param formula formula
+#' @param data If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
 #' @param ... Argument to be passed to methods. Please see boxplot().
 #' @param las las, defauls is 1
 #' @param cex.axis axis cex, default is 1.1
@@ -580,7 +636,8 @@ plotn <- function(formula, y = NULL, data = NULL, ...,
 #'
 #' @export
 #'
-boxplotn <- function(formula, data = NULL, ...,
+boxplotn <- function(x = NULL, formula = NULL,
+                     data = NULL, ...,
                      las = 1,
                      cex.axis = 1.1,
                      cex.lab = 1.3,
@@ -721,9 +778,11 @@ boxplotn <- function(formula, data = NULL, ...,
   par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
   on.exit(par(par.old))
 
-  if (!is.formula(formula)){
-    if (ncol(as.data.frame(formula)) > 1) {
-      nn <- colnames(formula)
+  if (length(x) == 0) x <- formula
+
+  if (!is.formula(x)){
+    if (ncol(as.data.frame(x)) > 1) {
+      nn <- colnames(x)
     } else {
       nn <- "x"
     }
@@ -751,69 +810,69 @@ boxplotn <- function(formula, data = NULL, ...,
     if(horizontal == T){
       ylim_t <- ylim
       if(length(xlim)==0){
-        ylim <- range(formula, na.rm = T)
+        ylim <- range(x, na.rm = T)
       } else {
         ylim <- xlim
       }
       xlim <- ylim_t
     } else {
       if(length(ylim)==0){
-        ylim <- range(formula, na.rm = T)
+        ylim <- range(x, na.rm = T)
       }
     }
 
   } else {
     if(is.null(data)){
 
-      y <- eval(attr(terms(formula), "variables")[[2]])
-      group <- eval(attr(terms(formula), "variables")[[3]])
+      y <- eval(attr(terms(x), "variables")[[2]])
+      group <- eval(attr(terms(x), "variables")[[3]])
       nn <- levels(as.factor(group))
-      if(length(attr(terms(formula), "variables"))-1 > 2){
-        for(i in 4:length(attr(terms(formula), "variables"))){
+      if(length(attr(terms(x), "variables"))-1 > 2){
+        for(i in 4:length(attr(terms(x), "variables"))){
           nn <- paste(nn, rep(levels(as.factor(
-            eval(attr(terms(formula), "variables")[[i]])
+            eval(attr(terms(x), "variables")[[i]])
           )
           ), each = length(nn)), sep = ".")
-          group <- paste(group, eval(attr(terms(formula), "variables")[[i]]), sep = ".")
+          group <- paste(group, eval(attr(terms(x), "variables")[[i]]), sep = ".")
         }
       }
       group <- factor(group, levels = nn)
 
       if(horizontal == T){
         if(length(xlab)==0){
-          n <- as.character(attr(terms(formula), "variables")[[2]])
+          n <- as.character(attr(terms(x), "variables")[[2]])
           xlab <- paste(n[2], n[1], n[3], sep = "")
         }
       } else {
         if(length(ylab)==0){
-          n <- as.character(attr(terms(formula), "variables")[[2]])
+          n <- as.character(attr(terms(x), "variables")[[2]])
           ylab <- paste(n[2], n[1], n[3], sep = "")
         }
       }
 
     } else {
 
-      y <- data[,as.character(attr(terms(formula), "variables")[[2]])]
-      group <- data[,as.character(attr(terms(formula), "variables")[[3]])]
+      y <- data[,as.character(attr(terms(x), "variables")[[2]])]
+      group <- data[,as.character(attr(terms(x), "variables")[[3]])]
       nn <- levels(as.factor(group))
-      if(length(attr(terms(formula), "variables"))-1 > 2){
-        for(i in 4:length(attr(terms(formula), "variables"))){
+      if(length(attr(terms(x), "variables"))-1 > 2){
+        for(i in 4:length(attr(terms(x), "variables"))){
           nn <- paste(nn, rep(levels(as.factor(
-            data[,as.character(attr(terms(formula), "variables")[[i]])]
+            data[,as.character(attr(terms(x), "variables")[[i]])]
           )
           ), each = length(nn)), sep = ".")
-          group <- paste(group, data[,as.character(attr(terms(formula), "variables")[[i]])], sep = ".")
+          group <- paste(group, data[,as.character(attr(terms(x), "variables")[[i]])], sep = ".")
         }
       }
       group <- factor(group, levels = nn)
 
       if(horizontal == T){
         if(length(xlab)==0){
-          xlab <- as.character(attr(terms(formula), "variables")[[2]])
+          xlab <- as.character(attr(terms(x), "variables")[[2]])
         }
       } else {
         if(length(ylab)==0){
-          ylab <- as.character(attr(terms(formula), "variables")[[2]])
+          ylab <- as.character(attr(terms(x), "variables")[[2]])
         }
       }
     }
@@ -853,7 +912,7 @@ boxplotn <- function(formula, data = NULL, ...,
   col.dot <- rep(col.dot, length = length(names))
   col.bg <- rep(col.bg, length = length(names))
 
-  boxplot(formula, data = data, ..., xlim = xlim, ylim = ylim,
+  boxplot(x, data = data, ..., xlim = xlim, ylim = ylim,
           outline = F, las = las, horizontal = horizontal,
           bty = "n", axes = F, add = add,
           col = NA, border = NA)
@@ -869,7 +928,7 @@ boxplotn <- function(formula, data = NULL, ...,
     xaxt <- "n"
   }
 
-  boxplot(formula, data = data, ..., xlim = xlim, ylim = ylim,
+  boxplot(x, data = data, ..., xlim = xlim, ylim = ylim,
           cex.axis = cex.axis, cex.lab = cex.lab,
           col.axis = col, col.lab = col,
           font.lab = font.lab,
@@ -885,8 +944,8 @@ boxplotn <- function(formula, data = NULL, ...,
 
     for (i in 1:length(nn)){
 
-      if (!is.formula(formula)){
-        xx <- as.data.frame(formula)[,i]
+      if (!is.formula(x)){
+        xx <- as.data.frame(x)[,i]
       } else {
         xx <- y[group == nn[i]]
       }
@@ -920,8 +979,8 @@ boxplotn <- function(formula, data = NULL, ...,
 
     for (i in 1:length(nn)){
 
-      if (!is.formula(formula)){
-        xx <- as.data.frame(formula)[,i]
+      if (!is.formula(x)){
+        xx <- as.data.frame(x)[,i]
       } else {
         xx <- y[group == nn[i]]
       }
@@ -945,11 +1004,11 @@ boxplotn <- function(formula, data = NULL, ...,
 
   if (!(!(Mean == T)&&!(SE == T)&&!(SD == T))){
 
-    if (!is.formula(formula)){
-      if (ncol(as.data.frame(formula)) > 1){
-        m <- apply(formula, 2, mean, na.rm = T)
+    if (!is.formula(x)){
+      if (ncol(as.data.frame(x)) > 1){
+        m <- apply(x, 2, mean, na.rm = T)
       } else {
-        m <- mean(formula, na.rm = T)
+        m <- mean(x, na.rm = T)
       }
 
     } else {
@@ -961,11 +1020,11 @@ boxplotn <- function(formula, data = NULL, ...,
     if (!(!(SE == T)&&!(SD == T))) {
       if (SE == T){
 
-        if (!is.formula(formula)){
-          if (ncol(as.data.frame(formula)) > 1){
-            d <- apply(formula, 2, se)
+        if (!is.formula(x)){
+          if (ncol(as.data.frame(x)) > 1){
+            d <- apply(x, 2, se)
           } else {
-            d <- se(formula)
+            d <- se(x)
           }
         } else {
           d <- tapply(y, list(group), se)
@@ -973,11 +1032,11 @@ boxplotn <- function(formula, data = NULL, ...,
 
       } else {
 
-        if (!is.formula(formula)){
-          if (ncol(as.data.frame(formula)) > 1){
-            d <- apply(formula, 2, sd, na.rm = T)
+        if (!is.formula(x)){
+          if (ncol(as.data.frame(x)) > 1){
+            d <- apply(x, 2, sd, na.rm = T)
           } else {
-            d <- sd(formula, na.rm = T)
+            d <- sd(x, na.rm = T)
           }
         } else {
           d <- tapply(y, list(group), sd, na.rm = T)
@@ -1071,8 +1130,9 @@ boxplotn <- function(formula, data = NULL, ...,
 
 #' Drawing a figure like barplot()
 #'
-#' @param formula Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
-#' @param data If formula is inputted in "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
+#' @param x Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
+#' @param formula formula
+#' @param data If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
 #' @param ... Argument to be passed to methods. Please see barplot().
 #' @param las las, defauls is 1
 #' @param cex.axis axis cex, default is 1.1
@@ -1125,7 +1185,8 @@ boxplotn <- function(formula, data = NULL, ...,
 #'
 #' @export
 #'
-barplotn <- function(formula, data = NULL, ...,
+barplotn <- function(x = NULL, formula = NULL,
+                     data = NULL, ...,
                      las = 1,
                      cex.axis = 1.1,
                      cex.lab = 1.3,
@@ -1232,7 +1293,9 @@ barplotn <- function(formula, data = NULL, ...,
   par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col, lwd = lwd.bor)
   on.exit(par(par.old))
 
-  if (!is.formula(formula)){
+  if (length(x) == 0) x <- formula
+
+  if (!is.formula(x)){
     nn <- "x"
 
     if(length(names)==0){
@@ -1255,31 +1318,31 @@ barplotn <- function(formula, data = NULL, ...,
       }
     }
 
-    cross0 <- min(formula, na.rm = T) * max(formula, na.rm = T) > 0
+    cross0 <- min(x, na.rm = T) * max(x, na.rm = T) > 0
 
     if(horizontal == T){
       if(length(xlim)==0){
         if(cross0 > 0) {
-          if(max(formula, na.rm = T) > 0) {
-            xlim <- c(0 - max(formula, na.rm = T) * 0.05, max(formula, na.rm = T) * 1.05)
+          if(max(x, na.rm = T) > 0) {
+            xlim <- c(0 - max(x, na.rm = T) * 0.05, max(x, na.rm = T) * 1.05)
           } else {
-            xlim <- c(min(formula, na.rm = T) * 1.05, 0 + min(formula, na.rm = T) * 0.05)
+            xlim <- c(min(x, na.rm = T) * 1.05, 0 + min(x, na.rm = T) * 0.05)
           }
         } else {
-          xlim <- c(min(formula, na.rm = T) * 1.05, max(formula, na.rm = T) * 1.05)
+          xlim <- c(min(x, na.rm = T) * 1.05, max(x, na.rm = T) * 1.05)
         }
       }
     } else {
       if(length(ylim)==0){
         if(cross0 > 0) {
-          if(max(formula, na.rm = T) > 0) {
-            ylim <- c(-max(formula, na.rm = T) * 0.05, max(formula, na.rm = T) * 1.05)
+          if(max(x, na.rm = T) > 0) {
+            ylim <- c(-max(x, na.rm = T) * 0.05, max(x, na.rm = T) * 1.05)
           } else {
-            ylim <- c(min(formula, na.rm = T) * 1.05, -min(formula, na.rm = T) * 0.05)
+            ylim <- c(min(x, na.rm = T) * 1.05, -min(x, na.rm = T) * 0.05)
           }
         } else {
-          ylim <- c(min(formula, na.rm = T) - (max(formula, na.rm = T) - min(formula, na.rm = T)) * 0.05,
-                    max(formula, na.rm = T) + (max(formula, na.rm = T) - min(formula, na.rm = T)) * 0.05)
+          ylim <- c(min(x, na.rm = T) - (max(x, na.rm = T) - min(x, na.rm = T)) * 0.05,
+                    max(x, na.rm = T) + (max(x, na.rm = T) - min(x, na.rm = T)) * 0.05)
         }
       }
     }
@@ -1287,55 +1350,55 @@ barplotn <- function(formula, data = NULL, ...,
   } else {
     if(is.null(data)){
 
-      y <- eval(attr(terms(formula), "variables")[[2]])
-      group <- eval(attr(terms(formula), "variables")[[3]])
+      y <- eval(attr(terms(x), "variables")[[2]])
+      group <- eval(attr(terms(x), "variables")[[3]])
       nn <- levels(as.factor(group))
-      if(length(attr(terms(formula), "variables"))-1 > 2){
-        for(i in 4:length(attr(terms(formula), "variables"))){
+      if(length(attr(terms(x), "variables"))-1 > 2){
+        for(i in 4:length(attr(terms(x), "variables"))){
           nn <- paste(nn, rep(levels(as.factor(
-            eval(attr(terms(formula), "variables")[[i]])
+            eval(attr(terms(x), "variables")[[i]])
           )
           ), each = length(nn)), sep = ".")
-          group <- paste(group, eval(attr(terms(formula), "variables")[[i]]), sep = ".")
+          group <- paste(group, eval(attr(terms(x), "variables")[[i]]), sep = ".")
         }
       }
       group <- factor(group, levels = nn)
 
       if(horizontal == T){
         if(length(xlab)==0){
-          n <- as.character(attr(terms(formula), "variables")[[2]])
+          n <- as.character(attr(terms(x), "variables")[[2]])
           xlab <- paste(n[2], n[1], n[3], sep = "")
         }
       } else {
         if(length(ylab)==0){
-          n <- as.character(attr(terms(formula), "variables")[[2]])
+          n <- as.character(attr(terms(x), "variables")[[2]])
           ylab <- paste(n[2], n[1], n[3], sep = "")
         }
       }
 
     } else {
 
-      y <- data[,as.character(attr(terms(formula), "variables")[[2]])]
-      group <- data[,as.character(attr(terms(formula), "variables")[[3]])]
+      y <- data[,as.character(attr(terms(x), "variables")[[2]])]
+      group <- data[,as.character(attr(terms(x), "variables")[[3]])]
       nn <- levels(as.factor(group))
-      if(length(attr(terms(formula), "variables"))-1 > 2){
-        for(i in 4:length(attr(terms(formula), "variables"))){
+      if(length(attr(terms(x), "variables"))-1 > 2){
+        for(i in 4:length(attr(terms(x), "variables"))){
           nn <- paste(nn, rep(levels(as.factor(
-            data[,as.character(attr(terms(formula), "variables")[[i]])]
+            data[,as.character(attr(terms(x), "variables")[[i]])]
           )
           ), each = length(nn)), sep = ".")
-          group <- paste(group, data[,as.character(attr(terms(formula), "variables")[[i]])], sep = ".")
+          group <- paste(group, data[,as.character(attr(terms(x), "variables")[[i]])], sep = ".")
         }
       }
       group <- factor(group, levels = nn)
 
       if(horizontal == T){
         if(length(xlab)==0){
-          xlab <- as.character(attr(terms(formula), "variables")[[2]])
+          xlab <- as.character(attr(terms(x), "variables")[[2]])
         }
       } else {
         if(length(ylab)==0){
-          ylab <- as.character(attr(terms(formula), "variables")[[2]])
+          ylab <- as.character(attr(terms(x), "variables")[[2]])
         }
       }
     }
@@ -1391,15 +1454,15 @@ barplotn <- function(formula, data = NULL, ...,
   }
 
 
-  if (!is.formula(formula)){
-    m <- formula
+  if (!is.formula(x)){
+    m <- x
   } else {
     m <- tapply(y, list(group), mean, na.rm = T)
   }
 
   if(beside == T){
-    col.fill <- col.fill[1:nrow(formula)]
-    col.bor <- col.bor[1:nrow(formula)]
+    col.fill <- col.fill[1:nrow(x)]
+    col.bor <- col.bor[1:nrow(x)]
 
     if(!length(space) == 2){
       space <- c(0,1)
@@ -1422,7 +1485,7 @@ barplotn <- function(formula, data = NULL, ...,
 
   box(lty=1, lwd = lwd.axis)
 
-  if ( is.formula(formula) && !(!(SE == T)&&!(SD == T))){
+  if ( is.formula(x) && !(!(SE == T)&&!(SD == T))){
 
     if (SE == T){
       d <- tapply(y, list(group), se)
@@ -1527,8 +1590,9 @@ barplotn <- function(formula, data = NULL, ...,
 
 #' Drawing a figure like hist()
 #'
-#' @param formula Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
-#' @param data If formula is inputted in "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
+#' @param x Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
+#' @param formula formula
+#' @param data If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
 #' @param ... Argument to be passed to methods. Please see hist().
 #' @param xlab x label
 #' @param ylab y label
@@ -1578,7 +1642,8 @@ barplotn <- function(formula, data = NULL, ...,
 #'
 #' @export
 #'
-histn <- function(formula, data = NULL, ...,
+histn <- function(x = NULL, formula = NULL,
+                  data = NULL, ...,
                   xlab = NULL,
                   ylab = NULL,
                   las = 1,
@@ -1681,7 +1746,9 @@ histn <- function(formula, data = NULL, ...,
   par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
   on.exit(par(par.old))
 
-  if (!is.formula(formula)){
+  if (length(x) == 0) x <- formula
+
+  if (!is.formula(x)){
 
     if(length(xlab)==0){
       xlab <- "index"
@@ -1694,43 +1761,43 @@ histn <- function(formula, data = NULL, ...,
 
     if(is.null(data)){
 
-      y <- eval(attr(terms(formula), "variables")[[2]])
-      group <- eval(attr(terms(formula), "variables")[[3]])
+      y <- eval(attr(terms(x), "variables")[[2]])
+      group <- eval(attr(terms(x), "variables")[[3]])
       nn <- levels(as.factor(group))
-      if(length(attr(terms(formula), "variables"))-1 > 2){
-        for(i in 4:length(attr(terms(formula), "variables"))){
+      if(length(attr(terms(x), "variables"))-1 > 2){
+        for(i in 4:length(attr(terms(x), "variables"))){
           nn <- paste(nn, rep(levels(as.factor(
-            eval(attr(terms(formula), "variables")[[i]])
+            eval(attr(terms(x), "variables")[[i]])
           )
           ), each = length(nn)), sep = ".")
-          group <- paste(group, eval(attr(terms(formula), "variables")[[i]]), sep = ".")
+          group <- paste(group, eval(attr(terms(x), "variables")[[i]]), sep = ".")
         }
       }
       group <- factor(group, levels = nn)
 
       if(length(xlab)==0){
-        n <- as.character(attr(terms(formula), "variables")[[2]])
+        n <- as.character(attr(terms(x), "variables")[[2]])
         xlab <- paste(n[2], n[1], n[3], sep = "")
       }
 
     } else {
 
-      y <- data[,as.character(attr(terms(formula), "variables")[[2]])]
-      group <- data[,as.character(attr(terms(formula), "variables")[[3]])]
+      y <- data[,as.character(attr(terms(x), "variables")[[2]])]
+      group <- data[,as.character(attr(terms(x), "variables")[[3]])]
       nn <- levels(as.factor(group))
-      if(length(attr(terms(formula), "variables"))-1 > 2){
-        for(i in 4:length(attr(terms(formula), "variables"))){
+      if(length(attr(terms(x), "variables"))-1 > 2){
+        for(i in 4:length(attr(terms(x), "variables"))){
           nn <- paste(nn, rep(levels(as.factor(
-            data[,as.character(attr(terms(formula), "variables")[[i]])]
+            data[,as.character(attr(terms(x), "variables")[[i]])]
           )
           ), each = length(nn)), sep = ".")
-          group <- paste(group, data[,as.character(attr(terms(formula), "variables")[[i]])], sep = ".")
+          group <- paste(group, data[,as.character(attr(terms(x), "variables")[[i]])], sep = ".")
         }
       }
       group <- factor(group, levels = nn)
 
       if(length(xlab)==0){
-        xlab <- as.character(attr(terms(formula), "variables")[[2]])
+        xlab <- as.character(attr(terms(x), "variables")[[2]])
       }
 
     }
@@ -1742,8 +1809,8 @@ histn <- function(formula, data = NULL, ...,
 
   if(length(breaks) == 0){
 
-    if (!is.formula(formula)){
-      xx <- formula
+    if (!is.formula(x)){
+      xx <- x
     } else {
       xx <- y
     }
@@ -1782,8 +1849,8 @@ histn <- function(formula, data = NULL, ...,
 
   for (i in 1:n){
 
-    if (!is.formula(formula)){
-      xx <- formula
+    if (!is.formula(x)){
+      xx <- x
     } else {
       xx <- y[group == levels(as.factor(group))[i]]
     }
@@ -1877,8 +1944,9 @@ histn <- function(formula, data = NULL, ...,
 
 #' Drawing a violinplot
 #'
-#' @param formula Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
-#' @param data If formula is inputted in "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
+#' @param x Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
+#' @param formula formula
+#' @param data If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
 #' @param ... Argument to be passed to methods. Please see boxplot().
 #' @param las las, defauls is 1
 #' @param xlab x label
@@ -1953,7 +2021,8 @@ histn <- function(formula, data = NULL, ...,
 #'
 #' @export
 #'
-vioplotn <- function(formula, data = NULL,
+vioplotn <- function(x = NULL, formula = NULL,
+                     data = NULL,
                      ...,
                      las = 1,
                      xlab = NULL,
@@ -2098,6 +2167,8 @@ vioplotn <- function(formula, data = NULL,
   par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
   on.exit(par(par.old))
 
+  if (length(x) == 0) x <- formula
+
   if(add == T){
     par(new = T)
   }
@@ -2113,9 +2184,9 @@ vioplotn <- function(formula, data = NULL,
               "right" = side.sp,
               "left" = -side.sp)
 
-  if (!is.formula(formula)){
-    if (ncol(as.data.frame(formula)) > 1){
-      nn <- colnames(formula)
+  if (!is.formula(x)){
+    if (ncol(as.data.frame(x)) > 1){
+      nn <- colnames(x)
     } else {
       nn <- "x"
     }
@@ -2143,69 +2214,69 @@ vioplotn <- function(formula, data = NULL,
     if(horizontal == T){
       ylim_t <- ylim
       if(length(xlim)==0){
-        ylim <- range(formula, na.rm = T)
+        ylim <- range(x, na.rm = T)
       } else {
         ylim <- xlim
       }
       xlim <- ylim_t
     } else {
       if(length(ylim)==0){
-        ylim <- range(formula, na.rm = T)
+        ylim <- range(x, na.rm = T)
       }
     }
 
   } else {
     if(is.null(data)){
 
-      y <- eval(attr(terms(formula), "variables")[[2]])
-      group <- eval(attr(terms(formula), "variables")[[3]])
+      y <- eval(attr(terms(x), "variables")[[2]])
+      group <- eval(attr(terms(x), "variables")[[3]])
       nn <- levels(as.factor(group))
-      if(length(attr(terms(formula), "variables"))-1 > 2){
-        for(i in 4:length(attr(terms(formula), "variables"))){
+      if(length(attr(terms(x), "variables"))-1 > 2){
+        for(i in 4:length(attr(terms(x), "variables"))){
           nn <- paste(nn, rep(levels(as.factor(
-            eval(attr(terms(formula), "variables")[[i]])
+            eval(attr(terms(x), "variables")[[i]])
           )
           ), each = length(nn)), sep = ".")
-          group <- paste(group, eval(attr(terms(formula), "variables")[[i]]), sep = ".")
+          group <- paste(group, eval(attr(terms(x), "variables")[[i]]), sep = ".")
         }
       }
       group <- factor(group, levels = nn)
 
       if(horizontal == T){
         if(length(xlab)==0){
-          n <- as.character(attr(terms(formula), "variables")[[2]])
+          n <- as.character(attr(terms(x), "variables")[[2]])
           xlab <- paste(n[2], n[1], n[3], sep = "")
         }
       } else {
         if(length(ylab)==0){
-          n <- as.character(attr(terms(formula), "variables")[[2]])
+          n <- as.character(attr(terms(x), "variables")[[2]])
           ylab <- paste(n[2], n[1], n[3], sep = "")
         }
       }
 
     } else {
 
-      y <- data[,as.character(attr(terms(formula), "variables")[[2]])]
-      group <- data[,as.character(attr(terms(formula), "variables")[[3]])]
+      y <- data[,as.character(attr(terms(x), "variables")[[2]])]
+      group <- data[,as.character(attr(terms(x), "variables")[[3]])]
       nn <- levels(as.factor(group))
-      if(length(attr(terms(formula), "variables"))-1 > 2){
-        for(i in 4:length(attr(terms(formula), "variables"))){
+      if(length(attr(terms(x), "variables"))-1 > 2){
+        for(i in 4:length(attr(terms(x), "variables"))){
           nn <- paste(nn, rep(levels(as.factor(
-            data[,as.character(attr(terms(formula), "variables")[[i]])]
+            data[,as.character(attr(terms(x), "variables")[[i]])]
           )
           ), each = length(nn)), sep = ".")
-          group <- paste(group, data[,as.character(attr(terms(formula), "variables")[[i]])], sep = ".")
+          group <- paste(group, data[,as.character(attr(terms(x), "variables")[[i]])], sep = ".")
         }
       }
       group <- factor(group, levels = nn)
 
       if(horizontal == T){
         if(length(xlab)==0){
-          xlab <- as.character(attr(terms(formula), "variables")[[2]])
+          xlab <- as.character(attr(terms(x), "variables")[[2]])
         }
       } else {
         if(length(ylab)==0){
-          ylab <- as.character(attr(terms(formula), "variables")[[2]])
+          ylab <- as.character(attr(terms(x), "variables")[[2]])
         }
       }
     }
@@ -2250,7 +2321,7 @@ vioplotn <- function(formula, data = NULL,
   density <- rep(density, length = length(names))
   angle <- rep(angle, length = length(names))
 
-  boxplot(formula, data = data ,..., xlim = xlim, ylim = ylim, las = las,
+  boxplot(x, data = data ,..., xlim = xlim, ylim = ylim, las = las,
           outline = F, bty = "n", axes = F, add = F,
           col = NA, border = NA,  horizontal = horizontal)
 
@@ -2261,8 +2332,8 @@ vioplotn <- function(formula, data = NULL,
 
   for (i in 1:length(nn)){
 
-    if (!is.formula(formula)){
-      xx <- as.data.frame(formula)[,i]
+    if (!is.formula(x)){
+      xx <- as.data.frame(x)[,i]
     } else {
       xx <- y[group == nn[i]]
     }
@@ -2292,8 +2363,8 @@ vioplotn <- function(formula, data = NULL,
 
   for (i in 1:length(nn)){
 
-    if (!is.formula(formula)){
-      xx <- as.data.frame(formula)[,i]
+    if (!is.formula(x)){
+      xx <- as.data.frame(x)[,i]
     } else {
       xx <- y[group == nn[i]]
     }
@@ -2333,7 +2404,7 @@ vioplotn <- function(formula, data = NULL,
     xaxt <- "n"
   }
 
-  boxplot(formula, data = data, ..., xlim = xlim, ylim = ylim,
+  boxplot(x, data = data, ..., xlim = xlim, ylim = ylim,
           xlab = xlab, ylab = ylab,
           lty = 1, outline = F, lwd = lwd.bor,
           cex.axis = cex.axis, cex.lab = cex.lab,
@@ -2347,8 +2418,8 @@ vioplotn <- function(formula, data = NULL,
 
     for (i in 1:length(nn)){
 
-      if (!is.formula(formula)){
-        xx <- as.data.frame(formula)[,i]
+      if (!is.formula(x)){
+        xx <- as.data.frame(x)[,i]
       } else {
         xx <- y[group == nn[i]]
       }
@@ -2382,8 +2453,8 @@ vioplotn <- function(formula, data = NULL,
 
     for (i in 1:length(nn)){
 
-      if (!is.formula(formula)){
-        xx <- as.data.frame(formula)[,i]
+      if (!is.formula(x)){
+        xx <- as.data.frame(x)[,i]
       } else {
         xx <- y[group == nn[i]]
       }
@@ -2407,11 +2478,11 @@ vioplotn <- function(formula, data = NULL,
 
   if (!(!(Mean == T)&&!(SE == T)&&!(SD == T))){
 
-    if (!is.formula(formula)){
-      if (ncol(as.data.frame(formula)) > 1){
-        m <- apply(formula, 2, mean, na.rm = T)
+    if (!is.formula(x)){
+      if (ncol(as.data.frame(x)) > 1){
+        m <- apply(x, 2, mean, na.rm = T)
       } else {
-        m <- mean(formula, na.rm = T)
+        m <- mean(x, na.rm = T)
       }
     } else {
       m <- tapply(y, list(group), mean, na.rm = T)
@@ -2421,11 +2492,11 @@ vioplotn <- function(formula, data = NULL,
 
     if (!(!(SE == T)&&!(SD == T))) {
       if (SE == T){
-        if (!is.formula(formula)){
-          if (ncol(as.data.frame(formula)) > 1){
-            d <- apply(formula, 2, se)
+        if (!is.formula(x)){
+          if (ncol(as.data.frame(x)) > 1){
+            d <- apply(x, 2, se)
           } else {
-            d <- se(formula)
+            d <- se(x)
           }
         } else {
           d <- tapply(y, list(group), se)
@@ -2433,11 +2504,11 @@ vioplotn <- function(formula, data = NULL,
 
       } else {
 
-        if (!is.formula(formula)){
-          if (ncol(as.data.frame(formula)) > 1){
-            d <- apply(formula, 2, sd, na.rm = T)
+        if (!is.formula(x)){
+          if (ncol(as.data.frame(x)) > 1){
+            d <- apply(x, 2, sd, na.rm = T)
           } else {
-            d <- sd(formula, na.rm = T)
+            d <- sd(x, na.rm = T)
           }
         } else {
           d <- tapply(y, list(group), sd, na.rm = T)
@@ -2650,8 +2721,9 @@ month.axis <- function(leap = F,
 
 #' Drawing mean points
 #'
-#' @param formula Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
-#' @param data If formula is inputted in "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
+#' @param x Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
+#' @param formula formula
+#' @param data If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
 #' @param at Drawing position
 #' @param SD If set "T", standard deviation is drawn. Default is "F".
 #' @param SE If set "T", standard error is drawn. Default is "F".
@@ -2676,7 +2748,8 @@ month.axis <- function(leap = F,
 #'
 #' @export
 #'
-Mean.pt <- function(formula, data = NULL,
+Mean.pt <- function(x = NULL, formula = NULL,
+                    data = NULL,
                     at = NULL,
                     SD = F,
                     SE = F,
@@ -2708,8 +2781,10 @@ Mean.pt <- function(formula, data = NULL,
   par.old <- par(mar = mar)
   on.exit(par(par.old))
 
+  if (length(x) == 0) x <- formula
+
   calculate <- F
-  if(is.formula(formula)) {
+  if(is.formula(x)) {
     calculate <- T
   } else {
     if(is.vector(group)){
@@ -2718,16 +2793,16 @@ Mean.pt <- function(formula, data = NULL,
   }
 
   if(calculate == T){
-    if(is.formula(formula)) {
+    if(is.formula(x)) {
       if(is.null(data)){
 
-        xx <- eval(attr(terms(formula), "variables")[[2]])
-        group <- eval(attr(terms(formula), "variables")[[3]])
+        xx <- eval(attr(terms(x), "variables")[[2]])
+        group <- eval(attr(terms(x), "variables")[[3]])
 
       } else {
 
-        xx <- data[,as.character(attr(terms(formula), "variables")[[2]])]
-        group <- data[,as.character(attr(terms(formula), "variables")[[3]])]
+        xx <- data[,as.character(attr(terms(x), "variables")[[2]])]
+        group <- data[,as.character(attr(terms(x), "variables")[[3]])]
 
       }
 
@@ -2736,15 +2811,15 @@ Mean.pt <- function(formula, data = NULL,
 
       if(is.null(data)){
 
-        xx <- as.matrix(formula)[,1]
+        xx <- as.matrix(x)[,1]
 
         if(length(group) == 1){
-          group <- as.matrix(formula)[,group]
+          group <- as.matrix(x)[,group]
         }
 
       } else {
 
-        xx <- data[,formula]
+        xx <- data[,x]
 
         if(length(group) == 1){
           group <- data[,group]
@@ -2770,8 +2845,8 @@ Mean.pt <- function(formula, data = NULL,
 
   } else {
 
-    m <- formula[,mean.column]
-    d <- formula[,3 - mean.column]
+    m <- x[,mean.column]
+    d <- x[,3 - mean.column]
     n <- length(m)
 
   }
@@ -2871,7 +2946,7 @@ leap.year <- function(year){
 #'
 #' @param main Main category, this is given as vector (e.g. c("S", "R"))
 #' @param sub Sub category, this is given as vector (e.g. c("1", "10", "100"))
-#' @param data If formula is inputted in "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
+#' @param data a data.frame
 #' @param main.axis.at Drawing position of main axis
 #' @param main.axis.length Bar length of main axis
 #' @param sub.axis.at Drawing position of sub axis

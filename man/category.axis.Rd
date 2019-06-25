@@ -15,7 +15,7 @@ category.axis(main, sub, data = NULL, main.axis.at = NULL,
 
 \item{sub}{Sub category, this is given as vector (e.g. c("1", "10", "100"))}
 
-\item{data}{If formula is inputted in "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.}
+\item{data}{a data.frame}
 
 \item{main.axis.at}{Drawing position of main axis}
 

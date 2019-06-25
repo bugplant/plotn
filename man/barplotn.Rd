@@ -4,14 +4,14 @@
 \alias{barplotn}
 \title{Drawing a figure like barplot()}
 \usage{
-barplotn(formula, data = NULL, ..., las = 1, cex.axis = 1.1,
-  cex.lab = 1.3, font.lab = 2, lwd.bor = 2, lwd.axis = 1,
-  lwd.0 = 1, lwd.stat = 1, lty.0 = 3, col.fill = c("#1F77B47F",
-  "#FF7F0E7F", "#2CA02C7F", "#D627287F", "#9467BD7F", "#8C564B7F",
-  "#E377C27F", "#7F7F7F7F", "#BCBD227F", "#17BECF7F"),
-  col.bor = c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF", "#D62728FF",
-  "#9467BDFF", "#8C564BFF", "#E377C2FF", "#7F7F7FFF", "#BCBD22FF",
-  "#17BECFFF"), col.stat = "default", col.0 = "#0000007F",
+barplotn(x = NULL, formula = NULL, data = NULL, ..., las = 1,
+  cex.axis = 1.1, cex.lab = 1.3, font.lab = 2, lwd.bor = 2,
+  lwd.axis = 1, lwd.0 = 1, lwd.stat = 1, lty.0 = 3,
+  col.fill = c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F", "#D627287F",
+  "#9467BD7F", "#8C564B7F", "#E377C27F", "#7F7F7F7F", "#BCBD227F",
+  "#17BECF7F"), col.bor = c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF",
+  "#D62728FF", "#9467BDFF", "#8C564BFF", "#E377C2FF", "#7F7F7FFF",
+  "#BCBD22FF", "#17BECFFF"), col.stat = "default", col.0 = "#0000007F",
   length = "auto", space = 0.5, names = NULL, xlim = NULL,
   ylim = NULL, xlab = NULL, ylab = NULL, SE = F, SD = F,
   horizontal = F, beside = F, legend = F, pos.leg = "outright",
@@ -23,9 +23,11 @@ barplotn(formula, data = NULL, ..., las = 1, cex.axis = 1.1,
   inversion = F, inv.col = "#FFFFFF")
 }
 \arguments{
-\item{formula}{Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result}
+\item{x}{Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result}
 
-\item{data}{If formula is inputted in "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.}
+\item{formula}{formula}
+
+\item{data}{If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.}
 
 \item{...}{Argument to be passed to methods. Please see barplot().}
 

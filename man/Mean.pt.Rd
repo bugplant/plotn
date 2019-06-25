@@ -4,16 +4,18 @@
 \alias{Mean.pt}
 \title{Drawing mean points}
 \usage{
-Mean.pt(formula, data = NULL, at = NULL, SD = F, SE = F,
-  group = NULL, mean.column = 1, pch = 21, cex = 1.5,
+Mean.pt(x = NULL, formula = NULL, data = NULL, at = NULL, SD = F,
+  SE = F, group = NULL, mean.column = 1, pch = 21, cex = 1.5,
   col.mean = "#000000", col.bg = "#FFFFFF", lwd.mean = 1,
   col.bar = "#000000", lwd.bar = 1, lty = 1, length = 0.5,
   horizontal = F, plot = T, mar = c(2, 3.8, 1, 1))
 }
 \arguments{
-\item{formula}{Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result}
+\item{x}{Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result}
 
-\item{data}{If formula is inputted in "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.}
+\item{formula}{formula}
+
+\item{data}{If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.}
 
 \item{at}{Drawing position}
 

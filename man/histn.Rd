@@ -4,29 +4,31 @@
 \alias{histn}
 \title{Drawing a figure like hist()}
 \usage{
-histn(formula, data = NULL, ..., xlab = NULL, ylab = NULL, las = 1,
-  main = "", cex.axis = 1.1, cex.lab = 1.3, font.lab = 2,
-  col.fill = c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F", "#D627287F",
-  "#9467BD7F", "#8C564B7F", "#E377C27F", "#7F7F7F7F", "#BCBD227F",
-  "#17BECF7F"), col.bor = c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF",
-  "#D62728FF", "#9467BDFF", "#8C564BFF", "#E377C2FF", "#7F7F7FFF",
-  "#BCBD22FF", "#17BECFFF"), hist.dens = NA, hist.ang = 45,
-  kernel = F, freq = T, col.line = c("#1F77B4FF", "#FF7F0EFF",
+histn(x = NULL, formula = NULL, data = NULL, ..., xlab = NULL,
+  ylab = NULL, las = 1, main = "", cex.axis = 1.1, cex.lab = 1.3,
+  font.lab = 2, col.fill = c("#1F77B47F", "#FF7F0E7F", "#2CA02C7F",
+  "#D627287F", "#9467BD7F", "#8C564B7F", "#E377C27F", "#7F7F7F7F",
+  "#BCBD227F", "#17BECF7F"), col.bor = c("#1F77B4FF", "#FF7F0EFF",
   "#2CA02CFF", "#D62728FF", "#9467BDFF", "#8C564BFF", "#E377C2FF",
-  "#7F7F7FFF", "#BCBD22FF", "#17BECFFF"), col.ker = "transparent",
-  ker.dens = NA, ker.ang = 45, lwd.hist = 1, lwd.line = 2,
-  breaks = NULL, horizontal = F, legend = F, pos.leg = "outright",
-  pch.leg = 22, bty.leg = "n", bg.leg = "transparent",
-  pt.cex.leg = 2, tx.cex.leg = 1.1, pt.col.leg = NULL,
-  pt.bg.leg = NULL, tx.col.leg = NULL, leg.lab = NULL,
-  leg.sp = 2.5, inset = 1, leg.title = NULL, tit.col.leg = NULL,
-  mar = c(3.8, 3.8, 1, 1), mgp = c(2.5, 0.5, 0), tcl = -0.2,
-  inversion = F, inv.col = "#FFFFFF")
+  "#7F7F7FFF", "#BCBD22FF", "#17BECFFF"), hist.dens = NA,
+  hist.ang = 45, kernel = F, freq = T, col.line = c("#1F77B4FF",
+  "#FF7F0EFF", "#2CA02CFF", "#D62728FF", "#9467BDFF", "#8C564BFF",
+  "#E377C2FF", "#7F7F7FFF", "#BCBD22FF", "#17BECFFF"),
+  col.ker = "transparent", ker.dens = NA, ker.ang = 45,
+  lwd.hist = 1, lwd.line = 2, breaks = NULL, horizontal = F,
+  legend = F, pos.leg = "outright", pch.leg = 22, bty.leg = "n",
+  bg.leg = "transparent", pt.cex.leg = 2, tx.cex.leg = 1.1,
+  pt.col.leg = NULL, pt.bg.leg = NULL, tx.col.leg = NULL,
+  leg.lab = NULL, leg.sp = 2.5, inset = 1, leg.title = NULL,
+  tit.col.leg = NULL, mar = c(3.8, 3.8, 1, 1), mgp = c(2.5, 0.5, 0),
+  tcl = -0.2, inversion = F, inv.col = "#FFFFFF")
 }
 \arguments{
-\item{formula}{Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result}
+\item{x}{Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result}
 
-\item{data}{If formula is inputted in "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.}
+\item{formula}{formula}
+
+\item{data}{If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.}
 
 \item{...}{Argument to be passed to methods. Please see hist().}
 

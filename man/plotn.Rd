@@ -4,32 +4,29 @@
 \alias{plotn}
 \title{Drawing a figure like plot()}
 \usage{
-plotn(formula, y = NULL, data = NULL, ..., xlim = NULL,
-  ylim = NULL, las = 1, cex.axis = 1.1, cex.lab = 1.3,
-  font.lab = 2, pch = 16, col.dot = c("#1F77B4FF", "#FF7F0EFF",
-  "#2CA02CFF", "#D62728FF", "#9467BDFF", "#8C564BFF", "#E377C2FF",
-  "#7F7F7FFF", "#BCBD22FF", "#17BECFFF"), col.fill = c("#1F77B47F",
-  "#FF7F0E7F", "#2CA02C7F", "#D627287F", "#9467BD7F", "#8C564B7F",
-  "#E377C27F", "#7F7F7F7F", "#BCBD227F", "#17BECF7F"),
-  col.line = c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF", "#D62728FF",
-  "#9467BDFF", "#8C564BFF", "#E377C2FF", "#7F7F7FFF", "#BCBD22FF",
-  "#17BECFFF"), col.bor = "transparent", col.bg = "#FFFFFF",
-  legend = F, pos.leg = "outright", pch.leg = NULL, bty.leg = "n",
-  bg.leg = "transparent", lty = 1, lwd.dot = 1, lwd.line = 1,
-  pt.cex.leg = 1.5, tx.cex.leg = 1.1, pt.col.leg = NULL,
-  pt.bg.leg = NULL, lty.leg = NULL, pt.lwd.leg = NULL,
-  ln.lwd.leg = NULL, tx.col.leg = NULL, leg.lab = NULL,
-  leg.sp = 2.5, inset = 1, leg.title = NULL, tit.col.leg = NULL,
-  mode = "s", group = NULL, fill = F, line = F, density = NA,
-  angle = 45, mar = c(3.8, 3.8, 1, 1), mgp = c(2.5, 0.5, 0),
-  tcl = -0.2, inversion = F, inv.col = "#FFFFFF")
+plotn(x = NULL, y = NULL, formula = NULL, data = NULL, ...,
+  xlim = NULL, ylim = NULL, las = 1, cex.axis = 1.1,
+  cex.lab = 1.3, font.lab = 2, pch = 16, col.dot = NULL,
+  col.fill = NULL, col.line = NULL, col.bor = "transparent",
+  col.bg = "#FFFFFF", legend = F, pos.leg = "outright",
+  pch.leg = NULL, bty.leg = "n", bg.leg = "transparent", lty = 1,
+  lwd.dot = 1, lwd.line = 1, pt.cex.leg = 1.5, tx.cex.leg = 1.1,
+  pt.col.leg = NULL, pt.bg.leg = NULL, lty.leg = NULL,
+  pt.lwd.leg = NULL, ln.lwd.leg = NULL, tx.col.leg = NULL,
+  leg.lab = NULL, leg.sp = 2.5, inset = 1, leg.title = NULL,
+  tit.col.leg = NULL, mode = "s", group = NULL, fill = F,
+  line = F, density = NA, angle = 45, mar = c(3.8, 3.8, 1, 1),
+  mgp = c(2.5, 0.5, 0), tcl = -0.2, inversion = F,
+  inv.col = "#FFFFFF")
 }
 \arguments{
-\item{formula}{Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result}
+\item{x}{Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result}
 
 \item{y}{If numeric vector is inputted in "formula" parameter, numeric vector is also inputted in y}
 
-\item{data}{If formula is inputted in "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.}
+\item{formula}{formula}
+
+\item{data}{If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.}
 
 \item{...}{Argument to be passed to methods. Please see plot().}
 
