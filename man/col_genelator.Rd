@@ -19,3 +19,11 @@ col_genelator(palette = "d3", palette_types = NULL, number = 10,
 \description{
 Genelating dafault color in plotn
 }
+\examples{
+cols <- col_genelator(palette = "npg")
+cols <- col_genelator(palette = "uchicago", palette_type = "light")
+
+}
+\seealso{
+[ggsci] <https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html>
+}

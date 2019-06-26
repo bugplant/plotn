@@ -2,13 +2,13 @@
 % Please edit documentation in R/plotn.R
 \name{Mean.pt}
 \alias{Mean.pt}
-\title{Drawing mean points}
+\title{Drawing mean points used with overdraw()}
 \usage{
 Mean.pt(x = NULL, formula = NULL, data = NULL, at = NULL, SD = F,
-  SE = F, group = NULL, mean.column = 1, pch = 21, cex = 1.5,
-  col.mean = "#000000", col.bg = "#FFFFFF", lwd.mean = 1,
-  col.bar = "#000000", lwd.bar = 1, lty = 1, length = 0.5,
-  horizontal = F, plot = T, mar = c(2, 3.8, 1, 1))
+  SE = F, group = NULL, mean.column = 1, dev.column = 2,
+  pch = 21, cex = 1.5, col.mean = NULL, col.bg = NULL,
+  lwd.mean = 1, col.bar = NULL, lwd.bar = 1, lty = 1,
+  length = 0.5, horizontal = F, plot = T)
 }
 \arguments{
 \item{x}{Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result}
@@ -26,6 +26,8 @@ Mean.pt(x = NULL, formula = NULL, data = NULL, at = NULL, SD = F,
 \item{group}{Grouping factor}
 
 \item{mean.column}{Column which means are stored.}
+
+\item{dev.column}{Column which sd or se are stored.}
 
 \item{pch}{pch, default is 21.}
 
@@ -48,9 +50,29 @@ Mean.pt(x = NULL, formula = NULL, data = NULL, at = NULL, SD = F,
 \item{horizontal}{horizontal, default is "F".}
 
 \item{plot}{If set "F", calculate is only done.}
-
-\item{mar}{mar, default is c(2,3.8,1,1).}
 }
 \description{
-Drawing mean points
+Drawing mean points used with overdraw()
+}
+\examples{
+d <- data.frame(x = c(1:10, 11:20, 21:30, 31:40),
+                group = rep(c("A","B","C", "D"), each = 10))
+pos <- barplotn(x ~ group, data = d)
+overdraw(Mean.pt(x ~ group, data = d, at = pos, SD = TRUE))
+
+pos <- barplotn(x ~ group, data = d)
+overdraw(Mean.pt("x", data = d, group = "group", at = pos,
+                 SE = TRUE))
+
+pos <- barplotn(x ~ group, data = d)
+overdraw(Mean.pt(d, group = "group", at = pos, SE = TRUE))
+#d[,1] is data
+
+pos <- barplotn(x ~ group, data = d)
+md <- Mean.pt(x ~ group, data = d, SE = TRUE, plot = FALSE)
+overdraw(Mean.pt(md, at = pos, SE = TRUE))
+
+}
+\seealso{
+[plotn::overdraw]
 }

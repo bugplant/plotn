@@ -26,3 +26,17 @@ theme_change(default_col = NULL, default_fill = NULL, palette = "d3",
 \description{
 Color theme change
 }
+\examples{
+d <- data.frame(x = c(1:10, 11:20, 21:30), group = rep(c("A","B","C"), each = 10))
+theme_change()
+boxplotn(x ~ group, data = d)
+
+theme_change(palette = "uchicago", palette_type = "light")
+boxplotn(x ~ group, data = d)
+
+}
+\seealso{
+[ggsci] <https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html>
+
+[plotn::col_genelator]
+}

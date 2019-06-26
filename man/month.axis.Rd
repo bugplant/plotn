@@ -2,12 +2,10 @@
 % Please edit documentation in R/plotn.R
 \name{month.axis}
 \alias{month.axis}
-\title{Drawing a month labeled axis}
+\title{Drawing a month labeled axis used with overdraw()}
 \usage{
 month.axis(leap = F, period = 1, year = NULL, start = c(1, 1),
-  lwd = 1, month.lab = "a", cex.axis = 1.1, las = 1, mar = c(3.8,
-  3.8, 1, 1), mgp = c(2.5, 0.5, 0), tcl = -0.2, inversion = F,
-  inv.col = "#FFFFFF")
+  lwd = 1, month.lab = "a", cex.axis = 1.1, las = 1)
 }
 \arguments{
 \item{leap}{If set "T", a year is treated as leap year.}
@@ -25,17 +23,23 @@ month.axis(leap = F, period = 1, year = NULL, start = c(1, 1),
 \item{cex.axis}{axis cex, default is 1.1,}
 
 \item{las}{las}
-
-\item{mar}{mar, default is c(2,3.8,1,1).}
-
-\item{mgp}{mgp, default is c(2.5,0.5,0).}
-
-\item{tcl}{tcl, default is -0.2.}
-
-\item{inversion}{Inversion mode. If set "T", plot is drawn with inversion color. Default is "F".}
-
-\item{inv.col}{Inversion color, if set inversion = "T". Default is "#FFFFFF".}
 }
 \description{
-Drawing a month labeled axis
+Drawing a month labeled axis used with overdraw()
+}
+\examples{
+d1 <- data.frame(Date = 1:100, x = rnorm(100, 1, 1))
+#This data starting at January 1st, 2004
+plotn(d1, line = TRUE, pch = NA, xaxt = "n", xlab = "Month")
+overdraw(month.axis(period = 1, year = 2004, start = c(1, 1)))
+
+d2 <- data.frame(Date = 1:365, x = rnorm(365, 1, 1))
+#This is treated as 365 days data starting at March 25th, 2019
+plotn(d2, line = TRUE, pch = NA, xaxt = "n", xlab = "Month")
+overdraw(month.axis(period = 2, year = 2019, start = c(3, 25),
+                    month.lab = "i"))
+
+}
+\seealso{
+[plotn::overdraw]
 }

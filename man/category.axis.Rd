@@ -2,18 +2,17 @@
 % Please edit documentation in R/plotn.R
 \name{category.axis}
 \alias{category.axis}
-\title{Drawing categorized axis}
+\title{Drawing categorized axis used with overdraw()}
 \usage{
 category.axis(main, sub, data = NULL, main.axis.at = NULL,
   main.axis.length = 3, sub.axis.at = NULL, lwd = 1, bar.lwd = 1,
   cex.axis = 1.1, las = 1, x.intsp = 0.6, y.intsp = 1.8,
-  horizontal = F, mar = c(3.8, 3.8, 1, 1), mgp = c(2.5, 0.5, 0),
-  tcl = -0.2, inversion = F, inv.col = "#FFFFFF")
+  horizontal = F)
 }
 \arguments{
-\item{main}{Main category, this is given as vector (e.g. c("S", "R"))}
+\item{main}{Main category, this is given as vector (e.g. c("S", "R")) or column name of data}
 
-\item{sub}{Sub category, this is given as vector (e.g. c("1", "10", "100"))}
+\item{sub}{Sub category, this is given as vector (e.g. c("1", "10", "100")) or column name of data}
 
 \item{data}{a data.frame}
 
@@ -36,17 +35,24 @@ category.axis(main, sub, data = NULL, main.axis.at = NULL,
 \item{y.intsp}{Inter space of main and sub axis, default is 1.8,}
 
 \item{horizontal}{horizontal, default is "F".}
-
-\item{mar}{mar, default is c(3.8,3.8,1,1).}
-
-\item{mgp}{mgp, default is c(2.5,0.5,0).}
-
-\item{tcl}{tcl, default is -0.2.}
-
-\item{inversion}{Inversion mode. If set "T", plot is drawn with inversion color. Default is "F".}
-
-\item{inv.col}{Inversion color, if set inversion = "T". Default is "#FFFFFF".}
 }
 \description{
-Drawing categorized axis
+Drawing categorized axis used with overdraw()
+}
+\examples{
+d <- data.frame(x = c(1:10, 11:20, 21:30, 31:40),
+                group = rep(c("A","B","A", "B"), each = 10),
+                treatment = rep(c("X","Y"), each = 20))
+boxplotn(x ~ group + treatment, data = d, xaxt = "n",
+         xlab = "", mar = c(3.8, 3.8, 1, 1))
+overdraw(category.axis(main = "treatment", sub = "group",
+                       data = d))
+
+boxplotn(x ~ group + treatment, data = d, xaxt = "n",
+         xlab = "", mar = c(3.8, 3.8, 1, 1))
+overdraw(category.axis(main = c("X", "Y"), sub = c("A", "B")))
+
+}
+\seealso{
+[plotn::overdraw]
 }

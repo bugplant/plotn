@@ -7,6 +7,11 @@
 #'
 #' @importFrom ggsci pal_npg pal_aaas pal_nejm pal_lancet pal_jama pal_jco pal_ucscgb pal_d3 pal_locuszoom pal_igv pal_uchicago pal_startrek pal_tron pal_futurama pal_rickandmorty pal_simpsons pal_gsea pal_material
 #'
+#' @seealso [ggsci] <https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html>
+#'
+#' @examples cols <- col_genelator(palette = "npg")
+#' @examples cols <- col_genelator(palette = "uchicago", palette_type = "light")
+#'
 #' @export
 #'
 col_genelator <- function (palette = "d3",
@@ -89,6 +94,16 @@ col_genelator <- function (palette = "d3",
 #' @param fill.alpha Transparency of default fill color
 #'
 #' @importFrom ggsci pal_npg pal_aaas pal_nejm pal_lancet pal_jama pal_jco pal_ucscgb pal_d3 pal_locuszoom pal_igv pal_uchicago pal_startrek pal_tron pal_futurama pal_rickandmorty pal_simpsons pal_gsea pal_material
+#'
+#' @seealso [ggsci] <https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html>
+#' @seealso [plotn::col_genelator]
+#'
+#' @examples d <- data.frame(x = c(1:10, 11:20, 21:30), group = rep(c("A","B","C"), each = 10))
+#' @examples theme_change()
+#' @examples boxplotn(x ~ group, data = d)
+#'
+#' @examples theme_change(palette = "uchicago", palette_type = "light")
+#' @examples boxplotn(x ~ group, data = d)
 #'
 #' @export
 #'
@@ -232,7 +247,7 @@ plotn <- function(x = NULL, y = NULL,
     theme_change()
 
   if (inversion == T){
-    bg <- "000000"
+    bg <- "#000000"
     col <- inv.col
   } else {
     bg <- "#FFFFFF"
@@ -256,6 +271,11 @@ plotn <- function(x = NULL, y = NULL,
 
   par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
   on.exit(par(par.old))
+  assign(".plotn.par", list(mar = par()$mar,
+                            mgp = par()$mgp,
+                            tcl = par()$tcl,
+                            bg = par()$bg,
+                            fg = par()$fg), envir = .GlobalEnv)
 
   if (length(x) == 0) x <- formula
 
@@ -761,9 +781,6 @@ boxplotn <- function(x = NULL, formula = NULL,
 
   if(horizontal == T){
     pos <- 2
-    ls <- c(yaxt,xaxt)
-    xaxt <- ls[1]
-    yaxt <- ls[2]
     ls <- c(mar[2],mar[1])
     mar[1] <- ls[1]
     mar[2] <- ls[2]
@@ -795,6 +812,11 @@ boxplotn <- function(x = NULL, formula = NULL,
 
   par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
   on.exit(par(par.old))
+  assign(".plotn.par", list(mar = par()$mar,
+                            mgp = par()$mgp,
+                            tcl = par()$tcl,
+                            bg = par()$bg,
+                            fg = par()$fg), envir = .GlobalEnv)
 
   if (length(x) == 0) x <- formula
 
@@ -1322,6 +1344,11 @@ barplotn <- function(x = NULL, formula = NULL,
 
   par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col, lwd = lwd.bor)
   on.exit(par(par.old))
+  assign(".plotn.par", list(mar = par()$mar,
+                            mgp = par()$mgp,
+                            tcl = par()$tcl,
+                            bg = par()$bg,
+                            fg = par()$fg), envir = .GlobalEnv)
 
   if (length(x) == 0) x <- formula
 
@@ -1765,6 +1792,11 @@ histn <- function(x = NULL, formula = NULL,
 
   par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
   on.exit(par(par.old))
+  assign(".plotn.par", list(mar = par()$mar,
+                            mgp = par()$mgp,
+                            tcl = par()$tcl,
+                            bg = par()$bg,
+                            fg = par()$fg), envir = .GlobalEnv)
 
   if (length(x) == 0) x <- formula
 
@@ -2145,9 +2177,6 @@ vioplotn <- function(x = NULL, formula = NULL,
 
   if(horizontal == T){
     pos <- 2
-    ls <- c(yaxt,xaxt)
-    xaxt <- ls[1]
-    yaxt <- ls[2]
     ls <- c(mar[2],mar[1])
     mar[1] <- ls[1]
     mar[2] <- ls[2]
@@ -2178,6 +2207,11 @@ vioplotn <- function(x = NULL, formula = NULL,
 
   par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
   on.exit(par(par.old))
+  assign(".plotn.par", list(mar = par()$mar,
+                            mgp = par()$mgp,
+                            tcl = par()$tcl,
+                            bg = par()$bg,
+                            fg = par()$fg), envir = .GlobalEnv)
 
   if (length(x) == 0) x <- formula
 
@@ -2630,7 +2664,7 @@ vioplotn <- function(x = NULL, formula = NULL,
 
 }
 
-#' Drawing a month labeled axis
+#' Drawing a month labeled axis used with overdraw()
 #'
 #' @param leap If set "T", a year is treated as leap year.
 #' @param period Periods (years) which experiments were conducted.
@@ -2640,15 +2674,23 @@ vioplotn <- function(x = NULL, formula = NULL,
 #' @param month.lab Month label, "a", "n", "i" and "f" are able to select. "a" is abbreviation, "n" is number, "i" is initial and "f" is full.
 #' @param cex.axis axis cex, default is 1.1,
 #' @param las las
-#' @param mar mar, default is c(2,3.8,1,1).
-#' @param mgp mgp, default is c(2.5,0.5,0).
-#' @param tcl tcl, default is -0.2.
-#' @param inversion Inversion mode. If set "T", plot is drawn with inversion color. Default is "F".
-#' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
 #'
 #' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
 #' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
 #' @importFrom stats density na.omit sd terms var
+#'
+#' @seealso [plotn::overdraw]
+#'
+#' @examples d1 <- data.frame(Date = 1:100, x = rnorm(100, 1, 1))
+#' @examples #This data starting at January 1st, 2004
+#' @examples plotn(d1, line = TRUE, pch = NA, xaxt = "n", xlab = "Month")
+#' @examples overdraw(month.axis(period = 1, year = 2004, start = c(1, 1)))
+#'
+#' @examples d2 <- data.frame(Date = 1:365, x = rnorm(365, 1, 1))
+#' @examples #This is treated as 365 days data starting at March 25th, 2019
+#' @examples plotn(d2, line = TRUE, pch = NA, xaxt = "n", xlab = "Month")
+#' @examples overdraw(month.axis(period = 2, year = 2019, start = c(3, 25),
+#' @examples                     month.lab = "i"))
 #'
 #' @export
 #'
@@ -2659,22 +2701,9 @@ month.axis <- function(leap = F,
                        lwd = 1,
                        month.lab = "a",
                        cex.axis = 1.1,
-                       las = 1,
-                       mar = c(3.8,3.8,1,1),
-                       mgp = c(2.5,0.5,0),
-                       tcl = -0.2,
-                       inversion = F,
-                       inv.col = "#FFFFFF"){
+                       las = 1){
 
-  if (inversion == T){
-    bg <- "transparent"
-    col <- inv.col
-  } else {
-    bg <- "#FFFFFF"
-    col <- "#000000"
-  }
-
-  par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
+  par.old <- par(.plotn.par)
   on.exit(par(par.old))
 
   if(!length(year) == 0){
@@ -2743,10 +2772,10 @@ month.axis <- function(leap = F,
 
   axis(side=1, labels = F, at = monthd2, lwd = lwd)
   axis(side=1, lty = 0, labels = monthn, at = monthp,
-       cex.axis = cex.axis, col.axis = col, col.lab = col, las = las)
+       cex.axis = cex.axis, col.axis = par()$fg, col.lab = par()$fg, las = las)
 }
 
-#' Drawing mean points
+#' Drawing mean points used with overdraw()
 #'
 #' @param x Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
 #' @param formula formula
@@ -2756,6 +2785,7 @@ month.axis <- function(leap = F,
 #' @param SE If set "T", standard error is drawn. Default is "F".
 #' @param group Grouping factor
 #' @param mean.column Column which means are stored.
+#' @param dev.column Column which sd or se are stored.
 #' @param pch pch, default is 21.
 #' @param cex cex, default is 1.5.
 #' @param col.mean mean points color, default is "#000000".
@@ -2767,11 +2797,29 @@ month.axis <- function(leap = F,
 #' @param length Length of vertical bar of tip in error bar, default is 0.5
 #' @param horizontal horizontal, default is "F".
 #' @param plot If set "F", calculate is only done.
-#' @param mar mar, default is c(2,3.8,1,1).
 #'
 #' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
 #' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
 #' @importFrom stats density na.omit sd terms var
+#'
+#' @seealso [plotn::overdraw]
+#'
+#' @examples d <- data.frame(x = c(1:10, 11:20, 21:30, 31:40),
+#' @examples                 group = rep(c("A","B","C", "D"), each = 10))
+#' @examples pos <- barplotn(x ~ group, data = d)
+#' @examples overdraw(Mean.pt(x ~ group, data = d, at = pos, SD = TRUE))
+#'
+#' @examples pos <- barplotn(x ~ group, data = d)
+#' @examples overdraw(Mean.pt("x", data = d, group = "group", at = pos,
+#' @examples                  SE = TRUE))
+#'
+#' @examples pos <- barplotn(x ~ group, data = d)
+#' @examples overdraw(Mean.pt(d, group = "group", at = pos, SE = TRUE))
+#' @examples #d[,1] is data
+#'
+#' @examples pos <- barplotn(x ~ group, data = d)
+#' @examples md <- Mean.pt(x ~ group, data = d, SE = TRUE, plot = FALSE)
+#' @examples overdraw(Mean.pt(md, at = pos, SE = TRUE))
 #'
 #' @export
 #'
@@ -2782,18 +2830,18 @@ Mean.pt <- function(x = NULL, formula = NULL,
                     SE = F,
                     group = NULL,
                     mean.column = 1,
+                    dev.column = 2,
                     pch = 21,
                     cex = 1.5,
-                    col.mean = "#000000",
-                    col.bg = "#FFFFFF",
+                    col.mean = NULL,
+                    col.bg = NULL,
                     lwd.mean = 1,
-                    col.bar = "#000000",
+                    col.bar = NULL,
                     lwd.bar = 1,
                     lty = 1,
                     length = 0.5,
                     horizontal = F,
-                    plot = T,
-                    mar = c(2,3.8,1,1)){
+                    plot = T){
 
   is.formula <- function(x){
     class(x)=="formula"
@@ -2804,9 +2852,12 @@ Mean.pt <- function(x = NULL, formula = NULL,
     sqrt(var(as.vector(y))/length(y))
   }
 
-
-  par.old <- par(mar = mar)
+  par.old <- par(.plotn.par)
   on.exit(par(par.old))
+
+  if (length(col.mean) == 0) col.mean <- par()$fg
+  if (length(col.bg) == 0) col.bg <- par()$bg
+  if (length(col.bar) == 0) col.bar <- par()$fg
 
   if (length(x) == 0) x <- formula
 
@@ -2838,10 +2889,10 @@ Mean.pt <- function(x = NULL, formula = NULL,
 
       if(is.null(data)){
 
-        xx <- as.matrix(x)[,1]
+        xx <- x[,1]
 
         if(length(group) == 1){
-          group <- as.matrix(x)[,group]
+          group <- x[,group]
         }
 
       } else {
@@ -2872,8 +2923,8 @@ Mean.pt <- function(x = NULL, formula = NULL,
 
   } else {
 
-    m <- x[,mean.column]
-    d <- x[,3 - mean.column]
+    m <- x[, mean.column]
+    d <- x[, dev.column]
     n <- length(m)
 
   }
@@ -2969,10 +3020,10 @@ leap.year <- function(year){
   leap
 }
 
-#' Drawing categorized axis
+#' Drawing categorized axis used with overdraw()
 #'
-#' @param main Main category, this is given as vector (e.g. c("S", "R"))
-#' @param sub Sub category, this is given as vector (e.g. c("1", "10", "100"))
+#' @param main Main category, this is given as vector (e.g. c("S", "R")) or column name of data
+#' @param sub Sub category, this is given as vector (e.g. c("1", "10", "100")) or column name of data
 #' @param data a data.frame
 #' @param main.axis.at Drawing position of main axis
 #' @param main.axis.length Bar length of main axis
@@ -2984,15 +3035,24 @@ leap.year <- function(year){
 #' @param x.intsp Inter space of main axis bar, defauit is 0.6.
 #' @param y.intsp Inter space of main and sub axis, default is 1.8,
 #' @param horizontal horizontal, default is "F".
-#' @param mar mar, default is c(3.8,3.8,1,1).
-#' @param mgp mgp, default is c(2.5,0.5,0).
-#' @param tcl tcl, default is -0.2.
-#' @param inversion Inversion mode. If set "T", plot is drawn with inversion color. Default is "F".
-#' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
 #'
 #' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
 #' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
 #' @importFrom stats density na.omit sd terms var
+#'
+#' @seealso [plotn::overdraw]
+#'
+#' @examples d <- data.frame(x = c(1:10, 11:20, 21:30, 31:40),
+#' @examples                 group = rep(c("A","B","A", "B"), each = 10),
+#' @examples                 treatment = rep(c("X","Y"), each = 20))
+#' @examples boxplotn(x ~ group + treatment, data = d, xaxt = "n",
+#' @examples          xlab = "", mar = c(3.8, 3.8, 1, 1))
+#' @examples overdraw(category.axis(main = "treatment", sub = "group",
+#' @examples                        data = d))
+#'
+#' @examples boxplotn(x ~ group + treatment, data = d, xaxt = "n",
+#' @examples          xlab = "", mar = c(3.8, 3.8, 1, 1))
+#' @examples overdraw(category.axis(main = c("X", "Y"), sub = c("A", "B")))
 #'
 #' @export
 #'
@@ -3006,29 +3066,18 @@ category.axis <- function(main, sub, data = NULL,
                           las = 1,
                           x.intsp = 0.6,
                           y.intsp = 1.8,
-                          horizontal = F,
-                          mar = c(3.8,3.8,1,1),
-                          mgp = c(2.5,0.5,0),
-                          tcl = -0.2,
-                          inversion = F,
-                          inv.col = "#FFFFFF"){
+                          horizontal = F){
 
-  if (inversion == T){
-    bg <- "000000"
-    col <- inv.col
-  } else {
-    bg <- "#FFFFFF"
-    col <- "#000000"
-  }
+  par.old <- par(.plotn.par)
+  on.exit(par(par.old))
+
+  mar <- par()$mar
 
   side <- 1
   if (horizontal == T){
     side <- 2
     mar[1:2] <- mar[2:1]
   }
-
-  par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
-  on.exit(par(par.old))
 
   if(!is.null(data)){
     x1n <- levels(data[,sub])
@@ -3049,7 +3098,8 @@ category.axis <- function(main, sub, data = NULL,
     at1 <- sub.axis.at
   }
   axis(side = side, lty = 1, labels = x1n, at = at1,
-       cex.axis = cex.axis, col.axis = col, lwd = lwd, las = las)
+       cex.axis = cex.axis, lwd = lwd, las = las,
+       col.axis = par()$fg)
 
   if (horizontal == T){
     mar[2] <- mar[2] - y.intsp
@@ -3068,7 +3118,7 @@ category.axis <- function(main, sub, data = NULL,
     }
 
     axis(side = side, lty = 1, lwd = bar.lwd, at = at2,
-         labels = F, cex.axis = cex.axis, col.axis = col)
+         labels = F, cex.axis = cex.axis, col.axis = par()$fg)
   }
 
   if (length(main.axis.at) == 0){
@@ -3078,37 +3128,22 @@ category.axis <- function(main, sub, data = NULL,
   }
 
   axis(side = side, lty = 0, at = at3,
-       labels = x2n, cex.axis = cex.axis, col.axis = col, las = las)
+       labels = x2n, cex.axis = cex.axis, las = las,
+       col.axis = par()$fg)
 
 }
 
 #' Function of overdrawing of low level plot function on plot function in plotn library
 #'
-#' @param x low level plot function, e.g. points()...
-#' @param mar mar, default is c(3.8,3.8,1,1).
-#' @param mgp mgp, default is c(2.5,0.5,0).
-#' @param tcl tcl, default is -0.2.
-#' @param inversion Inversion mode. If set "T", plot is drawn with inversion color. Default is "F".
-#' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
+#' @param ... low level plot function, e.g. points(...) etc. Multiple functions are able to be set.
+#'
+#' @examples plotn(1:50)
+#' @examples overdraw(abline(v = 30), abline(h = 20), points(1:10 + 1, 10:1))
 #'
 #' @export
 #'
-par.set <- function(x,
-                    mar = c(3.8,3.8,1,1),
-                    mgp = c(2.5,0.5,0),
-                    tcl = -0.2,
-                    inversion = F,
-                    inv.col = "#FFFFFF"){
-
-  if (inversion == T){
-    bg <- "000000"
-    col <- inv.col
-  } else {
-    bg <- "#FFFFFF"
-    col <- "#000000"
-  }
-
-  par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
+overdraw <- function(...){
+  par.old <- par(.plotn.par)
   on.exit(par(par.old))
-  x
+  for(i in length(list(...))) list(...)[[i]]
 }
