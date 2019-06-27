@@ -3147,3 +3147,162 @@ overdraw <- function(...){
   on.exit(par(par.old))
   for(i in length(list(...))) list(...)[[i]]
 }
+
+#' Make command consist of plotn and overdraw to store a figure as a object
+#'
+#' @param ... expression() object or character of plot command
+#'
+#' @seealso [plotn::cmd_plot]
+#'
+#' @examples g1 <- cmd_make(expression(plotn(1:50)),
+#' @examples                expression(overdraw(abline(v = 30),
+#' @examples                                    abline(h = 20),
+#' @examples                                    points(1:10 + 1, 10:1))))
+#'
+#' @examples d <- data.frame(x = c(1:10, 11:20, 21:30, 31:40),
+#' @examples                 group = rep(c("A","B","A", "B"), each = 10),
+#' @examples                 treatment = rep(c("X","Y"), each = 20))
+#' @examples g2 <- cmd_make(expression(boxplotn(x ~ group + treatment, data = d, xaxt = "n",
+#' @examples                                    xlab = "", mar = c(3.8, 3.8, 1, 1))),
+#' @examples                expression(overdraw(category.axis(main = "treatment", sub = "group",
+#' @examples                        data = d))))
+#'
+#' @export
+#'
+cmd_make <- function(...){
+  for (i in 1:length(list(...))){
+    if(i == 1){
+      command <- list(...)[[1]]
+    } else {
+      command <- paste(command, "\n", list(...)[[i]])
+    }
+  }
+  as.character(command)
+}
+
+#' Make figure using command made by cmd_make
+#'
+#' @param command plot command made by cmd_make()
+#'
+#' @seealso [plotn::cmd_make]
+#'
+#' @examples g1 <- cmd_make(expression(plotn(1:50)),
+#' @examples                expression(overdraw(abline(v = 30),
+#' @examples                                    abline(h = 20),
+#' @examples                                    points(1:10 + 1, 10:1))))
+#' @examples cmd_plot(g1)
+#'
+#' @export
+#'
+cmd_plot <- function(command) {
+  eval(parse(text = command))
+}
+
+#' Make figure using command made by cmd_make
+#'
+#' @param ... plot command made by cmd_make()
+#' @param row number of row, matrix of row x column plots
+#' @param column number of column, matrix of row x column plots
+#' @param panel.label panel label, "n","n)","(n)"(number), "A","A)","(A)"(upper case), "a","a)","(a)"(lower case) or character vevtor are able to selected.
+#' @param cex.panel.lab panel label cex
+#' @param x.panel.pos panel label position on x axis
+#' @param y.panel.pos panel label position on y axis
+#'
+#' @seealso [plotn::cmd_make][plotn::cmd_plot]
+#'
+#' @examples g1 <- cmd_make(expression(plotn(1:50)),
+#' @examples                expression(overdraw(abline(v = 30),
+#' @examples                                    abline(h = 20),
+#' @examples                                    points(1:10 + 1, 10:1))))
+#'
+#' @examples d <- data.frame(x = c(1:10, 11:20, 21:30, 31:40),
+#' @examples                 group = rep(c("A","B","A", "B"), each = 10),
+#' @examples                 treatment = rep(c("X","Y"), each = 20))
+#' @examples g2 <- cmd_make(expression(boxplotn(x ~ group + treatment, data = d, xaxt = "n",
+#' @examples                                    xlab = "", mar = c(3.8, 3.8, 1, 1))),
+#' @examples                expression(overdraw(category.axis(main = "treatment", sub = "group",
+#' @examples                                                  data = d))))
+#'
+#' @examples g3 <- cmd_make(expression(barplotn(x ~ group + treatment, data = d, xaxt = "n",
+#' @examples                                    xlab = "", mar = c(3.8, 3.8, 1, 1))))
+#'
+#' @examples plotn_arrange(g1, g2, g3, column = 2, panel.label = "a)")
+#'
+#' @export
+#'
+plotn_arrange <- function(..., row = NULL, column = NULL,
+                          panel.label = "A)", cex.panel.lab = 1.3,
+                          x.panel.pos = 0, y.panel.pos = 0) {
+
+  if(is.null(column) && is.null(column))
+    stop("Requires either row or column")
+  if(!is.null(row) && is.null(column))
+    column <- ceiling(length(list(...))/row)
+  if(is.null(row) && !is.null(column))
+    row <- ceiling(length(list(...))/column)
+
+  par.old <- par(mfrow = c(row, column))
+  on.exit(par(par.old))
+
+  panel.label <- switch(panel.label,
+                        "a" = letters,
+                        "(a)" = paste0(rep("(", length = 26), letters, rep(")", length = 26)),
+                        "a)" = paste0(letters, rep(")", length = 26)),
+                        "A" = LETTERS,
+                        "(A)" = paste0(rep("(", length = 26), LETTERS, rep(")", length = 26)),
+                        "A)" = paste0(LETTERS, rep(")", length = 26)),
+                        "n" = 1:26,
+                        "(n)" = paste0(rep("(", length = 26), 1:26, rep(")", length = 26)),
+                        "n)" = paste0(1:26, rep(")", length = 26)),
+                        panel.label
+  )
+
+  for (i in 1:length(list(...))) {
+
+    command <- list(...)[[i]]
+    x <- strsplit(command, " *\n")
+    if(length(grep("mar", x[[1]][1])) > 0){
+      y <- strsplit(x[[1]][1], "mar")
+      z <- strsplit(y[[1]][2], ",")
+      if(as.numeric(z[[1]][3]) < 2){
+        z[[1]][3] <- "2"
+        w <- paste0(y[[1]][1], "mar", z[[1]][1], ",", z[[1]][2], ", ",
+                    z[[1]][3], ",", z[[1]][4])
+
+        for (j in 1:length(x[[1]])){
+          if (j == 1) {
+            command <- w
+          } else {
+            command <- cmd_make(command, x[[1]][j])
+          }
+        }
+
+      }
+    } else {
+      y <- as.character(c("3.8","3.8","1","1"))
+      y[3] <- "2"
+      w <- paste0(substr(x[[1]][1], 1, nchar(x[[1]][1]) - 1),
+                  ", mar = c(", y[1], ", ", y[2], ", ",
+                  y[3], ", ", y[4], "))")
+
+      for (j in 1:length(x[[1]])){
+        if (j == 1) {
+          command <- w
+        } else {
+          command <- cmd_make(command, x[[1]][j])
+        }
+      }
+    }
+
+    panel_text <- paste0("mtext(adj = ", x.panel.pos/50 + 0.02, ", line = ",
+                         y.panel.pos/10 - 1.3,
+                         ", text = '", panel.label[i],
+                         "', cex = ", cex.panel.lab, ")")
+
+    command <- cmd_make(command, "par.old2 <- par(mar = c(0,0,0,0), new = T)",
+                        "plot(0, col = NA, ann = F, axes = F)", panel_text,
+                        "par(par.old2)")
+    cmd_plot(command)
+  }
+
+}
