@@ -2684,17 +2684,17 @@ vioplotn <- function(x = NULL, formula = NULL,
 #' @examples d1 <- data.frame(Date = 1:100, x = rnorm(100, 1, 1))
 #' @examples #This data starting at January 1st, 2004
 #' @examples plotn(d1, line = TRUE, pch = NA, xaxt = "n", xlab = "Month")
-#' @examples overdraw(month.axis(period = 1, year = 2004, start = c(1, 1)))
+#' @examples overdraw(month_axis(period = 1, year = 2004, start = c(1, 1)))
 #'
 #' @examples d2 <- data.frame(Date = 1:365, x = rnorm(365, 1, 1))
 #' @examples #This is treated as 365 days data starting at March 25th, 2019
 #' @examples plotn(d2, line = TRUE, pch = NA, xaxt = "n", xlab = "Month")
-#' @examples overdraw(month.axis(period = 2, year = 2019, start = c(3, 25),
+#' @examples overdraw(month_axis(period = 2, year = 2019, start = c(3, 25),
 #' @examples                     month.lab = "i"))
 #'
 #' @export
 #'
-month.axis <- function(leap = F,
+month_axis <- function(leap = F,
                        period = 1,
                        year = NULL,
                        start = c(1,1),
@@ -2707,7 +2707,7 @@ month.axis <- function(leap = F,
   on.exit(par(par.old))
 
   if(!length(year) == 0){
-    leap <- leap.year(year)
+    leap <- leap_year(year)
   }
 
   dayls <- if(leap) {
@@ -2727,7 +2727,7 @@ month.axis <- function(leap = F,
   }
   if(period > 1){
     for(i in 1:(period-1)){
-      leap <- leap.year(year + i)
+      leap <- leap_year(year + i)
 
       md <- if(leap) {
         c(31,29,31,30,31,30,31,31,30,31,30,31)
@@ -2807,23 +2807,23 @@ month.axis <- function(leap = F,
 #' @examples d <- data.frame(x = c(1:10, 11:20, 21:30, 31:40),
 #' @examples                 group = rep(c("A","B","C", "D"), each = 10))
 #' @examples pos <- barplotn(x ~ group, data = d)
-#' @examples overdraw(Mean.pt(x ~ group, data = d, at = pos, SD = TRUE))
+#' @examples overdraw(Mean_pt(x ~ group, data = d, at = pos, SD = TRUE))
 #'
 #' @examples pos <- barplotn(x ~ group, data = d)
-#' @examples overdraw(Mean.pt("x", data = d, group = "group", at = pos,
+#' @examples overdraw(Mean_pt("x", data = d, group = "group", at = pos,
 #' @examples                  SE = TRUE))
 #'
 #' @examples pos <- barplotn(x ~ group, data = d)
-#' @examples overdraw(Mean.pt(d, group = "group", at = pos, SE = TRUE))
+#' @examples overdraw(Mean_pt(d, group = "group", at = pos, SE = TRUE))
 #' @examples #d[,1] is data
 #'
 #' @examples pos <- barplotn(x ~ group, data = d)
-#' @examples md <- Mean.pt(x ~ group, data = d, SE = TRUE, plot = FALSE)
-#' @examples overdraw(Mean.pt(md, at = pos, SE = TRUE))
+#' @examples md <- Mean_pt(x ~ group, data = d, SE = TRUE, plot = FALSE)
+#' @examples overdraw(Mean_pt(md, at = pos, SE = TRUE))
 #'
 #' @export
 #'
-Mean.pt <- function(x = NULL, formula = NULL,
+Mean_pt <- function(x = NULL, formula = NULL,
                     data = NULL,
                     at = NULL,
                     SD = F,
@@ -3001,7 +3001,7 @@ Mean.pt <- function(x = NULL, formula = NULL,
 #' Judging leap year
 #' @param year The start year which experiments were conducted (e.g. 1999, 2001...).
 #'
-leap.year <- function(year){
+leap_year <- function(year){
   if(!length(year) == 0){
     if(year%%400 == 0){
       leap <- T
@@ -3047,16 +3047,16 @@ leap.year <- function(year){
 #' @examples                 treatment = rep(c("X","Y"), each = 20))
 #' @examples boxplotn(x ~ group + treatment, data = d, xaxt = "n",
 #' @examples          xlab = "", mar = c(3.8, 3.8, 1, 1))
-#' @examples overdraw(category.axis(main = "treatment", sub = "group",
+#' @examples overdraw(category_axis(main = "treatment", sub = "group",
 #' @examples                        data = d))
 #'
 #' @examples boxplotn(x ~ group + treatment, data = d, xaxt = "n",
 #' @examples          xlab = "", mar = c(3.8, 3.8, 1, 1))
-#' @examples overdraw(category.axis(main = c("X", "Y"), sub = c("A", "B")))
+#' @examples overdraw(category_axis(main = c("X", "Y"), sub = c("A", "B")))
 #'
 #' @export
 #'
-category.axis <- function(main, sub, data = NULL,
+category_axis <- function(main, sub, data = NULL,
                           main.axis.at = NULL,
                           main.axis.length = 3,
                           sub.axis.at = NULL,
@@ -3148,59 +3148,150 @@ overdraw <- function(...){
   for(i in length(list(...))) list(...)[[i]]
 }
 
-#' Make command consist of plotn and overdraw to store a figure as a object
+#' Make command and plotn object consist of plotn and overdraw to store a figure as a object
 #'
-#' @param ... expression() object or character of plot command
+#' @param ... plotn command or plotn object
+#' @param insert position of insert layer. If set nunber i, second and later arguments are inserted in i th layer in a first argument
+#' @param delete position of delete layer. If set nunber i, i th layers in a first argument are deleted. If both insert and delete are set number, deleting is done before inserting.
 #'
-#' @seealso [plotn::cmd_plot]
-#'
-#' @examples g1 <- cmd_make(expression(plotn(1:50)),
-#' @examples                expression(overdraw(abline(v = 30),
-#' @examples                                    abline(h = 20),
-#' @examples                                    points(1:10 + 1, 10:1))))
+#' @examples g1 <- plotn_object(plotn(1:50),
+#' @examples                    overdraw(abline(v = 30), abline(h = 20),
+#' @examples                             points(1:10 + 1, 10:1))
+#' @examples       )
 #'
 #' @examples d <- data.frame(x = c(1:10, 11:20, 21:30, 31:40),
 #' @examples                 group = rep(c("A","B","A", "B"), each = 10),
 #' @examples                 treatment = rep(c("X","Y"), each = 20))
-#' @examples g2 <- cmd_make(expression(boxplotn(x ~ group + treatment, data = d, xaxt = "n",
-#' @examples                                    xlab = "", mar = c(3.8, 3.8, 1, 1))),
-#' @examples                expression(overdraw(category.axis(main = "treatment", sub = "group",
-#' @examples                        data = d))))
+#' @examples g2 <- plotn_object(boxplotn(x ~ group + treatment, data = d, xaxt = "n",
+#' @examples                             xlab = "", mar = c(3.8, 3.8, 1, 1)),
+#' @examples                    overdraw(category_axis(main = "treatment",
+#' @examples                                          sub = "group",data = d))
+#' @examples       )
 #'
 #' @export
 #'
-cmd_make <- function(...){
-  for (i in 1:length(list(...))){
-    if(i == 1){
-      command <- list(...)[[1]]
+plotn_object <- function(..., insert = NULL, delete = NULL){
+
+  obj <- as.list(substitute(list(...)))
+  obj <- obj[-1]
+
+  ls <- list()
+  if (is.null(insert) && is.null(delete)){
+
+    for (i in 1:length(obj)) {
+
+      obj_c <- capture.output(obj[[i]])
+      for(p in 1:length(obj_c)){
+        if (p == 1){
+          obj_temp <- obj_c[1]
+        } else {
+          obj_temp <- paste0(obj_temp, substr(obj_c[p], 5, nchar(obj_c[p])))
+        }
+      }
+      obj_c <- obj_temp
+
+
+      if (length(grep("\\(", obj_c)) == 0) {
+        ls <- c(ls, as.list(eval(parse(text = obj_c))))
+      } else {
+        ls <- c(ls, obj_c)
+      }
+    }
+
+  }
+
+  if (!is.null(delete)) {
+
+    obj_c <- capture.output(obj[[1]])
+
+    if (length(grep("\\(", obj_c)) == 0) {
+      ls <- as.list(eval(parse(text = obj_c)))
     } else {
-      command <- paste(command, "\n", list(...)[[i]])
+      ls <- obj_c
+    }
+
+    for (j in 1:length(delete)){
+      ls <- ls[-sort(delete)[j] + (j - 1)]
+    }
+
+    if (is.null(insert) && length(obj) > 1){
+
+      ls2 <- NULL
+      for (k in 1:(length(obj) - 1)) {
+        obj_c <- capture.output(obj[[k + 1]])
+        if (length(grep("\\(", obj_c)) == 0) {
+          ls2 <- c(ls2, as.list(eval(parse(text = obj_c))))
+        } else {
+          ls2 <- c(ls2, obj_c)
+        }
+      }
+
+      ls <- c(ls, ls2)
+
     }
   }
-  as.character(command)
+
+  if (!is.null(insert)) {
+    if (is.null(delete)) {
+
+      obj_c <- capture.output(obj[[1]])
+
+      if (length(grep("\\(", obj_c)) == 0) {
+        ls <- as.list(eval(parse(text = obj_c)))
+      } else {
+        ls <- obj_c
+      }
+
+    }
+
+    if (insert < 2){
+
+      ls1 <- NULL
+      for (l in 1:(length(obj) - 1)) {
+        obj_c <- capture.output(obj[[l + 1]])
+        if (length(grep("\\(", obj_c)) == 0) {
+          ls1 <- c(ls1, as.list(eval(parse(text = obj_c))))
+        } else {
+          ls1 <- c(ls1, obj_c)
+        }
+      }
+      ls <- c(ls1, ls)
+
+    } else {
+
+      ls1 <- NULL
+      for (m in 1:(insert - 1)) {
+        ls1 <- c(ls1, ls[[m]])
+      }
+
+      lsI <- NULL
+      for (n in 1:(length(obj) - 1)) {
+        obj_c <- capture.output(obj[[n + 1]])
+        if (length(grep("\\(", obj_c)) == 0) {
+          lsI <- c(lsI, as.list(eval(parse(text = obj_c))))
+        } else {
+          lsI <- c(lsI, obj_c)
+        }
+      }
+
+      ls2 <- NULL
+      for (o in insert:length(ls)) {
+        ls2 <- c(ls2, ls[[o]])
+      }
+
+      ls <- c(ls1, lsI, ls2)
+
+    }
+
+  }
+
+  class(ls) <- "plotn"
+  ls
 }
 
-#' Make figure using command made by cmd_make
+#' Make figure with multiple panels
 #'
-#' @param command plot command made by cmd_make()
-#'
-#' @seealso [plotn::cmd_make]
-#'
-#' @examples g1 <- cmd_make(expression(plotn(1:50)),
-#' @examples                expression(overdraw(abline(v = 30),
-#' @examples                                    abline(h = 20),
-#' @examples                                    points(1:10 + 1, 10:1))))
-#' @examples cmd_plot(g1)
-#'
-#' @export
-#'
-cmd_plot <- function(command) {
-  eval(parse(text = command))
-}
-
-#' Make figure using command made by cmd_make
-#'
-#' @param ... plot command made by cmd_make()
+#' @param ... plotn object by plotn_object()
 #' @param row number of row, matrix of row x column plots
 #' @param column number of column, matrix of row x column plots
 #' @param panel.label panel label, "n","n)","(n)"(number), "A","A)","(A)"(upper case), "a","a)","(a)"(lower case) or character vevtor are able to selected.
@@ -3208,23 +3299,25 @@ cmd_plot <- function(command) {
 #' @param x.panel.pos panel label position on x axis
 #' @param y.panel.pos panel label position on y axis
 #'
-#' @seealso [plotn::cmd_make][plotn::cmd_plot]
+#' @seealso [plotn::plotn_object]
 #'
-#' @examples g1 <- cmd_make(expression(plotn(1:50)),
-#' @examples                expression(overdraw(abline(v = 30),
-#' @examples                                    abline(h = 20),
-#' @examples                                    points(1:10 + 1, 10:1))))
+#' @examples g1 <- plotn_object(plotn(1:50),
+#' @examples                    overdraw(abline(v = 30), abline(h = 20),
+#' @examples                             points(1:10 + 1, 10:1))
+#' @examples       )
 #'
 #' @examples d <- data.frame(x = c(1:10, 11:20, 21:30, 31:40),
 #' @examples                 group = rep(c("A","B","A", "B"), each = 10),
 #' @examples                 treatment = rep(c("X","Y"), each = 20))
-#' @examples g2 <- cmd_make(expression(boxplotn(x ~ group + treatment, data = d, xaxt = "n",
-#' @examples                                    xlab = "", mar = c(3.8, 3.8, 1, 1))),
-#' @examples                expression(overdraw(category.axis(main = "treatment", sub = "group",
-#' @examples                                                  data = d))))
+#' @examples g2 <- plotn_object(boxplotn(x ~ group + treatment, data = d, xaxt = "n",
+#' @examples                             xlab = "", mar = c(3.8, 3.8, 1, 1)),
+#' @examples                    overdraw(category_axis(main = "treatment",
+#' @examples                                           sub = "group", data = d))
+#' @examples       )
 #'
-#' @examples g3 <- cmd_make(expression(barplotn(x ~ group + treatment, data = d, xaxt = "n",
-#' @examples                                    xlab = "", mar = c(3.8, 3.8, 1, 1))))
+#' @examples g3 <- plotn_object(barplotn(x ~ group + treatment, data = d, xaxt = "n",
+#' @examples                             xlab = "", mar = c(3.8, 3.8, 1, 1))
+#' @examples       )
 #'
 #' @examples plotn_arrange(g1, g2, g3, column = 2, panel.label = "a)")
 #'
@@ -3234,7 +3327,7 @@ plotn_arrange <- function(..., row = NULL, column = NULL,
                           panel.label = "A)", cex.panel.lab = 1.3,
                           x.panel.pos = 0, y.panel.pos = 0) {
 
-  if(is.null(column) && is.null(column))
+  if(is.null(row) && is.null(column))
     stop("Requires either row or column")
   if(!is.null(row) && is.null(column))
     column <- ceiling(length(list(...))/row)
@@ -3259,37 +3352,52 @@ plotn_arrange <- function(..., row = NULL, column = NULL,
 
   for (i in 1:length(list(...))) {
 
-    command <- list(...)[[i]]
-    x <- strsplit(command, " *\n")
-    if(length(grep("mar", x[[1]][1])) > 0){
-      y <- strsplit(x[[1]][1], "mar")
-      z <- strsplit(y[[1]][2], ",")
-      if(as.numeric(z[[1]][3]) < 2){
-        z[[1]][3] <- "2"
-        w <- paste0(y[[1]][1], "mar", z[[1]][1], ",", z[[1]][2], ", ",
-                    z[[1]][3], ",", z[[1]][4])
+    x <- as.list(list(...)[[i]])
+    if(length(grep(", *mar", x[[1]])) > 0){
+      y <- strsplit(x[[1]], ", *mar")
 
-        for (j in 1:length(x[[1]])){
-          if (j == 1) {
-            command <- w
+      s <- strsplit(y[[1]][2], split = NULL)[[1]]
+      v1 <- NULL
+      v2 <- NULL
+      for (j in 1:length(s)){
+        v1 <- c(v1, sum(s[1:j] == "("))
+        v2 <- c(v2, sum(s[1:j] == ")"))
+      }
+      v <- v1 - v2
+
+      p <- 0
+      for (k in 1:(length(v) - 1)){
+        p <- p + 1
+        if(v[k] == 1 && v[k + 1] == 0 ) break
+      }
+
+      z <- strsplit(substr(y[[1]][2], 1, p + 1), ",")
+      if(eval(parse(text = z[[1]][3])) < 2){
+        z[[1]][3] <- "2"
+        w <- paste0(y[[1]][1], ", mar", z[[1]][1], ",", z[[1]][2], ", ",
+                    z[[1]][3], ",", z[[1]][4],
+                    substr(y[[1]][2], p + 2, nchar(y[[1]][2])))
+
+        for (l in 1:length(x)){
+          if (l == 1) {
+            command <- list(w)
           } else {
-            command <- cmd_make(command, x[[1]][j])
+            command <- c(command, x[[l]])
           }
         }
 
       }
     } else {
-      y <- as.character(c("3.8","3.8","1","1"))
-      y[3] <- "2"
-      w <- paste0(substr(x[[1]][1], 1, nchar(x[[1]][1]) - 1),
+      y <- as.character(c("3.8","3.8","2","1"))
+      w <- paste0(substr(x[[1]], 1, nchar(x[[1]]) - 1),
                   ", mar = c(", y[1], ", ", y[2], ", ",
                   y[3], ", ", y[4], "))")
 
-      for (j in 1:length(x[[1]])){
-        if (j == 1) {
-          command <- w
+      for (l in 1:length(x)){
+        if (l == 1) {
+          command <- list(w)
         } else {
-          command <- cmd_make(command, x[[1]][j])
+          command <- c(command, x[[l]])
         }
       }
     }
@@ -3299,10 +3407,52 @@ plotn_arrange <- function(..., row = NULL, column = NULL,
                          ", text = '", panel.label[i],
                          "', cex = ", cex.panel.lab, ")")
 
-    command <- cmd_make(command, "par.old2 <- par(mar = c(0,0,0,0), new = T)",
-                        "plot(0, col = NA, ann = F, axes = F)", panel_text,
-                        "par(par.old2)")
-    cmd_plot(command)
+    command <- c(command, "par.old2 <- par(mar = c(0,0,0,0), new = T)",
+                 "plot(0, col = NA, ann = F, axes = F)", panel_text,
+                 "par(par.old2)")
+    class(command) <- "plotn"
+    print(command)
   }
+}
 
+#' Make figure using command made by plotn_object()
+#'
+#' @usage ## Default S3 method:
+#' @usage print(x, ..., plot = T)
+#'
+#' @param x plotn object made by plotn_object()
+#' @param ... further arguments passed to or from other methods.
+#' @param plot If set "F", only print command as a character vector
+#'
+#' @method print plotn
+#'
+#' @seealso [base::print][plotn::plotn_object]
+#'
+#' @examples g1 <- plotn_object(
+#' @examples         expression(plotn(1:50)),
+#' @examples         expression(
+#' @examples           overdraw(abline(v = 30),
+#' @examples                    abline(h = 20),
+#' @examples                    points(1:10 + 1, 10:1)
+#' @examples           )
+#' @examples         )
+#' @examples       )
+#' @examples g1
+#'
+#' @export
+#'
+print.plotn <- function(x, ..., plot = T){
+  if (plot == T) {
+    for (i in 1:length(x)){
+      if(i == 1){
+        command <- x[[1]]
+      } else {
+        command <- paste(command, "\n", x[[i]])
+      }
+    }
+    command <- as.character(command)
+    eval(parse(text = command))
+  } else {
+    UseMethod("print", "default")
+  }
 }

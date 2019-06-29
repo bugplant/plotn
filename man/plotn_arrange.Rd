@@ -2,13 +2,13 @@
 % Please edit documentation in R/plotn.R
 \name{plotn_arrange}
 \alias{plotn_arrange}
-\title{Make figure using command made by cmd_make}
+\title{Make figure with multiple panels}
 \usage{
 plotn_arrange(..., row = NULL, column = NULL, panel.label = "A)",
   cex.panel.lab = 1.3, x.panel.pos = 0, y.panel.pos = 0)
 }
 \arguments{
-\item{...}{plot command made by cmd_make()}
+\item{...}{plotn object by plotn_object()}
 
 \item{row}{number of row, matrix of row x column plots}
 
@@ -23,28 +23,30 @@ plotn_arrange(..., row = NULL, column = NULL, panel.label = "A)",
 \item{y.panel.pos}{panel label position on y axis}
 }
 \description{
-Make figure using command made by cmd_make
+Make figure with multiple panels
 }
 \examples{
-g1 <- cmd_make(expression(plotn(1:50)),
-               expression(overdraw(abline(v = 30),
-                                   abline(h = 20),
-                                   points(1:10 + 1, 10:1))))
+g1 <- plotn_object(plotn(1:50),
+                   overdraw(abline(v = 30), abline(h = 20),
+                            points(1:10 + 1, 10:1))
+      )
 
 d <- data.frame(x = c(1:10, 11:20, 21:30, 31:40),
                 group = rep(c("A","B","A", "B"), each = 10),
                 treatment = rep(c("X","Y"), each = 20))
-g2 <- cmd_make(expression(boxplotn(x ~ group + treatment, data = d, xaxt = "n",
-                                   xlab = "", mar = c(3.8, 3.8, 1, 1))),
-               expression(overdraw(category.axis(main = "treatment", sub = "group",
-                                                 data = d))))
+g2 <- plotn_object(boxplotn(x ~ group + treatment, data = d, xaxt = "n",
+                            xlab = "", mar = c(3.8, 3.8, 1, 1)),
+                   overdraw(category_axis(main = "treatment",
+                                          sub = "group", data = d))
+      )
 
-g3 <- cmd_make(expression(barplotn(x ~ group + treatment, data = d, xaxt = "n",
-                                   xlab = "", mar = c(3.8, 3.8, 1, 1))))
+g3 <- plotn_object(barplotn(x ~ group + treatment, data = d, xaxt = "n",
+                            xlab = "", mar = c(3.8, 3.8, 1, 1))
+      )
 
 plotn_arrange(g1, g2, g3, column = 2, panel.label = "a)")
 
 }
 \seealso{
-[plotn::cmd_make][plotn::cmd_plot]
+[plotn::plotn_object]
 }
