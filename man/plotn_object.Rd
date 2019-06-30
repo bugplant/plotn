@@ -17,18 +17,20 @@ plotn_object(..., insert = NULL, delete = NULL)
 Make command and plotn object consist of plotn and overdraw to store a figure as a object
 }
 \examples{
-g1 <- plotn_object(plotn(1:50),
+n1 <- plotn_object(plotn(1:50),
                    overdraw(abline(v = 30), abline(h = 20),
                             points(1:10 + 1, 10:1))
       )
+n1
 
 d <- data.frame(x = c(1:10, 11:20, 21:30, 31:40),
                 group = rep(c("A","B","A", "B"), each = 10),
                 treatment = rep(c("X","Y"), each = 20))
-g2 <- plotn_object(boxplotn(x ~ group + treatment, data = d, xaxt = "n",
+n2 <- plotn_object(boxplotn(x ~ group + treatment, data = d, xaxt = "n",
                             xlab = "", mar = c(3.8, 3.8, 1, 1)),
                    overdraw(category_axis(main = "treatment",
                                          sub = "group",data = d))
       )
+n2
 
 }

@@ -17,16 +17,12 @@
 Make figure using command made by plotn_object()
 }
 \examples{
-g1 <- plotn_object(
-        expression(plotn(1:50)),
-        expression(
-          overdraw(abline(v = 30),
-                   abline(h = 20),
-                   points(1:10 + 1, 10:1)
-          )
-        )
+n1 <- plotn_object(plotn(1:50),
+        overdraw(abline(v = 30),
+                 abline(h = 20),
+                 points(1:10 + 1, 10:1))
       )
-g1
+n1
 
 }
 \seealso{

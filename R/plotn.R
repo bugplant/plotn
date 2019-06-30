@@ -3154,19 +3154,21 @@ overdraw <- function(...){
 #' @param insert position of insert layer. If set nunber i, second and later arguments are inserted in i th layer in a first argument
 #' @param delete position of delete layer. If set nunber i, i th layers in a first argument are deleted. If both insert and delete are set number, deleting is done before inserting.
 #'
-#' @examples g1 <- plotn_object(plotn(1:50),
+#' @examples n1 <- plotn_object(plotn(1:50),
 #' @examples                    overdraw(abline(v = 30), abline(h = 20),
 #' @examples                             points(1:10 + 1, 10:1))
 #' @examples       )
+#' @examples n1
 #'
 #' @examples d <- data.frame(x = c(1:10, 11:20, 21:30, 31:40),
 #' @examples                 group = rep(c("A","B","A", "B"), each = 10),
 #' @examples                 treatment = rep(c("X","Y"), each = 20))
-#' @examples g2 <- plotn_object(boxplotn(x ~ group + treatment, data = d, xaxt = "n",
+#' @examples n2 <- plotn_object(boxplotn(x ~ group + treatment, data = d, xaxt = "n",
 #' @examples                             xlab = "", mar = c(3.8, 3.8, 1, 1)),
 #' @examples                    overdraw(category_axis(main = "treatment",
 #' @examples                                          sub = "group",data = d))
 #' @examples       )
+#' @examples n2
 #'
 #' @export
 #'
@@ -3301,7 +3303,7 @@ plotn_object <- function(..., insert = NULL, delete = NULL){
 #'
 #' @seealso [plotn::plotn_object]
 #'
-#' @examples g1 <- plotn_object(plotn(1:50),
+#' @examples n1 <- plotn_object(plotn(1:50),
 #' @examples                    overdraw(abline(v = 30), abline(h = 20),
 #' @examples                             points(1:10 + 1, 10:1))
 #' @examples       )
@@ -3309,17 +3311,19 @@ plotn_object <- function(..., insert = NULL, delete = NULL){
 #' @examples d <- data.frame(x = c(1:10, 11:20, 21:30, 31:40),
 #' @examples                 group = rep(c("A","B","A", "B"), each = 10),
 #' @examples                 treatment = rep(c("X","Y"), each = 20))
-#' @examples g2 <- plotn_object(boxplotn(x ~ group + treatment, data = d, xaxt = "n",
+#' @examples n2 <- plotn_object(boxplotn(x ~ group + treatment, data = d, xaxt = "n",
 #' @examples                             xlab = "", mar = c(3.8, 3.8, 1, 1)),
 #' @examples                    overdraw(category_axis(main = "treatment",
 #' @examples                                           sub = "group", data = d))
 #' @examples       )
 #'
-#' @examples g3 <- plotn_object(barplotn(x ~ group + treatment, data = d, xaxt = "n",
+#' @examples n3 <- plotn_object(barplotn(x ~ group + treatment, data = d, xaxt = "n",
 #' @examples                             xlab = "", mar = c(3.8, 3.8, 1, 1))
 #' @examples       )
 #'
-#' @examples plotn_arrange(g1, g2, g3, column = 2, panel.label = "a)")
+#' @examples plotn_arrange(n1, n2, n3, column = 2, panel.label = "a)")
+#' @examples n <- plotn_object(plotn_arrange(n1, n2, n3, column = 2, panel.label = "a)"))
+#' @examples n
 #'
 #' @export
 #'
@@ -3380,9 +3384,9 @@ plotn_arrange <- function(..., row = NULL, column = NULL,
 
         for (l in 1:length(x)){
           if (l == 1) {
-            command <- list(w)
+            cmd <- list(w)
           } else {
-            command <- c(command, x[[l]])
+            cmd <- c(cmd, x[[l]])
           }
         }
 
@@ -3395,9 +3399,9 @@ plotn_arrange <- function(..., row = NULL, column = NULL,
 
       for (l in 1:length(x)){
         if (l == 1) {
-          command <- list(w)
+          cmd <- list(w)
         } else {
-          command <- c(command, x[[l]])
+          cmd <- c(cmd, x[[l]])
         }
       }
     }
@@ -3407,11 +3411,11 @@ plotn_arrange <- function(..., row = NULL, column = NULL,
                          ", text = '", panel.label[i],
                          "', cex = ", cex.panel.lab, ")")
 
-    command <- c(command, "par.old2 <- par(mar = c(0,0,0,0), new = T)",
-                 "plot(0, col = NA, ann = F, axes = F)", panel_text,
-                 "par(par.old2)")
-    class(command) <- "plotn"
-    print(command)
+    cmd <- c(cmd, "par.old2 <- par(mar = c(0,0,0,0), new = T)",
+             "plot(0, col = NA, ann = F, axes = F)", panel_text,
+             "par(par.old2)")
+    class(cmd) <- "plotn"
+    print(cmd)
   }
 }
 
@@ -3428,16 +3432,12 @@ plotn_arrange <- function(..., row = NULL, column = NULL,
 #'
 #' @seealso [base::print][plotn::plotn_object]
 #'
-#' @examples g1 <- plotn_object(
-#' @examples         expression(plotn(1:50)),
-#' @examples         expression(
-#' @examples           overdraw(abline(v = 30),
-#' @examples                    abline(h = 20),
-#' @examples                    points(1:10 + 1, 10:1)
-#' @examples           )
-#' @examples         )
+#' @examples n1 <- plotn_object(plotn(1:50),
+#' @examples         overdraw(abline(v = 30),
+#' @examples                  abline(h = 20),
+#' @examples                  points(1:10 + 1, 10:1))
 #' @examples       )
-#' @examples g1
+#' @examples n1
 #'
 #' @export
 #'
