@@ -1,5 +1,5 @@
 plotn
 ====
 
-Drawing a figure similar to ggplot style using a default command
+Drawing better figures using a default command
 
