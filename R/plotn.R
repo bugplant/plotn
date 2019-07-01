@@ -327,7 +327,7 @@ plotn <- function(x = NULL, y = NULL,
           if (class(error) == "try-error") {
             if(warning == T) warning("Data wasn't plotted with default settings, so trying to plot with different settings.")
             plot(x, ..., las = las, cex.axis = cex.axis,
-                 col = col.dot, cex.lab = cex.lab, font.lab = font.lab,
+                 cex.lab = cex.lab, font.lab = font.lab,
                  col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd.dot)
           }
         }
