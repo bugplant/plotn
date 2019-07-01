@@ -1,11 +1,11 @@
 Package: plotn
 Type: Package
-Title: Drawing a figure similar to ggplot style using a default command
+Title: Drawing better figures using a default command
 Version: 1.0.0
-Date: 2019-06-26
+Date: 2019-07-01
 Author: Yasuyuki Nomura
 Maintainer: The package maintainer <carniplant8931@yahoo.co.jp>
-Description: Drowing figures similar to ggplot by using default command.
+Description: Drowing better figures using default command.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

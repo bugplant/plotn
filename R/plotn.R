@@ -176,6 +176,7 @@ theme_change <- function(default_col = NULL,
 #' @param line If line is needed, set "T". Default is "F".
 #' @param density Fill density
 #' @param angle Fill stripe angle, default is 45 degree.
+#' @param warning If it is set with T and plot is not able to outputted with default settings, warning message is outputted
 #' @param mar mar, default is c(3.8,3.8,1,1).
 #' @param mgp mgp, default is c(2.5,0.5,0).
 #' @param tcl tcl, default is -0.2.
@@ -229,6 +230,7 @@ plotn <- function(x = NULL, y = NULL,
                   line = F,
                   density = NA,
                   angle = 45,
+                  warning = F,
                   mar = c(3.8,3.8,1,1),
                   mgp = c(2.5,0.5,0),
                   tcl = -0.2,
@@ -323,7 +325,7 @@ plotn <- function(x = NULL, y = NULL,
                        silent = T)
 
           if (class(error) == "try-error") {
-            warning("Data wasn't plotted with default settings, so trying to plot with different settings.")
+            if(warning == T) warning("Data wasn't plotted with default settings, so trying to plot with different settings.")
             plot(x, ..., las = las, cex.axis = cex.axis,
                  col = col.dot, cex.lab = cex.lab, font.lab = font.lab,
                  col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd.dot)

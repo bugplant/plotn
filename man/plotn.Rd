@@ -15,8 +15,8 @@ plotn(x = NULL, y = NULL, formula = NULL, data = NULL, ...,
   pt.lwd.leg = NULL, ln.lwd.leg = NULL, tx.col.leg = NULL,
   leg.lab = NULL, leg.sp = 2.5, inset = 1, leg.title = NULL,
   tit.col.leg = NULL, mode = "s", group = NULL, fill = F,
-  line = F, density = NA, angle = 45, mar = c(3.8, 3.8, 1, 1),
-  mgp = c(2.5, 0.5, 0), tcl = -0.2, inversion = F,
+  line = F, density = NA, angle = 45, warning = F, mar = c(3.8,
+  3.8, 1, 1), mgp = c(2.5, 0.5, 0), tcl = -0.2, inversion = F,
   inv.col = "#FFFFFF")
 }
 \arguments{
@@ -107,6 +107,8 @@ plotn(x = NULL, y = NULL, formula = NULL, data = NULL, ...,
 \item{density}{Fill density}
 
 \item{angle}{Fill stripe angle, default is 45 degree.}
+
+\item{warning}{If it is set with T and plot is not able to outputted with default settings, warning message is outputted}
 
 \item{mar}{mar, default is c(3.8,3.8,1,1).}
 
