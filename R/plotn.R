@@ -3343,7 +3343,7 @@ plotn_arrange <- function(..., row = NULL, column = NULL,
   par.old <- par(mfrow = c(row, column))
   on.exit(par(par.old))
 
-  panel.label <- switch(panel.label,
+  panel.label <- switch(panel.label[1],
                         "a" = letters,
                         "(a)" = paste0(rep("(", length = 26), letters, rep(")", length = 26)),
                         "a)" = paste0(letters, rep(")", length = 26)),
