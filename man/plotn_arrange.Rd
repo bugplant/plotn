@@ -5,7 +5,8 @@
 \title{Make figure with multiple panels}
 \usage{
 plotn_arrange(..., row = NULL, column = NULL, panel.label = "A)",
-  cex.panel.lab = 1.3, x.panel.pos = 0, y.panel.pos = 0)
+  cex.panel.lab = 1.3, x.panel.pos = 0, y.panel.pos = 0,
+  label.sp = 2)
 }
 \arguments{
 \item{...}{plotn object by plotn_object()}

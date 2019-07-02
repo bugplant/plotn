@@ -3331,7 +3331,8 @@ plotn_object <- function(..., insert = NULL, delete = NULL){
 #'
 plotn_arrange <- function(..., row = NULL, column = NULL,
                           panel.label = "A)", cex.panel.lab = 1.3,
-                          x.panel.pos = 0, y.panel.pos = 0) {
+                          x.panel.pos = 0, y.panel.pos = 0,
+                          label.sp = 2) {
 
   if(is.null(row) && is.null(column))
     stop("Requires either row or column")
@@ -3378,8 +3379,8 @@ plotn_arrange <- function(..., row = NULL, column = NULL,
       }
 
       z <- strsplit(substr(y[[1]][2], 1, p + 1), ",")
-      if(eval(parse(text = z[[1]][3])) < 2){
-        z[[1]][3] <- "2"
+      if(eval(parse(text = z[[1]][3])) < label.sp){
+        z[[1]][3] <- as.character(label.sp)
         w <- paste0(y[[1]][1], ", mar", z[[1]][1], ",", z[[1]][2], ", ",
                     z[[1]][3], ",", z[[1]][4],
                     substr(y[[1]][2], p + 2, nchar(y[[1]][2])))
@@ -3394,7 +3395,7 @@ plotn_arrange <- function(..., row = NULL, column = NULL,
 
       }
     } else {
-      y <- as.character(c("3.8","3.8","2","1"))
+      y <- as.character(c("3.8", "3.8", label.sp, "1"))
       w <- paste0(substr(x[[1]], 1, nchar(x[[1]]) - 1),
                   ", mar = c(", y[1], ", ", y[2], ", ",
                   y[3], ", ", y[4], "))")
