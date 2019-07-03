@@ -1660,6 +1660,7 @@ barplotn <- function(x = NULL, formula = NULL,
 #' @param formula formula
 #' @param data If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
 #' @param ... Argument to be passed to methods. Please see hist().
+#' @param ylim y limit
 #' @param xlab x label
 #' @param ylab y label
 #' @param las las, defauls is 1
@@ -1710,6 +1711,7 @@ barplotn <- function(x = NULL, formula = NULL,
 #'
 histn <- function(x = NULL, formula = NULL,
                   data = NULL, ...,
+                  ylim = NULL,
                   xlab = NULL,
                   ylab = NULL,
                   las = 1,
@@ -1878,10 +1880,10 @@ histn <- function(x = NULL, formula = NULL,
     }
 
     l <- length(xx)
+    dif <- max(xx, na.rm = T) - min(xx, na.rm = T)
 
     if (l < 19){
-      breaks <- seq(floor(min(xx, na.rm = T)),
-                    ceiling(max(xx, na.rm = T)), 1)
+      l <- l/2
     } else {
       if(l < 99){
         l <- l/3
@@ -1892,10 +1894,39 @@ histn <- function(x = NULL, formula = NULL,
           l <- 10*(floor(log10(l))-1)
         }
       }
-      breaks <- seq(floor(min(xx, na.rm = T)),
-                    ceiling(max(xx, na.rm = T)),
-                    length = l)
     }
+
+    bin <- (dif/l)/(10^(floor(log10(dif/l))))
+    if(bin < 2){
+      bin <- 1
+    } else {
+      if(bin < 2.5){
+        bin <- 2
+      } else {
+        if(bin < 4){
+          bin <- 2.5
+        } else {
+          if(bin < 5){
+            bin <- 4
+          } else {
+            if (bin < 7.5) {
+              bin <- 5
+            } else {
+              bin <- 7.5
+            }
+          }
+        }
+      }
+    }
+
+    bin <- bin * 10^(floor(log10(dif/l)))
+
+
+
+    breaks <- seq(floor(min(xx, na.rm = T) * 10^(-floor(log10(bin)) - 1)) * 10^(floor(log10(bin)) + 1),
+                  max(xx, na.rm = T), by = bin)
+    if(max(breaks) < max(xx, na.rm = T)) breaks <- c(breaks, max(breaks) + bin)
+
   }
 
   if(n > 1){
@@ -1907,6 +1938,31 @@ histn <- function(x = NULL, formula = NULL,
     col.ker <- rep(col.ker, length = n)
     ker.dens <- rep(ker.dens, length = n)
     ker.ang <- rep(ker.ang, length = n)
+  }
+
+  if(length(ylim) == 0){
+    for(i in 1:n){
+      if (!is.formula(x)){
+        xx <- x
+      } else {
+        xx <- y[group == levels(as.factor(group))[i]]
+      }
+
+      if(i == 1){
+        if(freq == T) {
+          M <- max(hist(x = xx, breaks = breaks, plot = F)$counts)
+        } else {
+          M <- max(hist(x = xx, breaks = breaks, plot = F)$density)
+        }
+      } else {
+        if(freq == T) {
+          M <- max(M, max(hist(x = xx, breaks = breaks, plot = F)$counts))
+        } else {
+          M <- max(M, max(hist(x = xx, breaks = breaks, plot = F)$density))
+        }
+      }
+    }
+    ylim <- c(0, M)
   }
 
   for (i in 1:n){
@@ -1921,7 +1977,7 @@ histn <- function(x = NULL, formula = NULL,
 
       if(n == 1){
 
-        hist(..., x = xx, las = las, cex.axis = cex.axis, ylab = ylab,
+        hist(..., x = xx, ylim = ylim, las = las, cex.axis = cex.axis, ylab = ylab,
              cex.lab = cex.lab, font.lab = font.lab, xlab = xlab,
              col.axis = col, col.lab = col, main = main, lwd = lwd.hist,
              col = col.fill[1], border = col.bor[1], freq = freq, breaks = breaks,
@@ -1929,7 +1985,7 @@ histn <- function(x = NULL, formula = NULL,
 
       } else {
 
-        hist(..., x = xx, las = las, cex.axis = cex.axis, ylab = ylab,
+        hist(..., x = xx, ylim = ylim, las = las, cex.axis = cex.axis, ylab = ylab,
              cex.lab = cex.lab, font.lab = font.lab, xlab = xlab,
              col.axis = col, col.lab = col, main = main, lwd = lwd.hist,
              col = col.fill[i], border = col.bor[i], freq = freq, breaks = breaks,
@@ -1938,7 +1994,7 @@ histn <- function(x = NULL, formula = NULL,
       }
 
     } else {
-      hist(..., x = xx, main = "", lwd = lwd.hist, ylab = "",
+      hist(..., x = xx, ylim = ylim, main = "", lwd = lwd.hist, ylab = "",
            col = col.fill[i], border = col.bor[i], freq = freq, breaks = breaks,
            density = hist.dens[i], angle = hist.ang[i], add = T)
     }
@@ -3302,6 +3358,7 @@ plotn_object <- function(..., insert = NULL, delete = NULL){
 #' @param cex.panel.lab panel label cex
 #' @param x.panel.pos panel label position on x axis
 #' @param y.panel.pos panel label position on y axis
+#' @param label.sp space for panel label
 #'
 #' @seealso [plotn::plotn_object]
 #'

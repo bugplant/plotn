@@ -22,6 +22,8 @@ plotn_arrange(..., row = NULL, column = NULL, panel.label = "A)",
 \item{x.panel.pos}{panel label position on x axis}
 
 \item{y.panel.pos}{panel label position on y axis}
+
+\item{label.sp}{space for panel label}
 }
 \description{
 Make figure with multiple panels
