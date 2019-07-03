@@ -1882,6 +1882,8 @@ histn <- function(x = NULL, formula = NULL,
     l <- length(xx)
     dif <- max(xx, na.rm = T) - min(xx, na.rm = T)
 
+    if(dif == 0) dif <- 1
+
     if (l < 19){
       l <- l/2
     } else {
