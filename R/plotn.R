@@ -1898,7 +1898,7 @@ histn <- function(x = NULL, formula = NULL,
       }
     }
 
-    bin <- (dif/l)/(10^(floor(log10(dif/l)))) * 2
+    bin <- (dif/l)/(10^(floor(log10(dif/l))))
     if(bin < 2){
       bin <- 1
     } else {
