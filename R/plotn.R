@@ -1361,7 +1361,14 @@ barplotn <- function(x = NULL, formula = NULL,
     if (length(col.bor) == 0) col.bor <- col
 
     if(length(names)==0){
-      names <- nn
+      names <- colnames(x)
+      if(length(names)==0){
+        matx <- x
+        if(is.vector(matx)){
+          matx <- matrix(x, nrow = 1)
+        }
+        names <- 1:length(matx[1,])
+      }
     }
 
     if(horizontal == T){
@@ -1380,31 +1387,40 @@ barplotn <- function(x = NULL, formula = NULL,
       }
     }
 
-    cross0 <- min(x, na.rm = T) * max(x, na.rm = T) > 0
+    if(is.matrix(x)){
+      cross0 <- sign(min(apply(x, 2, sum), na.rm = T)) *
+        sign(max(apply(x, 2, sum), na.rm = T))
+      MIN <- min(apply(x, 2, sum), na.rm = T)
+      MAX <- max(apply(x, 2, sum), na.rm = T)
+    } else {
+      cross0 <- sign(min(x, na.rm = T)) * sign(max(x, na.rm = T))
+      MIN <- min(x, na.rm = T)
+      MAX <- max(x, na.rm = T)
+    }
 
     if(horizontal == T){
       if(length(xlim)==0){
         if(cross0 > 0) {
           if(max(x, na.rm = T) > 0) {
-            xlim <- c(0 - max(x, na.rm = T) * 0.05, max(x, na.rm = T) * 1.05)
+            xlim <- c(0 - MAX * 0.05, MAX * 1.05)
           } else {
-            xlim <- c(min(x, na.rm = T) * 1.05, 0 + min(x, na.rm = T) * 0.05)
+            xlim <- c(MIN * 1.05, 0 + MIN * 0.05)
           }
         } else {
-          xlim <- c(min(x, na.rm = T) * 1.05, max(x, na.rm = T) * 1.05)
+          xlim <- c(MIN * 1.05, MAX * 1.05)
         }
       }
     } else {
       if(length(ylim)==0){
         if(cross0 > 0) {
           if(max(x, na.rm = T) > 0) {
-            ylim <- c(-max(x, na.rm = T) * 0.05, max(x, na.rm = T) * 1.05)
+            ylim <- c(-MAX * 0.05, MAX * 1.05)
           } else {
-            ylim <- c(min(x, na.rm = T) * 1.05, -min(x, na.rm = T) * 0.05)
+            ylim <- c(MIN * 1.05, -MIN * 0.05)
           }
         } else {
-          ylim <- c(min(x, na.rm = T) - (max(x, na.rm = T) - min(x, na.rm = T)) * 0.05,
-                    max(x, na.rm = T) + (max(x, na.rm = T) - min(x, na.rm = T)) * 0.05)
+          ylim <- c(MIN - (MAX - MIN) * 0.05,
+                    MAX + (MAX - MIN) * 0.05)
         }
       }
     }
@@ -1483,37 +1499,39 @@ barplotn <- function(x = NULL, formula = NULL,
       }
     }
 
-    cross0 <- min(tapply(y, list(group), mean, na.rm = T)) *
-      max(tapply(y, list(group), mean, na.rm = T)) > 0
+    cross0 <- sign(min(tapply(y, list(group), mean, na.rm = T))) *
+      sign(max(tapply(y, list(group), mean, na.rm = T)))
+    MIN <- min(tapply(y, list(group), mean, na.rm = T))
+    MAX <- max(tapply(y, list(group), mean, na.rm = T))
 
     if(horizontal == T){
       if(length(xlim)==0){
         if(cross0 > 0) {
-          if(max(tapply(y, list(group), mean, na.rm = T)) > 0) {
+          if(MAX > 0) {
             xlim <- c(0 - max(tapply(y, list(group), sd, na.rm = T)) * 0.5,
-                      max(tapply(y, list(group), mean, na.rm = T)) + max(tapply(y, list(group), sd, na.rm = T)) * 1.5)
+                      MAX + max(tapply(y, list(group), sd, na.rm = T)) * 1.5)
           } else {
-            xlim <- c(min(tapply(y, list(group), mean, na.rm = T)) - max(tapply(y, list(group), sd, na.rm = T)) * 1.5,
+            xlim <- c(MIN - max(tapply(y, list(group), sd, na.rm = T)) * 1.5,
                       0 + max(tapply(y, list(group), sd, na.rm = T)) * 0.5)
           }
         } else {
-          xlim <- c(min(tapply(y, list(group), mean, na.rm = T)) - max(tapply(y, list(group), sd, na.rm = T)) * 1.5,
-                    max(tapply(y, list(group), mean, na.rm = T)) + max(tapply(y, list(group), sd, na.rm = T)) * 1.5)
+          xlim <- c(MIN - max(tapply(y, list(group), sd, na.rm = T)) * 1.5,
+                    MAX + max(tapply(y, list(group), sd, na.rm = T)) * 1.5)
         }
       }
     } else {
       if(length(ylim)==0){
         if(cross0 > 0) {
-          if(max(tapply(y, list(group), mean, na.rm = T)) > 0) {
+          if(MAX > 0) {
             ylim <- c(-max(tapply(y, list(group), sd, na.rm = T)) * 0.5,
-                      max(tapply(y, list(group), mean, na.rm = T)) + max(tapply(y, list(group), sd, na.rm = T)) * 1.5)
+                      MAX + max(tapply(y, list(group), sd, na.rm = T)) * 1.5)
           } else {
-            ylim <- c(min(tapply(y, list(group), mean, na.rm = T)) - max(tapply(y, list(group), sd, na.rm = T)) * 1.5,
+            ylim <- c(MIN - max(tapply(y, list(group), sd, na.rm = T)) * 1.5,
                       max(tapply(y, list(group), sd, na.rm = T)) * 0.5)
           }
         } else {
-          ylim <- c(min(tapply(y, list(group), mean, na.rm = T)) - max(tapply(y, list(group), sd, na.rm = T)) * 1.5,
-                    max(tapply(y, list(group), mean, na.rm = T)) + max(tapply(y, list(group), sd, na.rm = T)) * 1.5)
+          ylim <- c(MIN - max(tapply(y, list(group), sd, na.rm = T)) * 1.5,
+                    MAX + max(tapply(y, list(group), sd, na.rm = T)) * 1.5)
         }
       }
     }
