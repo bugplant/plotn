@@ -1357,8 +1357,19 @@ barplotn <- function(x = NULL, formula = NULL,
   if (!is.formula(x)){
     nn <- "x"
 
-    if (length(col.fill) == 0) col.fill <- paste(col, "7F", sep = "")
-    if (length(col.bor) == 0) col.bor <- col
+    if (is.vector(x)){
+      if (length(col.fill) == 0) col.fill <- paste(col, "7F", sep = "")
+      if (length(col.bor) == 0) col.bor <- col
+    } else {
+      if(nrow(x) == 1) {
+        if (length(col.fill) == 0) col.fill <- paste(col, "7F", sep = "")
+        if (length(col.bor) == 0) col.bor <- col
+      } else {
+        if (length(col.fill) == 0) col.fill <- .default_fill
+        if (length(col.bor) == 0) col.bor <- .default_col
+      }
+    }
+
 
     if(length(names)==0){
       names <- colnames(x)
@@ -1387,15 +1398,29 @@ barplotn <- function(x = NULL, formula = NULL,
       }
     }
 
-    if(is.matrix(x)){
-      cross0 <- sign(min(apply(x, 2, sum), na.rm = T)) *
-        sign(max(apply(x, 2, sum), na.rm = T))
-      MIN <- min(apply(x, 2, sum), na.rm = T)
-      MAX <- max(apply(x, 2, sum), na.rm = T)
-    } else {
+    if(is.vector(x)){
       cross0 <- sign(min(x, na.rm = T)) * sign(max(x, na.rm = T))
       MIN <- min(x, na.rm = T)
       MAX <- max(x, na.rm = T)
+    } else {
+
+      if (nrow(x) == 1) {
+        cross0 <- sign(min(x, na.rm = T)) * sign(max(x, na.rm = T))
+        MIN <- min(x, na.rm = T)
+        MAX <- max(x, na.rm = T)
+      } else {
+        if(beside == F) {
+          cross0 <- sign(min(apply(x, 2, sum), na.rm = T)) *
+            sign(max(apply(x, 2, sum), na.rm = T))
+          MIN <- min(apply(x, 2, sum), na.rm = T)
+          MAX <- max(apply(x, 2, sum), na.rm = T)
+        } else {
+          cross0 <- sign(min(x, na.rm = T)) * sign(max(x, na.rm = T))
+          MIN <- min(x, na.rm = T)
+          MAX <- max(x, na.rm = T)
+        }
+      }
+
     }
 
     if(horizontal == T){
