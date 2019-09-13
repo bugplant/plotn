@@ -3401,6 +3401,7 @@ plotn_object <- function(..., insert = NULL, delete = NULL){
 #' @param column number of column, matrix of row x column plots
 #' @param panel.label panel label, "n","n)","(n)"(number), "A","A)","(A)"(upper case), "a","a)","(a)"(lower case) or character vevtor are able to selected.
 #' @param cex.panel.lab panel label cex
+#' @param col.panel.lab panel label color
 #' @param x.panel.pos panel label position on x axis
 #' @param y.panel.pos panel label position on y axis
 #' @param label.sp space for panel label
@@ -3433,6 +3434,7 @@ plotn_object <- function(..., insert = NULL, delete = NULL){
 #'
 plotn_arrange <- function(..., row = NULL, column = NULL,
                           panel.label = "A)", cex.panel.lab = 1.3,
+                          col.panel.lab = "#000000",
                           x.panel.pos = 0, y.panel.pos = 0,
                           label.sp = 2) {
 
@@ -3514,7 +3516,8 @@ plotn_arrange <- function(..., row = NULL, column = NULL,
     panel_text <- paste0("mtext(adj = ", x.panel.pos/50 + 0.02, ", line = ",
                          y.panel.pos/10 - 1.3,
                          ", text = '", panel.label[i],
-                         "', cex = ", cex.panel.lab, ")")
+                         "', cex = ", cex.panel.lab,
+                         ", col = '", col.panel.lab, "')")
 
     cmd <- c(cmd, "par.old2 <- par(mar = c(0,0,0,0), new = T)",
              "plot(0, col = NA, ann = F, axes = F)", panel_text,

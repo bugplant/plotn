@@ -5,8 +5,8 @@
 \title{Make figure with multiple panels}
 \usage{
 plotn_arrange(..., row = NULL, column = NULL, panel.label = "A)",
-  cex.panel.lab = 1.3, x.panel.pos = 0, y.panel.pos = 0,
-  label.sp = 2)
+  cex.panel.lab = 1.3, col.panel.lab = "#000000", x.panel.pos = 0,
+  y.panel.pos = 0, label.sp = 2)
 }
 \arguments{
 \item{...}{plotn object by plotn_object()}
@@ -18,6 +18,8 @@ plotn_arrange(..., row = NULL, column = NULL, panel.label = "A)",
 \item{panel.label}{panel label, "n","n)","(n)"(number), "A","A)","(A)"(upper case), "a","a)","(a)"(lower case) or character vevtor are able to selected.}
 
 \item{cex.panel.lab}{panel label cex}
+
+\item{col.panel.lab}{panel label color}
 
 \item{x.panel.pos}{panel label position on x axis}
 

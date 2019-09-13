@@ -1,8 +1,8 @@
 Package: plotn
 Type: Package
 Title: Drawing better figures using a default command
-Version: 1.0.2
-Date: 2019-08-22
+Version: 1.0.3
+Date: 2019-09-13
 Author: Yasuyuki Nomura
 Maintainer: The package maintainer <carniplant8931@yahoo.co.jp>
 Description: Drowing better figures using default command.
