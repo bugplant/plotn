@@ -3134,7 +3134,8 @@ leap_year <- function(year){
 #' @param lwd sub axis lwd, default is 1.
 #' @param bar.lwd main axis lwd, default is 1.
 #' @param cex.axis axis cex, default is 1.1.
-#' @param las las
+#' @param las.main las of main category
+#' @param las.sub las of sub category
 #' @param x.intsp Inter space of main axis bar, defauit is 0.6.
 #' @param y.intsp Inter space of main and sub axis, default is 1.8,
 #' @param horizontal horizontal, default is "F".
@@ -3166,7 +3167,8 @@ category_axis <- function(main, sub, data = NULL,
                           lwd = 1,
                           bar.lwd = 1,
                           cex.axis = 1.1,
-                          las = 1,
+                          las.main = 1,
+                          las.sub = 1,
                           x.intsp = 0.6,
                           y.intsp = 1.8,
                           horizontal = F){
@@ -3201,7 +3203,7 @@ category_axis <- function(main, sub, data = NULL,
     at1 <- sub.axis.at
   }
   axis(side = side, lty = 1, labels = x1n, at = at1,
-       cex.axis = cex.axis, lwd = lwd, las = las,
+       cex.axis = cex.axis, lwd = lwd, las = las.sub,
        col.axis = par()$fg)
 
   if (horizontal == T){
@@ -3231,7 +3233,7 @@ category_axis <- function(main, sub, data = NULL,
   }
 
   axis(side = side, lty = 0, at = at3,
-       labels = x2n, cex.axis = cex.axis, las = las,
+       labels = x2n, cex.axis = cex.axis, las = las.main,
        col.axis = par()$fg)
 
 }

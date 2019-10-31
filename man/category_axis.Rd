@@ -6,8 +6,8 @@
 \usage{
 category_axis(main, sub, data = NULL, main.axis.at = NULL,
   main.axis.length = 3, sub.axis.at = NULL, lwd = 1, bar.lwd = 1,
-  cex.axis = 1.1, las = 1, x.intsp = 0.6, y.intsp = 1.8,
-  horizontal = F)
+  cex.axis = 1.1, las.main = 1, las.sub = 1, x.intsp = 0.6,
+  y.intsp = 1.8, horizontal = F)
 }
 \arguments{
 \item{main}{Main category, this is given as vector (e.g. c("S", "R")) or column name of data}
@@ -28,7 +28,9 @@ category_axis(main, sub, data = NULL, main.axis.at = NULL,
 
 \item{cex.axis}{axis cex, default is 1.1.}
 
-\item{las}{las}
+\item{las.main}{las of main category}
+
+\item{las.sub}{las of sub category}
 
 \item{x.intsp}{Inter space of main axis bar, defauit is 0.6.}
 
