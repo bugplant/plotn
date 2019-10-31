@@ -3292,7 +3292,15 @@ plotn_object <- function(..., insert = NULL, delete = NULL){
         if (p == 1){
           obj_temp <- obj_c[1]
         } else {
-          obj_temp <- paste0(obj_temp, substr(obj_c[p], 5, nchar(obj_c[p])))
+          obj_temp <- paste0(obj_temp,
+                             substr(sub(pattern = " *",
+                                        replacement = " ",
+                                        x = obj_c[p]),
+                                    1, nchar(sub(pattern = " *",
+                                                 replacement = " ",
+                                                 x = obj_c[p]))
+                                    )
+                             )
         }
       }
       obj_c <- obj_temp
