@@ -1,8 +1,8 @@
 Package: plotn
 Type: Package
 Title: Drawing better figures using a default command
-Version: 1.0.4
-Date: 2019-10-31
+Version: 1.1.0
+Date: 2019-12-03
 Author: Yasuyuki Nomura
 Maintainer: The package maintainer <carniplant8931@yahoo.co.jp>
 Description: Drowing better figures using default command.
@@ -10,5 +10,5 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports: 
-  ggsci
+  ggsci, beeswarm
 RoxygenNote: 6.1.1

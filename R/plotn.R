@@ -634,6 +634,7 @@ plotn <- function(x = NULL, y = NULL,
 #' @param lty lty
 #' @param outline If set "T", outliners are drawn. Default is "F".
 #' @param all If set "T", all points are drawn. Default is "T".
+#' @param jitter.method how to draw jitter, "jitter", "swarm", "center", "hex" and "square" are able to select. Default is "jitter".
 #' @param staplelwd staplelwd, default is "NA".
 #' @param boxwex boxwex, default is 0.5.
 #' @param xlab x label
@@ -689,6 +690,7 @@ plotn <- function(x = NULL, y = NULL,
 #' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
 #' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
 #' @importFrom stats density na.omit sd terms var
+#' @importFrom beeswarm beeswarm
 #'
 #' @export
 #'
@@ -701,6 +703,7 @@ boxplotn <- function(x = NULL, formula = NULL,
                      lty = 1,
                      outline = F,
                      all = T,
+                     jitter.method = "jitter",
                      staplelwd = NA,
                      boxwex = 0.5,
                      xlab = NULL,
@@ -1001,35 +1004,43 @@ boxplotn <- function(x = NULL, formula = NULL,
 
   if(all == T){
 
-    for (i in 1:length(nn)){
+    if(jitter.method == "jitter"){
+      for (i in 1:length(nn)){
 
-      if (!is.formula(x)){
-        xx <- as.data.frame(x)[,i]
-      } else {
-        xx <- y[group == nn[i]]
+        if (!is.formula(x)){
+          xx <- as.data.frame(x)[,i]
+        } else {
+          xx <- y[group == nn[i]]
+        }
+
+        pos <- jitter(rep(0, length(xx)), factor = noise) + i + g
+
+        if (reflect == T){
+          pos <- switch(side,
+                        "left" = eval(parse(text = "pos[pos > i] <- 2*i - pos[pos > i]; pos")),
+                        "right" = eval(parse(text = "pos[pos < i] <- 2*i - pos[pos < i]; pos")),
+                        pos)
+        }
+
+        al <- xx
+
+        if(horizontal == T){
+          p1 <- al
+          p2 <- pos
+        } else {
+          p1 <- pos
+          p2 <- al
+        }
+
+        points(p1, p2, pch = pch.dot,col = col.dot[i],
+               bg = col.bg, cex = cex.dot, lwd = lwd.dot)
       }
-
-      pos <- jitter(rep(0, length(xx)), factor = noise) + i + g
-
-      if (reflect == T){
-        pos <- switch(side,
-                      "left" = eval(parse(text = "pos[pos > i] <- 2*i - pos[pos > i]; pos")),
-                      "right" = eval(parse(text = "pos[pos < i] <- 2*i - pos[pos < i]; pos")),
-                      pos)
-      }
-
-      al <- xx
-
-      if(horizontal == T){
-        p1 <- al
-        p2 <- pos
-      } else {
-        p1 <- pos
-        p2 <- al
-      }
-
-      points(p1, p2, pch = pch.dot,col = col.dot[i],
-             bg = col.bg, cex = cex.dot, lwd = lwd.dot)
+    } else {
+      beeswarm(x, data = data, pch = pch.dot,
+               cex = cex.dot, col = col.dot, bg = col.bg,
+               lwd = lwd.dot, axes = F, vertical = !horizontal,
+               xlab = "", ylab = "", method = jitter.method,
+               add = T, at = (1+g):(length(names)+g))
     }
 
   }
@@ -2150,6 +2161,7 @@ histn <- function(x = NULL, formula = NULL,
 #' @param boxplot If set "T", boxplot is also drawn. Default is "F".
 #' @param outline If set "T", outliners are drawn. Default is "F".
 #' @param all If set "T", all points are drawn. Default is "T".
+#' @param jitter.method how to draw jitter, "jitter", "swarm", "center", "hex" and "square" are able to select. Default is "jitter".
 #' @param add If set "T", boxplot is able to overdrawn on previous boxplot. Default is "F".
 #' @param trim If set "T", tip of violin plot is trimmed. Default is "F".
 #' @param horizontal horizontal, default is "F".
@@ -2226,6 +2238,7 @@ vioplotn <- function(x = NULL, formula = NULL,
                      boxplot = T,
                      outline = F,
                      all = T,
+                     jitter.method = "jitter",
                      add = F,
                      trim = F,
                      horizontal = F,
@@ -2580,35 +2593,43 @@ vioplotn <- function(x = NULL, formula = NULL,
 
   if(all == T){
 
-    for (i in 1:length(nn)){
+    if(jitter.method == "jitter"){
+      for (i in 1:length(nn)){
 
-      if (!is.formula(x)){
-        xx <- as.data.frame(x)[,i]
-      } else {
-        xx <- y[group == nn[i]]
+        if (!is.formula(x)){
+          xx <- as.data.frame(x)[,i]
+        } else {
+          xx <- y[group == nn[i]]
+        }
+
+        pos <- jitter(rep(0, length(xx)), factor = noise) + i + g
+
+        if (reflect == T){
+          pos <- switch(side,
+                        "left" = eval(parse(text = "pos[pos > i] <- 2*i - pos[pos > i]; pos")),
+                        "right" = eval(parse(text = "pos[pos < i] <- 2*i - pos[pos < i]; pos")),
+                        pos)
+        }
+
+        al <- xx
+
+        if(horizontal == T){
+          p1 <- al
+          p2 <- pos
+        } else {
+          p1 <- pos
+          p2 <- al
+        }
+
+        points(p1, p2, pch = pch.dot,col = col.dot[i],
+               bg = col.bg, cex = cex.dot, lwd = lwd.dot)
       }
-
-      pos <- jitter(rep(0, length(xx)), factor = noise) + i + g
-
-      if (reflect == T){
-        pos <- switch(side,
-                      "left" = eval(parse(text = "pos[pos > i] <- 2*i - pos[pos > i]; pos")),
-                      "right" = eval(parse(text = "pos[pos < i] <- 2*i - pos[pos < i]; pos")),
-                      pos)
-      }
-
-      al <- xx
-
-      if(horizontal == T){
-        p1 <- al
-        p2 <- pos
-      } else {
-        p1 <- pos
-        p2 <- al
-      }
-
-      points(p1, p2, pch = pch.dot,col = col.dot[i],
-             bg = col.bg, cex = cex.dot, lwd = lwd.dot)
+    } else {
+      beeswarm(x, data = data, pch = pch.dot,
+               cex = cex.dot, col = col.dot, bg = col.bg,
+               lwd = lwd.dot, axes = F, vertical = !horizontal,
+               xlab = "", ylab = "", method = jitter.method,
+               add = T, at = (1+g):(length(names)+g))
     }
 
   }
