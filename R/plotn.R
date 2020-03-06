@@ -695,6 +695,64 @@ plotn_s.formula <- function(formula = NULL, y = NULL,
   }
 }
 
+#' Drawing a figure like plot()
+#'
+#' @param x Data frame
+#' @param y Data frame
+#' @param data If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
+#' @param ... Argument to be passed to methods. Please see plot().
+#' @param xlim x limit
+#' @param ylim y limit
+#' @param las las, defauls is 1
+#' @param cex.axis axis cex, default is 1.1
+#' @param cex.lab label cex, default is 1.3
+#' @param font.lab label font size, default is 2
+#' @param pch pch, default is 16
+#' @param col.dot points color
+#' @param col.fill fill color
+#' @param col.line line color
+#' @param col.bor border color
+#' @param col.bg background color
+#' @param legend If legend is needed, set "T". Default is "F".
+#' @param pos.leg Legend position. In addition to position of legend(), "outtopright, "outright", "outbottomright" and "outbottom" are able to select. Default is "outright".
+#' @param pch.leg Legend pch
+#' @param bty.leg Legend box type. Default is ""n.
+#' @param bg.leg Legend background
+#' @param lty lty
+#' @param lwd.dot Points lwd, default is 1.
+#' @param lwd.line Line lwd, default is 1.
+#' @param pt.cex.leg Points cex in legend, default is 1.5.
+#' @param tx.cex.leg Text cex in legend, default is 1.1.
+#' @param pt.col.leg Points color in legend.
+#' @param pt.bg.leg Points background color in legend.
+#' @param lty.leg lty in legend.
+#' @param pt.lwd.leg Points lwd in legend.
+#' @param ln.lwd.leg Line lwd in legend.
+#' @param tx.col.leg Text color in legend.
+#' @param leg.lab Legend label
+#' @param leg.sp Legend space, default is 2.5.
+#' @param inset Legend inset, default is 1.
+#' @param leg.title Legend title
+#' @param tit.col.leg Legend title color
+#' @param mode Plotting mode. Setting "s" is single group plot, while setting "m" is multiple groups plot. Default is "s".
+#' @param group Grouping factor in setting mode = "m".
+#' @param fill If fill color is needed, set "T". Default is "F".
+#' @param line If line is needed, set "T". Default is "F".
+#' @param density Fill density
+#' @param angle Fill stripe angle, default is 45 degree.
+#' @param warning If it is set with T and plot is not able to outputted with default settings, warning message is outputted
+#' @param mar mar, default is c(3.8,3.8,1,1).
+#' @param mgp mgp, default is c(2.5,0.5,0).
+#' @param tcl tcl, default is -0.2.
+#' @param inversion Inversion mode. If set "T", plot is drawn with inversion color. Default is "F".
+#' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
+#'
+#' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
+#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
+#' @importFrom stats density na.omit sd terms var
+#'
+#' @export
+#'
 matplotn_m.default <- function(x = NULL, y = NULL,
                                data = NULL, ...,
                                xlim = NULL,
@@ -926,6 +984,64 @@ matplotn_m.default <- function(x = NULL, y = NULL,
 
 }
 
+#' Drawing a figure like plot()
+#'
+#' @param x Data frame
+#' @param y Data frame
+#' @param data If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
+#' @param ... Argument to be passed to methods. Please see plot().
+#' @param xlim x limit
+#' @param ylim y limit
+#' @param las las, defauls is 1
+#' @param cex.axis axis cex, default is 1.1
+#' @param cex.lab label cex, default is 1.3
+#' @param font.lab label font size, default is 2
+#' @param pch pch, default is 16
+#' @param col.dot points color
+#' @param col.fill fill color
+#' @param col.line line color
+#' @param col.bor border color
+#' @param col.bg background color
+#' @param legend If legend is needed, set "T". Default is "F".
+#' @param pos.leg Legend position. In addition to position of legend(), "outtopright, "outright", "outbottomright" and "outbottom" are able to select. Default is "outright".
+#' @param pch.leg Legend pch
+#' @param bty.leg Legend box type. Default is ""n.
+#' @param bg.leg Legend background
+#' @param lty lty
+#' @param lwd.dot Points lwd, default is 1.
+#' @param lwd.line Line lwd, default is 1.
+#' @param pt.cex.leg Points cex in legend, default is 1.5.
+#' @param tx.cex.leg Text cex in legend, default is 1.1.
+#' @param pt.col.leg Points color in legend.
+#' @param pt.bg.leg Points background color in legend.
+#' @param lty.leg lty in legend.
+#' @param pt.lwd.leg Points lwd in legend.
+#' @param ln.lwd.leg Line lwd in legend.
+#' @param tx.col.leg Text color in legend.
+#' @param leg.lab Legend label
+#' @param leg.sp Legend space, default is 2.5.
+#' @param inset Legend inset, default is 1.
+#' @param leg.title Legend title
+#' @param tit.col.leg Legend title color
+#' @param mode Plotting mode. Setting "s" is single group plot, while setting "m" is multiple groups plot. Default is "s".
+#' @param group Grouping factor in setting mode = "m".
+#' @param fill If fill color is needed, set "T". Default is "F".
+#' @param line If line is needed, set "T". Default is "F".
+#' @param density Fill density
+#' @param angle Fill stripe angle, default is 45 degree.
+#' @param warning If it is set with T and plot is not able to outputted with default settings, warning message is outputted
+#' @param mar mar, default is c(3.8,3.8,1,1).
+#' @param mgp mgp, default is c(2.5,0.5,0).
+#' @param tcl tcl, default is -0.2.
+#' @param inversion Inversion mode. If set "T", plot is drawn with inversion color. Default is "F".
+#' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
+#'
+#' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
+#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
+#' @importFrom stats density na.omit sd terms var
+#'
+#' @export
+#'
 matplotn_m.data.frame <- function(x = NULL, y = NULL,
                                   data = NULL, ...,
                                   xlim = NULL,
