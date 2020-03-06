@@ -926,6 +926,237 @@ matplotn_m.default <- function(x = NULL, y = NULL,
 
 }
 
+matplotn_m.data.frame <- function(x = NULL, y = NULL,
+                                  data = NULL, ...,
+                                  xlim = NULL,
+                                  ylim = NULL,
+                                  las = 1,
+                                  cex.axis = 1.1,
+                                  cex.lab = 1.3,
+                                  font.lab = 2,
+                                  pch = 16,
+                                  col.dot = NULL,
+                                  col.fill = NULL,
+                                  col.line = NULL,
+                                  col.bor = "transparent",
+                                  col.bg = "#FFFFFF",
+                                  legend = F,
+                                  pos.leg = "outright",
+                                  pch.leg = NULL,
+                                  bty.leg = "n",
+                                  bg.leg = "transparent",
+                                  lty = 1,
+                                  lwd.dot = 1,
+                                  lwd.line = 1,
+                                  pt.cex.leg = 1.5,
+                                  tx.cex.leg = 1.1,
+                                  pt.col.leg = NULL,
+                                  pt.bg.leg = NULL,
+                                  lty.leg = NULL,
+                                  pt.lwd.leg = NULL,
+                                  ln.lwd.leg = NULL,
+                                  tx.col.leg = NULL,
+                                  leg.lab = NULL,
+                                  leg.sp = 2.5,
+                                  inset = 1,
+                                  leg.title = NULL,
+                                  tit.col.leg = NULL,
+                                  mode = "s",
+                                  group = NULL,
+                                  fill = F,
+                                  line = F,
+                                  density = NA,
+                                  angle = 45,
+                                  warning = F,
+                                  mar = c(3.8,3.8,1,1),
+                                  mgp = c(2.5,0.5,0),
+                                  tcl = -0.2,
+                                  inversion = F,
+                                  inv.col = "#FFFFFF"){
+
+  error1 <- NULL
+  error2 <- NULL
+  error1 <- try(.default_col, silent = T)
+  error2 <- try(.default_fill, silent = T)
+  if(class(error1) == "try-error" || class(error2) == "try-error")
+    theme_change()
+
+  if (inversion == T){
+    bg <- "#000000"
+    col <- inv.col
+  } else {
+    bg <- "#FFFFFF"
+    col <- "#000000"
+  }
+
+
+  if(legend == T){
+    switch (pos.leg,
+            "outtopright" = eval(mar[4] <- mar[4]+leg.sp),
+            "outright" = eval(mar[4] <- mar[4]+leg.sp),
+            "outbottomright" = eval(mar[4] <- mar[4]+leg.sp),
+            "outbottom" = eval(mar[1] <- mar[1]+leg.sp)
+    )
+  }
+
+  par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
+  on.exit(par(par.old))
+  assign(".plotn.par", list(mar = par()$mar,
+                            mgp = par()$mgp,
+                            tcl = par()$tcl,
+                            bg = par()$bg,
+                            fg = par()$fg), envir = .GlobalEnv)
+
+  if (length(col.dot) == 0)
+    col.dot <- .default_col
+
+  if (length(col.fill) == 0)
+    col.fill <- .default_fill
+
+  if (length(col.line) == 0)
+    col.line <- .default_col
+
+  x <- as.matrix(x)
+
+  if(ncol(x) > 1){
+    n <- ncol(x)
+    names <- colnames(x)
+  } else {
+    n <- ncol(y)
+    names <- colnames(y)
+  }
+
+  col.dot <- rep(col.dot, length = n)
+  col.fill <- rep(col.fill, length = n)
+  col.line <- rep(col.line, length = n)
+  lty <- rep(lty, length = n)
+  pch <- rep(pch, length = n)
+  density <- rep(density, length = n)
+  angle <- rep(angle, length = n)
+
+
+  if(!length(y) == 0){
+    matplot(x = x, y = y, ..., pch = pch,
+            las = las, cex.axis = cex.axis, xlim = xlim, ylim = ylim,
+            cex.lab = cex.lab, font.lab = font.lab, col = col.dot,
+            col.axis = col, col.lab = col,
+            lty = lty, lwd = lwd.dot)
+  } else {
+    matplot(x = x, ..., pch = pch,
+            las = las, cex.axis = cex.axis, xlim = xlim, ylim = ylim,
+            cex.lab = cex.lab, font.lab = font.lab, col = col.dot,
+            col.axis = col, col.lab = col,
+            lty = lty, lwd = lwd.dot)
+  }
+
+  for(i in 1:n){
+    if(ncol(x) > 1){
+      if(fill == T){
+        polygon(c(1:length(x[,1])), x[,i], col = col.fill[i], border = col.bor[i],
+                density = density[i], angle = angle[i], lwd = lwd.line)
+      }
+      if(line == T){
+        lines(c(1:length(x[,1])), x[,i], col = col.line[i],
+              lty = lty[i], lwd = lwd.line)
+      }
+    } else {
+      if(fill == T){
+        polygon(x, y[,i], col = col.fill[i], border = col.bor[i],
+                density = density[i], angle = angle[i], lwd = lwd.line)
+      }
+      if(line == T){
+        lines(x, y[,i], col = col.line[i], lty = lty[i], lwd = lwd.line)
+      }
+
+    }
+  }
+
+  if(legend == T){
+
+    par(xpd = T)
+    par.old$xpd <- F
+
+    if (length(leg.lab) == 0){
+      if (j){
+        if(length(names) == 0){
+          leg.lab <- 1:n
+        } else {
+          leg.lab <- names
+        }
+      } else {
+        leg.lab <- names
+      }
+
+    }
+
+    if (length(pch.leg) == 0){
+      pch.leg <- pch
+    }
+
+    if (length(pt.col.leg) == 0){
+      pt.col.leg <- col.dot
+    }
+
+    if (length(pt.bg.leg) == 0){
+      pt.bg.leg <- bg
+    }
+
+    if (length(tx.col.leg) == 0){
+      tx.col.leg <- col
+    }
+
+    if (length(lty.leg) == 0){
+      if(line == T){
+        lty.leg <- lty
+      } else {
+        lty.leg <- 0
+      }
+    }
+
+    if (length(pt.lwd.leg) == 0){
+      pt.lwd.leg <- lwd.dot
+    }
+
+    if (length(ln.lwd.leg) == 0){
+      ln.lwd.leg <- lwd.line
+    }
+
+    if (length(tit.col.leg) == 0){
+      tit.col.leg <- col
+    }
+
+    x.intersp <- 1
+    if (lty.leg[1] == 0){
+      x.intersp <- 0
+    }
+
+    if(pos.leg =="outbottom"){
+      horiz <-  T
+      inset <- inset*1.1
+    } else {
+      horiz <- F
+    }
+
+    ins <- 0
+
+    switch (pos.leg,
+            "outtopright" = eval(parse(text = "pos.leg <- 'topleft'; ins <- c(inset,0)")),
+            "outright" = eval(parse(text = "pos.leg <- 'left'; ins <- c(inset,0)")),
+            "outbottomright" = eval(parse(text = "pos.leg <- 'bottomleft'; ins <- c(inset,0)")),
+            "outbottom" = eval(parse(text = "pos.leg <- 'bottom'; ins <- c(0,inset)"))
+    )
+
+    legend(pos.leg[1] , pos.leg[2], inset = ins,
+           legend = leg.lab, col = pt.col.leg, lty = lty.leg,
+           pt.bg = pt.bg.leg, pch = pch.leg, pt.lwd = pt.lwd.leg,
+           lwd = ln.lwd.leg, x.intersp = x.intersp,
+           bty = bty.leg, bg = bg.leg, text.col = tx.col.leg,
+           pt.cex = pt.cex.leg, cex = tx.cex.leg, horiz = horiz,
+           title = leg.title, title.col = tit.col.leg)
+  }
+
+}
+
 #' Drawing a figure like plot()
 #'
 #' @param x Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
