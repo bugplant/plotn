@@ -4730,7 +4730,7 @@ plotn_arrange <- function(..., row = NULL, column = NULL,
       }
 
       z <- strsplit(substr(y[[1]][2], 1, p + 1), ",")
-      if(eval(parse(text = z[[1]][3])) < label.sp){
+      if(eval(parse(text = z[[1]][3])) <= label.sp){
         z[[1]][3] <- as.character(label.sp)
         w <- paste0(y[[1]][1], ", mar", z[[1]][1], ",", z[[1]][2], ", ",
                     z[[1]][3], ",", z[[1]][4],
