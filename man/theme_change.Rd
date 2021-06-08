@@ -4,15 +4,9 @@
 \alias{theme_change}
 \title{Color theme change}
 \usage{
-theme_change(
-  default_col = NULL,
-  default_fill = NULL,
-  palette = "d3",
-  palette_types = NULL,
-  number = 10,
-  col.alpha = 1,
-  fill.alpha = 0.5
-)
+theme_change(default_col = NULL, default_fill = NULL, palette = "d3",
+  palette_types = NULL, number = 10, col.alpha = 1,
+  fill.alpha = 0.5)
 }
 \arguments{
 \item{default_col}{Default setting colors which is used for dot, line and border colors}

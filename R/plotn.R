@@ -134,8 +134,54 @@ theme_change <- function(default_col = NULL,
 #'
 #' @param x Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
 #' @param y If numeric vector is inputted in "formula" parameter, numeric vector is also inputted in y
-#' @param mode Plotting mode. Setting "s" is single group plot, while setting "m" is multiple groups plot. Default is "s".
+#' @param formula formula
+#' @param data If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
 #' @param ... Argument to be passed to methods. Please see plot().
+#' @param xlim x limit
+#' @param ylim y limit
+#' @param las las, defauls is 1
+#' @param cex.axis axis cex, default is 1.1
+#' @param cex.lab label cex, default is 1.3
+#' @param font.lab label font size, default is 2
+#' @param pch pch, default is 16
+#' @param col.dot points color
+#' @param col.fill fill color
+#' @param col.line line color
+#' @param col.bor border color
+#' @param col.bg background color
+#' @param legend If legend is needed, set "T". Default is "F".
+#' @param pos.leg Legend position. In addition to position of legend(), "outtopright, "outright", "outbottomright" and "outbottom" are able to select. Default is "outright".
+#' @param pch.leg Legend pch
+#' @param bty.leg Legend box type. Default is ""n.
+#' @param bg.leg Legend background
+#' @param lty lty
+#' @param lwd.dot Points lwd, default is 1.
+#' @param lwd.line Line lwd, default is 1.
+#' @param pt.cex.leg Points cex in legend, default is 1.5.
+#' @param tx.cex.leg Text cex in legend, default is 1.1.
+#' @param pt.col.leg Points color in legend.
+#' @param pt.bg.leg Points background color in legend.
+#' @param lty.leg lty in legend.
+#' @param pt.lwd.leg Points lwd in legend.
+#' @param ln.lwd.leg Line lwd in legend.
+#' @param tx.col.leg Text color in legend.
+#' @param leg.lab Legend label
+#' @param leg.sp Legend space, default is 2.5.
+#' @param inset Legend inset, default is 1.
+#' @param leg.title Legend title
+#' @param tit.col.leg Legend title color
+#' @param mode Plotting mode. Setting "s" is single group plot, while setting "m" is multiple groups plot. Default is "s".
+#' @param group Grouping factor in setting mode = "m".
+#' @param fill If fill color is needed, set "T". Default is "F".
+#' @param line If line is needed, set "T". Default is "F".
+#' @param density Fill density
+#' @param angle Fill stripe angle, default is 45 degree.
+#' @param warning If it is set with T and plot is not able to outputted with default settings, warning message is outputted
+#' @param mar mar, default is c(3.8,3.8,1,1).
+#' @param mgp mgp, default is c(2.5,0.5,0).
+#' @param tcl tcl, default is -0.2.
+#' @param inversion Inversion mode. If set "T", plot is drawn with inversion color. Default is "F".
+#' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
 #'
 #' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
 #' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
@@ -143,157 +189,88 @@ theme_change <- function(default_col = NULL,
 #'
 #' @export
 #'
-plotn <- function(x = NULL,  y = NULL, mode = "s", ...){
+plotn <- function(x = NULL, y = NULL,
+                  formula = NULL, data = NULL, ...,
+                  xlim = NULL,
+                  ylim = NULL,
+                  las = 1,
+                  cex.axis = 1.1,
+                  cex.lab = 1.3,
+                  font.lab = 2,
+                  pch = 16,
+                  col.dot = NULL,
+                  col.fill = NULL,
+                  col.line = NULL,
+                  col.bor = "transparent",
+                  col.bg = "#FFFFFF",
+                  legend = F,
+                  pos.leg = "outright",
+                  pch.leg = NULL,
+                  bty.leg = "n",
+                  bg.leg = "transparent",
+                  lty = 1,
+                  lwd.dot = 1,
+                  lwd.line = 1,
+                  pt.cex.leg = 1.5,
+                  tx.cex.leg = 1.1,
+                  pt.col.leg = NULL,
+                  pt.bg.leg = NULL,
+                  lty.leg = NULL,
+                  pt.lwd.leg = NULL,
+                  ln.lwd.leg = NULL,
+                  tx.col.leg = NULL,
+                  leg.lab = NULL,
+                  leg.sp = 2.5,
+                  inset = 1,
+                  leg.title = NULL,
+                  tit.col.leg = NULL,
+                  mode = "s",
+                  group = NULL,
+                  fill = F,
+                  line = F,
+                  density = NA,
+                  angle = 45,
+                  warning = F,
+                  mar = c(3.8,3.8,1,1),
+                  mgp = c(2.5,0.5,0),
+                  tcl = -0.2,
+                  inversion = F,
+                  inv.col = "#FFFFFF"){
+
+  is.formula <- function(x){
+    class(x)=="formula"
+  }
+
+  error1 <- NULL
+  error2 <- NULL
+  error1 <- try(.default_col, silent = T)
+  error2 <- try(.default_fill, silent = T)
+  if(class(error1) == "try-error" || class(error2) == "try-error")
+    theme_change()
+
+  if (inversion == T){
+    bg <- "#000000"
+    col <- inv.col
+  } else {
+    bg <- "#FFFFFF"
+    col <- "#000000"
+  }
+
+
+  if(legend == T){
+    switch (pos.leg,
+            "outtopright" = eval(mar[4] <- mar[4]+leg.sp),
+            "outright" = eval(mar[4] <- mar[4]+leg.sp),
+            "outbottomright" = eval(mar[4] <- mar[4]+leg.sp),
+            "outbottom" = eval(mar[1] <- mar[1]+leg.sp)
+    )
+  }
 
   mode <-  switch(mode,
                   "s" = mode,
                   "m" = mode,
                   "s")
 
-  if (mode == "s"){
-    UseMethod("plotn_s", x)
-  } else {
-    j <- (ncol(x) > 1)||(ncol(y) > 1)
-    j[is.na(j)] <- F
-    if(j){
-      UseMethod("matplotn_m", x)
-    } else {
-      UseMethod("plotn_m", x)
-    }
-  }
-
-}
-
-#' Drawing a figure like plot()
-#'
-#' @param x Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
-#' @param y If numeric vector is inputted in "formula" parameter, numeric vector is also inputted in y
-#' @param data If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
-#' @param ... Argument to be passed to methods. Please see plot().
-#' @param xlim x limit
-#' @param ylim y limit
-#' @param las las, defauls is 1
-#' @param cex.axis axis cex, default is 1.1
-#' @param cex.lab label cex, default is 1.3
-#' @param font.lab label font size, default is 2
-#' @param pch pch, default is 16
-#' @param col.dot points color
-#' @param col.fill fill color
-#' @param col.line line color
-#' @param col.bor border color
-#' @param col.bg background color
-#' @param legend If legend is needed, set "T". Default is "F".
-#' @param pos.leg Legend position. In addition to position of legend(), "outtopright, "outright", "outbottomright" and "outbottom" are able to select. Default is "outright".
-#' @param pch.leg Legend pch
-#' @param bty.leg Legend box type. Default is ""n.
-#' @param bg.leg Legend background
-#' @param lty lty
-#' @param lwd.dot Points lwd, default is 1.
-#' @param lwd.line Line lwd, default is 1.
-#' @param pt.cex.leg Points cex in legend, default is 1.5.
-#' @param tx.cex.leg Text cex in legend, default is 1.1.
-#' @param pt.col.leg Points color in legend.
-#' @param pt.bg.leg Points background color in legend.
-#' @param lty.leg lty in legend.
-#' @param pt.lwd.leg Points lwd in legend.
-#' @param ln.lwd.leg Line lwd in legend.
-#' @param tx.col.leg Text color in legend.
-#' @param leg.lab Legend label
-#' @param leg.sp Legend space, default is 2.5.
-#' @param inset Legend inset, default is 1.
-#' @param leg.title Legend title
-#' @param tit.col.leg Legend title color
-#' @param mode Plotting mode. Setting "s" is single group plot, while setting "m" is multiple groups plot. Default is "s".
-#' @param group Grouping factor in setting mode = "m".
-#' @param fill If fill color is needed, set "T". Default is "F".
-#' @param line If line is needed, set "T". Default is "F".
-#' @param density Fill density
-#' @param angle Fill stripe angle, default is 45 degree.
-#' @param warning If it is set with T and plot is not able to outputted with default settings, warning message is outputted
-#' @param mar mar, default is c(3.8,3.8,1,1).
-#' @param mgp mgp, default is c(2.5,0.5,0).
-#' @param tcl tcl, default is -0.2.
-#' @param inversion Inversion mode. If set "T", plot is drawn with inversion color. Default is "F".
-#' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
-#'
-#' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
-#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
-#' @importFrom stats density na.omit sd terms var
-#'
-#' @export
-#'
-plotn_s.default <- function(x = NULL, y = NULL,
-                            data = NULL, ...,
-                            xlim = NULL,
-                            ylim = NULL,
-                            las = 1,
-                            cex.axis = 1.1,
-                            cex.lab = 1.3,
-                            font.lab = 2,
-                            pch = 16,
-                            col.dot = NULL,
-                            col.fill = NULL,
-                            col.line = NULL,
-                            col.bor = "transparent",
-                            col.bg = "#FFFFFF",
-                            legend = F,
-                            pos.leg = "outright",
-                            pch.leg = NULL,
-                            bty.leg = "n",
-                            bg.leg = "transparent",
-                            lty = 1,
-                            lwd.dot = 1,
-                            lwd.line = 1,
-                            pt.cex.leg = 1.5,
-                            tx.cex.leg = 1.1,
-                            pt.col.leg = NULL,
-                            pt.bg.leg = NULL,
-                            lty.leg = NULL,
-                            pt.lwd.leg = NULL,
-                            ln.lwd.leg = NULL,
-                            tx.col.leg = NULL,
-                            leg.lab = NULL,
-                            leg.sp = 2.5,
-                            inset = 1,
-                            leg.title = NULL,
-                            tit.col.leg = NULL,
-                            mode = "s",
-                            group = NULL,
-                            fill = F,
-                            line = F,
-                            density = NA,
-                            angle = 45,
-                            warning = F,
-                            mar = c(3.8,3.8,1,1),
-                            mgp = c(2.5,0.5,0),
-                            tcl = -0.2,
-                            inversion = F,
-                            inv.col = "#FFFFFF"){
-
-  error1 <- NULL
-  error2 <- NULL
-  error1 <- try(.default_col, silent = T)
-  error2 <- try(.default_fill, silent = T)
-  if(class(error1) == "try-error" || class(error2) == "try-error")
-    theme_change()
-
-  if (inversion == T){
-    bg <- "#000000"
-    col <- inv.col
-  } else {
-    bg <- "#FFFFFF"
-    col <- "#000000"
-  }
-
-  if(legend == T){
-    switch (pos.leg,
-            "outtopright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outbottomright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outbottom" = eval(mar[1] <- mar[1]+leg.sp)
-    )
-  }
-
   par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
   on.exit(par(par.old))
   assign(".plotn.par", list(mar = par()$mar,
@@ -302,1455 +279,258 @@ plotn_s.default <- function(x = NULL, y = NULL,
                             bg = par()$bg,
                             fg = par()$fg), envir = .GlobalEnv)
 
-  if(!length(y) == 0){
+  if (length(x) == 0) x <- formula
 
-    if (is.factor(x)){
-      if (length(col.fill) == 0)
-        col.fill <- .default_fill
-      col.dot <- col.fill
-    } else {
-      if (length(col.dot) == 0) col.dot <- col
-    }
+  if (mode == "s"){
 
-    plot(x = x, y = y, ..., xlim = xlim, ylim = ylim,
-         las = las, cex.axis = cex.axis, col = col.dot,
-         cex.lab = cex.lab, font.lab = font.lab,
-         col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd.dot)
+    if(!is.formula(x)) {
 
-  } else {
+      if(!length(y) == 0){
 
-    if(is.factor(x)){
+        if (is.factor(x)){
+          if (length(col.fill) == 0)
+            col.fill <- .default_fill
+          col.dot <- col.fill
+        } else {
+          if (length(col.dot) == 0) col.dot <- col
+        }
 
-      if (length(col.fill) == 0)
-        col.fill <- .default_fill
-
-      col.dot <- col.fill
-
-      plot(x, ..., las = las, cex.axis = cex.axis,
-           col = col.dot, cex.lab = cex.lab, font.lab = font.lab,
-           col.axis = col, col.lab = col, pch = pch, lwd = lwd.dot)
-      box(lty = 1)
-
-    } else {
-
-      if (length(col.dot) == 0) col.dot <- col
-
-      error <- NULL
-      error <- try(plot(x, ..., xlim = xlim, ylim = ylim, las = las, cex.axis = cex.axis,
-                        col = col.dot, cex.lab = cex.lab, font.lab = font.lab,
-                        col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd.dot),
-                   silent = T)
-
-      if (class(error) == "try-error") {
-        if(warning == T) warning("Data wasn't plotted with default settings, so trying to plot with different settings.")
-        plot(x, ..., las = las, cex.axis = cex.axis,
+        plot(x = x, y = y, ..., xlim = xlim, ylim = ylim,
+             las = las, cex.axis = cex.axis, col = col.dot,
              cex.lab = cex.lab, font.lab = font.lab,
              col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd.dot)
-      }
-    }
-  }
 
-
-
-  if (fill == T) {
-    if (length(col.fill) == 0) col.fill <- paste(col, "7F", sep ="")
-
-    polygon(x, y, col = col.fill, border = col.bor,
-            density = density, angle = angle, lwd = lwd.line)
-  }
-
-  if (line == T) {
-    if (length(col.line) == 0) col.line <- col
-
-    lines(x, y, col = col.line, lty = lty, lwd = lwd.line)
-  }
-
-  if(legend == T){
-
-    par(xpd = T)
-    par.old$xpd <- F
-
-    if (length(leg.lab) == 0){
-      leg.lab <- 1
-    }
-
-    if (length(pch.leg) == 0){
-      pch.leg <- pch
-    }
-
-    if (length(pt.col.leg) == 0){
-      pt.col.leg <- col.dot
-    }
-
-    if (length(pt.bg.leg) == 0){
-      pt.bg.leg <- bg
-    }
-
-    if (length(tx.col.leg) == 0){
-      tx.col.leg <- col
-    }
-
-    if (length(lty.leg) == 0){
-      if(line == T){
-        lty.leg <- lty
       } else {
-        lty.leg <- 0
-      }
-    }
 
-    if (length(pt.lwd.leg) == 0){
-      pt.lwd.leg <- lwd.dot
-    }
+        if(is.factor(x)){
 
-    if (length(ln.lwd.leg) == 0){
-      ln.lwd.leg <- lwd.line
-    }
+          if (length(col.fill) == 0)
+            col.fill <- .default_fill
 
-    if (length(tit.col.leg) == 0){
-      tit.col.leg <- col
-    }
+          col.dot <- col.fill
 
-    x.intersp <- 1
-    if (lty.leg[1] == 0){
-      x.intersp <- 0
-    }
+          plot(x, ..., las = las, cex.axis = cex.axis,
+               col = col.dot, cex.lab = cex.lab, font.lab = font.lab,
+               col.axis = col, col.lab = col, pch = pch, lwd = lwd.dot)
+          box(lty = 1)
 
-    if(pos.leg =="outbottom"){
-      horiz <-  T
-      inset <- inset*1.1
-    } else {
-      horiz <- F
-    }
-
-    ins <- 0
-
-    switch (pos.leg,
-            "outtopright" = eval(parse(text = "pos.leg <- 'topleft'; ins <- c(inset,0)")),
-            "outright" = eval(parse(text = "pos.leg <- 'left'; ins <- c(inset,0)")),
-            "outbottomright" = eval(parse(text = "pos.leg <- 'bottomleft'; ins <- c(inset,0)")),
-            "outbottom" = eval(parse(text = "pos.leg <- 'bottom'; ins <- c(0,inset)"))
-    )
-
-    legend(pos.leg[1] , pos.leg[2], inset = ins,
-           legend = leg.lab, col = pt.col.leg, lty = lty.leg,
-           pt.bg = pt.bg.leg, pch = pch.leg, pt.lwd = pt.lwd.leg,
-           lwd = ln.lwd.leg, x.intersp = x.intersp,
-           bty = bty.leg, bg = bg.leg, text.col = tx.col.leg,
-           pt.cex = pt.cex.leg, cex = tx.cex.leg, horiz = horiz,
-           title = leg.title, title.col = tit.col.leg)
-  }
-}
-
-#' Drawing a figure like plot()
-#'
-#' @param formula formula, e.g. y ~ x
-#' @param y If numeric vector is inputted in "formula" parameter, numeric vector is also inputted in y
-#' @param data If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
-#' @param ... Argument to be passed to methods. Please see plot().
-#' @param xlim x limit
-#' @param ylim y limit
-#' @param las las, defauls is 1
-#' @param cex.axis axis cex, default is 1.1
-#' @param cex.lab label cex, default is 1.3
-#' @param font.lab label font size, default is 2
-#' @param pch pch, default is 16
-#' @param col.dot points color
-#' @param col.fill fill color
-#' @param col.line line color
-#' @param col.bor border color
-#' @param col.bg background color
-#' @param legend If legend is needed, set "T". Default is "F".
-#' @param pos.leg Legend position. In addition to position of legend(), "outtopright, "outright", "outbottomright" and "outbottom" are able to select. Default is "outright".
-#' @param pch.leg Legend pch
-#' @param bty.leg Legend box type. Default is ""n.
-#' @param bg.leg Legend background
-#' @param lty lty
-#' @param lwd.dot Points lwd, default is 1.
-#' @param lwd.line Line lwd, default is 1.
-#' @param pt.cex.leg Points cex in legend, default is 1.5.
-#' @param tx.cex.leg Text cex in legend, default is 1.1.
-#' @param pt.col.leg Points color in legend.
-#' @param pt.bg.leg Points background color in legend.
-#' @param lty.leg lty in legend.
-#' @param pt.lwd.leg Points lwd in legend.
-#' @param ln.lwd.leg Line lwd in legend.
-#' @param tx.col.leg Text color in legend.
-#' @param leg.lab Legend label
-#' @param leg.sp Legend space, default is 2.5.
-#' @param inset Legend inset, default is 1.
-#' @param leg.title Legend title
-#' @param tit.col.leg Legend title color
-#' @param mode Plotting mode. Setting "s" is single group plot, while setting "m" is multiple groups plot. Default is "s".
-#' @param group Grouping factor in setting mode = "m".
-#' @param fill If fill color is needed, set "T". Default is "F".
-#' @param line If line is needed, set "T". Default is "F".
-#' @param density Fill density
-#' @param angle Fill stripe angle, default is 45 degree.
-#' @param warning If it is set with T and plot is not able to outputted with default settings, warning message is outputted
-#' @param mar mar, default is c(3.8,3.8,1,1).
-#' @param mgp mgp, default is c(2.5,0.5,0).
-#' @param tcl tcl, default is -0.2.
-#' @param inversion Inversion mode. If set "T", plot is drawn with inversion color. Default is "F".
-#' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
-#'
-#' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
-#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
-#' @importFrom stats density na.omit sd terms var
-#'
-#' @export
-#'
-plotn_s.formula <- function(formula = NULL, y = NULL,
-                            data = NULL, ...,
-                            xlim = NULL,
-                            ylim = NULL,
-                            las = 1,
-                            cex.axis = 1.1,
-                            cex.lab = 1.3,
-                            font.lab = 2,
-                            pch = 16,
-                            col.dot = NULL,
-                            col.fill = NULL,
-                            col.line = NULL,
-                            col.bor = "transparent",
-                            col.bg = "#FFFFFF",
-                            legend = F,
-                            pos.leg = "outright",
-                            pch.leg = NULL,
-                            bty.leg = "n",
-                            bg.leg = "transparent",
-                            lty = 1,
-                            lwd.dot = 1,
-                            lwd.line = 1,
-                            pt.cex.leg = 1.5,
-                            tx.cex.leg = 1.1,
-                            pt.col.leg = NULL,
-                            pt.bg.leg = NULL,
-                            lty.leg = NULL,
-                            pt.lwd.leg = NULL,
-                            ln.lwd.leg = NULL,
-                            tx.col.leg = NULL,
-                            leg.lab = NULL,
-                            leg.sp = 2.5,
-                            inset = 1,
-                            leg.title = NULL,
-                            tit.col.leg = NULL,
-                            mode = "s",
-                            group = NULL,
-                            fill = F,
-                            line = F,
-                            density = NA,
-                            angle = 45,
-                            warning = F,
-                            mar = c(3.8,3.8,1,1),
-                            mgp = c(2.5,0.5,0),
-                            tcl = -0.2,
-                            inversion = F,
-                            inv.col = "#FFFFFF"){
-
-  error1 <- NULL
-  error2 <- NULL
-  error1 <- try(.default_col, silent = T)
-  error2 <- try(.default_fill, silent = T)
-  if(class(error1) == "try-error" || class(error2) == "try-error")
-    theme_change()
-
-  if (inversion == T){
-    bg <- "#000000"
-    col <- inv.col
-  } else {
-    bg <- "#FFFFFF"
-    col <- "#000000"
-  }
-
-  if(legend == T){
-    switch (pos.leg,
-            "outtopright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outbottomright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outbottom" = eval(mar[1] <- mar[1]+leg.sp)
-    )
-  }
-
-  par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
-  on.exit(par(par.old))
-  assign(".plotn.par", list(mar = par()$mar,
-                            mgp = par()$mgp,
-                            tcl = par()$tcl,
-                            bg = par()$bg,
-                            fg = par()$fg), envir = .GlobalEnv)
-
-  if(is.null(data)){
-
-    y <- eval(attr(terms(formula), "variables")[[2]])
-    x <- eval(attr(terms(formula), "variables")[[3]])
-
-  } else {
-
-    y <- data[,as.character(attr(terms(formula), "variables")[[2]])]
-    x <- data[,as.character(attr(terms(formula), "variables")[[3]])]
-
-  }
-
-  if(is.factor(x)){
-
-    if (length(col.fill) == 0) col.fill <- .default_fill
-    col.dot <- col.fill
-
-  } else {
-    if (length(col.dot) == 0) col.dot <- col
-  }
-
-  plot(formula, data = data, ...,
-       xlim = xlim, ylim = ylim, col = col.dot,
-       las = las, cex.axis = cex.axis,
-       cex.lab = cex.lab, font.lab = font.lab,
-       col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd.dot)
-
-  if (fill == T) {
-    if (length(col.fill) == 0) col.fill <- paste(col, "7F", sep ="")
-
-    polygon(x, y, col = col.fill, border = col.bor,
-            density = density, angle = angle, lwd = lwd.line)
-  }
-
-  if (line == T) {
-    if (length(col.line) == 0) col.line <- col
-
-    lines(x, y, col = col.line, lty = lty, lwd = lwd.line)
-  }
-
-  if(legend == T){
-
-    par(xpd = T)
-    par.old$xpd <- F
-
-    if (length(leg.lab) == 0){
-      leg.lab <- 1
-    }
-
-    if (length(pch.leg) == 0){
-      pch.leg <- pch
-    }
-
-    if (length(pt.col.leg) == 0){
-      pt.col.leg <- col.dot
-    }
-
-    if (length(pt.bg.leg) == 0){
-      pt.bg.leg <- bg
-    }
-
-    if (length(tx.col.leg) == 0){
-      tx.col.leg <- col
-    }
-
-    if (length(lty.leg) == 0){
-      if(line == T){
-        lty.leg <- lty
-      } else {
-        lty.leg <- 0
-      }
-    }
-
-    if (length(pt.lwd.leg) == 0){
-      pt.lwd.leg <- lwd.dot
-    }
-
-    if (length(ln.lwd.leg) == 0){
-      ln.lwd.leg <- lwd.line
-    }
-
-    if (length(tit.col.leg) == 0){
-      tit.col.leg <- col
-    }
-
-    x.intersp <- 1
-    if (lty.leg[1] == 0){
-      x.intersp <- 0
-    }
-
-    if(pos.leg =="outbottom"){
-      horiz <-  T
-      inset <- inset*1.1
-    } else {
-      horiz <- F
-    }
-
-    ins <- 0
-
-    switch (pos.leg,
-            "outtopright" = eval(parse(text = "pos.leg <- 'topleft'; ins <- c(inset,0)")),
-            "outright" = eval(parse(text = "pos.leg <- 'left'; ins <- c(inset,0)")),
-            "outbottomright" = eval(parse(text = "pos.leg <- 'bottomleft'; ins <- c(inset,0)")),
-            "outbottom" = eval(parse(text = "pos.leg <- 'bottom'; ins <- c(0,inset)"))
-    )
-
-    legend(pos.leg[1] , pos.leg[2], inset = ins,
-           legend = leg.lab, col = pt.col.leg, lty = lty.leg,
-           pt.bg = pt.bg.leg, pch = pch.leg, pt.lwd = pt.lwd.leg,
-           lwd = ln.lwd.leg, x.intersp = x.intersp,
-           bty = bty.leg, bg = bg.leg, text.col = tx.col.leg,
-           pt.cex = pt.cex.leg, cex = tx.cex.leg, horiz = horiz,
-           title = leg.title, title.col = tit.col.leg)
-  }
-}
-
-#' Drawing a figure like plot()
-#'
-#' @param x Data frame
-#' @param y Data frame
-#' @param data If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
-#' @param ... Argument to be passed to methods. Please see plot().
-#' @param xlim x limit
-#' @param ylim y limit
-#' @param las las, defauls is 1
-#' @param cex.axis axis cex, default is 1.1
-#' @param cex.lab label cex, default is 1.3
-#' @param font.lab label font size, default is 2
-#' @param pch pch, default is 16
-#' @param col.dot points color
-#' @param col.fill fill color
-#' @param col.line line color
-#' @param col.bor border color
-#' @param col.bg background color
-#' @param legend If legend is needed, set "T". Default is "F".
-#' @param pos.leg Legend position. In addition to position of legend(), "outtopright, "outright", "outbottomright" and "outbottom" are able to select. Default is "outright".
-#' @param pch.leg Legend pch
-#' @param bty.leg Legend box type. Default is ""n.
-#' @param bg.leg Legend background
-#' @param lty lty
-#' @param lwd.dot Points lwd, default is 1.
-#' @param lwd.line Line lwd, default is 1.
-#' @param pt.cex.leg Points cex in legend, default is 1.5.
-#' @param tx.cex.leg Text cex in legend, default is 1.1.
-#' @param pt.col.leg Points color in legend.
-#' @param pt.bg.leg Points background color in legend.
-#' @param lty.leg lty in legend.
-#' @param pt.lwd.leg Points lwd in legend.
-#' @param ln.lwd.leg Line lwd in legend.
-#' @param tx.col.leg Text color in legend.
-#' @param leg.lab Legend label
-#' @param leg.sp Legend space, default is 2.5.
-#' @param inset Legend inset, default is 1.
-#' @param leg.title Legend title
-#' @param tit.col.leg Legend title color
-#' @param mode Plotting mode. Setting "s" is single group plot, while setting "m" is multiple groups plot. Default is "s".
-#' @param group Grouping factor in setting mode = "m".
-#' @param fill If fill color is needed, set "T". Default is "F".
-#' @param line If line is needed, set "T". Default is "F".
-#' @param density Fill density
-#' @param angle Fill stripe angle, default is 45 degree.
-#' @param warning If it is set with T and plot is not able to outputted with default settings, warning message is outputted
-#' @param mar mar, default is c(3.8,3.8,1,1).
-#' @param mgp mgp, default is c(2.5,0.5,0).
-#' @param tcl tcl, default is -0.2.
-#' @param inversion Inversion mode. If set "T", plot is drawn with inversion color. Default is "F".
-#' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
-#'
-#' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
-#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
-#' @importFrom stats density na.omit sd terms var
-#'
-#' @export
-#'
-matplotn_m.default <- function(x = NULL, y = NULL,
-                               data = NULL, ...,
-                               xlim = NULL,
-                               ylim = NULL,
-                               las = 1,
-                               cex.axis = 1.1,
-                               cex.lab = 1.3,
-                               font.lab = 2,
-                               pch = 16,
-                               col.dot = NULL,
-                               col.fill = NULL,
-                               col.line = NULL,
-                               col.bor = "transparent",
-                               col.bg = "#FFFFFF",
-                               legend = F,
-                               pos.leg = "outright",
-                               pch.leg = NULL,
-                               bty.leg = "n",
-                               bg.leg = "transparent",
-                               lty = 1,
-                               lwd.dot = 1,
-                               lwd.line = 1,
-                               pt.cex.leg = 1.5,
-                               tx.cex.leg = 1.1,
-                               pt.col.leg = NULL,
-                               pt.bg.leg = NULL,
-                               lty.leg = NULL,
-                               pt.lwd.leg = NULL,
-                               ln.lwd.leg = NULL,
-                               tx.col.leg = NULL,
-                               leg.lab = NULL,
-                               leg.sp = 2.5,
-                               inset = 1,
-                               leg.title = NULL,
-                               tit.col.leg = NULL,
-                               mode = "s",
-                               group = NULL,
-                               fill = F,
-                               line = F,
-                               density = NA,
-                               angle = 45,
-                               warning = F,
-                               mar = c(3.8,3.8,1,1),
-                               mgp = c(2.5,0.5,0),
-                               tcl = -0.2,
-                               inversion = F,
-                               inv.col = "#FFFFFF"){
-
-  error1 <- NULL
-  error2 <- NULL
-  error1 <- try(.default_col, silent = T)
-  error2 <- try(.default_fill, silent = T)
-  if(class(error1) == "try-error" || class(error2) == "try-error")
-    theme_change()
-
-  if (inversion == T){
-    bg <- "#000000"
-    col <- inv.col
-  } else {
-    bg <- "#FFFFFF"
-    col <- "#000000"
-  }
-
-
-  if(legend == T){
-    switch (pos.leg,
-            "outtopright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outbottomright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outbottom" = eval(mar[1] <- mar[1]+leg.sp)
-    )
-  }
-
-  par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
-  on.exit(par(par.old))
-  assign(".plotn.par", list(mar = par()$mar,
-                            mgp = par()$mgp,
-                            tcl = par()$tcl,
-                            bg = par()$bg,
-                            fg = par()$fg), envir = .GlobalEnv)
-
-  if (length(col.dot) == 0)
-    col.dot <- .default_col
-
-  if (length(col.fill) == 0)
-    col.fill <- .default_fill
-
-  if (length(col.line) == 0)
-    col.line <- .default_col
-
-  x <- as.matrix(x)
-
-  if(ncol(x) > 1){
-    n <- ncol(x)
-    names <- colnames(x)
-  } else {
-    n <- ncol(y)
-    names <- colnames(y)
-  }
-
-  col.dot <- rep(col.dot, length = n)
-  col.fill <- rep(col.fill, length = n)
-  col.line <- rep(col.line, length = n)
-  lty <- rep(lty, length = n)
-  pch <- rep(pch, length = n)
-  density <- rep(density, length = n)
-  angle <- rep(angle, length = n)
-
-
-  if(!length(y) == 0){
-    matplot(x = x, y = y, ..., pch = pch,
-            las = las, cex.axis = cex.axis, xlim = xlim, ylim = ylim,
-            cex.lab = cex.lab, font.lab = font.lab, col = col.dot,
-            col.axis = col, col.lab = col,
-            lty = lty, lwd = lwd.dot)
-  } else {
-    matplot(x = x, ..., pch = pch,
-            las = las, cex.axis = cex.axis, xlim = xlim, ylim = ylim,
-            cex.lab = cex.lab, font.lab = font.lab, col = col.dot,
-            col.axis = col, col.lab = col,
-            lty = lty, lwd = lwd.dot)
-  }
-
-  for(i in 1:n){
-    if(ncol(x) > 1){
-      if(fill == T){
-        polygon(c(1:length(x[,1])), x[,i], col = col.fill[i], border = col.bor[i],
-                density = density[i], angle = angle[i], lwd = lwd.line)
-      }
-      if(line == T){
-        lines(c(1:length(x[,1])), x[,i], col = col.line[i],
-              lty = lty[i], lwd = lwd.line)
-      }
-    } else {
-      if(fill == T){
-        polygon(x, y[,i], col = col.fill[i], border = col.bor[i],
-                density = density[i], angle = angle[i], lwd = lwd.line)
-      }
-      if(line == T){
-        lines(x, y[,i], col = col.line[i], lty = lty[i], lwd = lwd.line)
-      }
-
-    }
-  }
-
-  if(legend == T){
-
-    par(xpd = T)
-    par.old$xpd <- F
-
-    if (length(leg.lab) == 0){
-      if (j){
-        if(length(names) == 0){
-          leg.lab <- 1:n
         } else {
-          leg.lab <- names
+
+          if (length(col.dot) == 0) col.dot <- col
+
+          error <- NULL
+          error <- try(plot(x, ..., xlim = xlim, ylim = ylim, las = las, cex.axis = cex.axis,
+                            col = col.dot, cex.lab = cex.lab, font.lab = font.lab,
+                            col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd.dot),
+                       silent = T)
+
+          if (class(error) == "try-error") {
+            if(warning == T) warning("Data wasn't plotted with default settings, so trying to plot with different settings.")
+            plot(x, ..., las = las, cex.axis = cex.axis,
+                 cex.lab = cex.lab, font.lab = font.lab,
+                 col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd.dot)
+          }
         }
-      } else {
-        leg.lab <- names
       }
 
-    }
-
-    if (length(pch.leg) == 0){
-      pch.leg <- pch
-    }
-
-    if (length(pt.col.leg) == 0){
-      pt.col.leg <- col.dot
-    }
-
-    if (length(pt.bg.leg) == 0){
-      pt.bg.leg <- bg
-    }
-
-    if (length(tx.col.leg) == 0){
-      tx.col.leg <- col
-    }
-
-    if (length(lty.leg) == 0){
-      if(line == T){
-        lty.leg <- lty
-      } else {
-        lty.leg <- 0
-      }
-    }
-
-    if (length(pt.lwd.leg) == 0){
-      pt.lwd.leg <- lwd.dot
-    }
-
-    if (length(ln.lwd.leg) == 0){
-      ln.lwd.leg <- lwd.line
-    }
-
-    if (length(tit.col.leg) == 0){
-      tit.col.leg <- col
-    }
-
-    x.intersp <- 1
-    if (lty.leg[1] == 0){
-      x.intersp <- 0
-    }
-
-    if(pos.leg =="outbottom"){
-      horiz <-  T
-      inset <- inset*1.1
     } else {
-      horiz <- F
-    }
 
-    ins <- 0
+      formula <- x
 
-    switch (pos.leg,
-            "outtopright" = eval(parse(text = "pos.leg <- 'topleft'; ins <- c(inset,0)")),
-            "outright" = eval(parse(text = "pos.leg <- 'left'; ins <- c(inset,0)")),
-            "outbottomright" = eval(parse(text = "pos.leg <- 'bottomleft'; ins <- c(inset,0)")),
-            "outbottom" = eval(parse(text = "pos.leg <- 'bottom'; ins <- c(0,inset)"))
-    )
+      if(is.null(data)){
 
-    legend(pos.leg[1] , pos.leg[2], inset = ins,
-           legend = leg.lab, col = pt.col.leg, lty = lty.leg,
-           pt.bg = pt.bg.leg, pch = pch.leg, pt.lwd = pt.lwd.leg,
-           lwd = ln.lwd.leg, x.intersp = x.intersp,
-           bty = bty.leg, bg = bg.leg, text.col = tx.col.leg,
-           pt.cex = pt.cex.leg, cex = tx.cex.leg, horiz = horiz,
-           title = leg.title, title.col = tit.col.leg)
-  }
+        y <- eval(attr(terms(formula), "variables")[[2]])
+        x <- eval(attr(terms(formula), "variables")[[3]])
 
-}
-
-#' Drawing a figure like plot()
-#'
-#' @param x Data frame
-#' @param y Data frame
-#' @param data If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
-#' @param ... Argument to be passed to methods. Please see plot().
-#' @param xlim x limit
-#' @param ylim y limit
-#' @param las las, defauls is 1
-#' @param cex.axis axis cex, default is 1.1
-#' @param cex.lab label cex, default is 1.3
-#' @param font.lab label font size, default is 2
-#' @param pch pch, default is 16
-#' @param col.dot points color
-#' @param col.fill fill color
-#' @param col.line line color
-#' @param col.bor border color
-#' @param col.bg background color
-#' @param legend If legend is needed, set "T". Default is "F".
-#' @param pos.leg Legend position. In addition to position of legend(), "outtopright, "outright", "outbottomright" and "outbottom" are able to select. Default is "outright".
-#' @param pch.leg Legend pch
-#' @param bty.leg Legend box type. Default is ""n.
-#' @param bg.leg Legend background
-#' @param lty lty
-#' @param lwd.dot Points lwd, default is 1.
-#' @param lwd.line Line lwd, default is 1.
-#' @param pt.cex.leg Points cex in legend, default is 1.5.
-#' @param tx.cex.leg Text cex in legend, default is 1.1.
-#' @param pt.col.leg Points color in legend.
-#' @param pt.bg.leg Points background color in legend.
-#' @param lty.leg lty in legend.
-#' @param pt.lwd.leg Points lwd in legend.
-#' @param ln.lwd.leg Line lwd in legend.
-#' @param tx.col.leg Text color in legend.
-#' @param leg.lab Legend label
-#' @param leg.sp Legend space, default is 2.5.
-#' @param inset Legend inset, default is 1.
-#' @param leg.title Legend title
-#' @param tit.col.leg Legend title color
-#' @param mode Plotting mode. Setting "s" is single group plot, while setting "m" is multiple groups plot. Default is "s".
-#' @param group Grouping factor in setting mode = "m".
-#' @param fill If fill color is needed, set "T". Default is "F".
-#' @param line If line is needed, set "T". Default is "F".
-#' @param density Fill density
-#' @param angle Fill stripe angle, default is 45 degree.
-#' @param warning If it is set with T and plot is not able to outputted with default settings, warning message is outputted
-#' @param mar mar, default is c(3.8,3.8,1,1).
-#' @param mgp mgp, default is c(2.5,0.5,0).
-#' @param tcl tcl, default is -0.2.
-#' @param inversion Inversion mode. If set "T", plot is drawn with inversion color. Default is "F".
-#' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
-#'
-#' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
-#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
-#' @importFrom stats density na.omit sd terms var
-#'
-#' @export
-#'
-matplotn_m.data.frame <- function(x = NULL, y = NULL,
-                                  data = NULL, ...,
-                                  xlim = NULL,
-                                  ylim = NULL,
-                                  las = 1,
-                                  cex.axis = 1.1,
-                                  cex.lab = 1.3,
-                                  font.lab = 2,
-                                  pch = 16,
-                                  col.dot = NULL,
-                                  col.fill = NULL,
-                                  col.line = NULL,
-                                  col.bor = "transparent",
-                                  col.bg = "#FFFFFF",
-                                  legend = F,
-                                  pos.leg = "outright",
-                                  pch.leg = NULL,
-                                  bty.leg = "n",
-                                  bg.leg = "transparent",
-                                  lty = 1,
-                                  lwd.dot = 1,
-                                  lwd.line = 1,
-                                  pt.cex.leg = 1.5,
-                                  tx.cex.leg = 1.1,
-                                  pt.col.leg = NULL,
-                                  pt.bg.leg = NULL,
-                                  lty.leg = NULL,
-                                  pt.lwd.leg = NULL,
-                                  ln.lwd.leg = NULL,
-                                  tx.col.leg = NULL,
-                                  leg.lab = NULL,
-                                  leg.sp = 2.5,
-                                  inset = 1,
-                                  leg.title = NULL,
-                                  tit.col.leg = NULL,
-                                  mode = "s",
-                                  group = NULL,
-                                  fill = F,
-                                  line = F,
-                                  density = NA,
-                                  angle = 45,
-                                  warning = F,
-                                  mar = c(3.8,3.8,1,1),
-                                  mgp = c(2.5,0.5,0),
-                                  tcl = -0.2,
-                                  inversion = F,
-                                  inv.col = "#FFFFFF"){
-
-  error1 <- NULL
-  error2 <- NULL
-  error1 <- try(.default_col, silent = T)
-  error2 <- try(.default_fill, silent = T)
-  if(class(error1) == "try-error" || class(error2) == "try-error")
-    theme_change()
-
-  if (inversion == T){
-    bg <- "#000000"
-    col <- inv.col
-  } else {
-    bg <- "#FFFFFF"
-    col <- "#000000"
-  }
-
-
-  if(legend == T){
-    switch (pos.leg,
-            "outtopright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outbottomright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outbottom" = eval(mar[1] <- mar[1]+leg.sp)
-    )
-  }
-
-  par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
-  on.exit(par(par.old))
-  assign(".plotn.par", list(mar = par()$mar,
-                            mgp = par()$mgp,
-                            tcl = par()$tcl,
-                            bg = par()$bg,
-                            fg = par()$fg), envir = .GlobalEnv)
-
-  if (length(col.dot) == 0)
-    col.dot <- .default_col
-
-  if (length(col.fill) == 0)
-    col.fill <- .default_fill
-
-  if (length(col.line) == 0)
-    col.line <- .default_col
-
-  x <- as.matrix(x)
-
-  if(ncol(x) > 1){
-    n <- ncol(x)
-    names <- colnames(x)
-  } else {
-    n <- ncol(y)
-    names <- colnames(y)
-  }
-
-  col.dot <- rep(col.dot, length = n)
-  col.fill <- rep(col.fill, length = n)
-  col.line <- rep(col.line, length = n)
-  lty <- rep(lty, length = n)
-  pch <- rep(pch, length = n)
-  density <- rep(density, length = n)
-  angle <- rep(angle, length = n)
-
-
-  if(!length(y) == 0){
-    matplot(x = x, y = y, ..., pch = pch,
-            las = las, cex.axis = cex.axis, xlim = xlim, ylim = ylim,
-            cex.lab = cex.lab, font.lab = font.lab, col = col.dot,
-            col.axis = col, col.lab = col,
-            lty = lty, lwd = lwd.dot)
-  } else {
-    matplot(x = x, ..., pch = pch,
-            las = las, cex.axis = cex.axis, xlim = xlim, ylim = ylim,
-            cex.lab = cex.lab, font.lab = font.lab, col = col.dot,
-            col.axis = col, col.lab = col,
-            lty = lty, lwd = lwd.dot)
-  }
-
-  for(i in 1:n){
-    if(ncol(x) > 1){
-      if(fill == T){
-        polygon(c(1:length(x[,1])), x[,i], col = col.fill[i], border = col.bor[i],
-                density = density[i], angle = angle[i], lwd = lwd.line)
-      }
-      if(line == T){
-        lines(c(1:length(x[,1])), x[,i], col = col.line[i],
-              lty = lty[i], lwd = lwd.line)
-      }
-    } else {
-      if(fill == T){
-        polygon(x, y[,i], col = col.fill[i], border = col.bor[i],
-                density = density[i], angle = angle[i], lwd = lwd.line)
-      }
-      if(line == T){
-        lines(x, y[,i], col = col.line[i], lty = lty[i], lwd = lwd.line)
-      }
-
-    }
-  }
-
-  if(legend == T){
-
-    par(xpd = T)
-    par.old$xpd <- F
-
-    if (length(leg.lab) == 0){
-      if (j){
-        if(length(names) == 0){
-          leg.lab <- 1:n
-        } else {
-          leg.lab <- names
-        }
       } else {
-        leg.lab <- names
+
+        y <- data[,as.character(attr(terms(formula), "variables")[[2]])]
+        x <- data[,as.character(attr(terms(formula), "variables")[[3]])]
+
       }
 
-    }
+      if(is.factor(x)){
 
-    if (length(pch.leg) == 0){
-      pch.leg <- pch
-    }
+        if (length(col.fill) == 0)
+          col.fill <- .default_fill
 
-    if (length(pt.col.leg) == 0){
-      pt.col.leg <- col.dot
-    }
+        col.dot <- col.fill
 
-    if (length(pt.bg.leg) == 0){
-      pt.bg.leg <- bg
-    }
-
-    if (length(tx.col.leg) == 0){
-      tx.col.leg <- col
-    }
-
-    if (length(lty.leg) == 0){
-      if(line == T){
-        lty.leg <- lty
       } else {
-        lty.leg <- 0
+        if (length(col.dot) == 0) col.dot <- col
       }
+
+      plot(formula, data = data, ...,
+           xlim = xlim, ylim = ylim, col = col.dot,
+           las = las, cex.axis = cex.axis,
+           cex.lab = cex.lab, font.lab = font.lab,
+           col.axis = col, col.lab = col, pch = pch, lty = lty, lwd = lwd.dot)
     }
-
-    if (length(pt.lwd.leg) == 0){
-      pt.lwd.leg <- lwd.dot
-    }
-
-    if (length(ln.lwd.leg) == 0){
-      ln.lwd.leg <- lwd.line
-    }
-
-    if (length(tit.col.leg) == 0){
-      tit.col.leg <- col
-    }
-
-    x.intersp <- 1
-    if (lty.leg[1] == 0){
-      x.intersp <- 0
-    }
-
-    if(pos.leg =="outbottom"){
-      horiz <-  T
-      inset <- inset*1.1
-    } else {
-      horiz <- F
-    }
-
-    ins <- 0
-
-    switch (pos.leg,
-            "outtopright" = eval(parse(text = "pos.leg <- 'topleft'; ins <- c(inset,0)")),
-            "outright" = eval(parse(text = "pos.leg <- 'left'; ins <- c(inset,0)")),
-            "outbottomright" = eval(parse(text = "pos.leg <- 'bottomleft'; ins <- c(inset,0)")),
-            "outbottom" = eval(parse(text = "pos.leg <- 'bottom'; ins <- c(0,inset)"))
-    )
-
-    legend(pos.leg[1] , pos.leg[2], inset = ins,
-           legend = leg.lab, col = pt.col.leg, lty = lty.leg,
-           pt.bg = pt.bg.leg, pch = pch.leg, pt.lwd = pt.lwd.leg,
-           lwd = ln.lwd.leg, x.intersp = x.intersp,
-           bty = bty.leg, bg = bg.leg, text.col = tx.col.leg,
-           pt.cex = pt.cex.leg, cex = tx.cex.leg, horiz = horiz,
-           title = leg.title, title.col = tit.col.leg)
-  }
-
-}
-
-#' Drawing a figure like plot()
-#'
-#' @param x Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result
-#' @param y If numeric vector is inputted in "formula" parameter, numeric vector is also inputted in y
-#' @param data If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
-#' @param ... Argument to be passed to methods. Please see plot().
-#' @param xlim x limit
-#' @param ylim y limit
-#' @param las las, defauls is 1
-#' @param cex.axis axis cex, default is 1.1
-#' @param cex.lab label cex, default is 1.3
-#' @param font.lab label font size, default is 2
-#' @param pch pch, default is 16
-#' @param col.dot points color
-#' @param col.fill fill color
-#' @param col.line line color
-#' @param col.bor border color
-#' @param col.bg background color
-#' @param legend If legend is needed, set "T". Default is "F".
-#' @param pos.leg Legend position. In addition to position of legend(), "outtopright, "outright", "outbottomright" and "outbottom" are able to select. Default is "outright".
-#' @param pch.leg Legend pch
-#' @param bty.leg Legend box type. Default is ""n.
-#' @param bg.leg Legend background
-#' @param lty lty
-#' @param lwd.dot Points lwd, default is 1.
-#' @param lwd.line Line lwd, default is 1.
-#' @param pt.cex.leg Points cex in legend, default is 1.5.
-#' @param tx.cex.leg Text cex in legend, default is 1.1.
-#' @param pt.col.leg Points color in legend.
-#' @param pt.bg.leg Points background color in legend.
-#' @param lty.leg lty in legend.
-#' @param pt.lwd.leg Points lwd in legend.
-#' @param ln.lwd.leg Line lwd in legend.
-#' @param tx.col.leg Text color in legend.
-#' @param leg.lab Legend label
-#' @param leg.sp Legend space, default is 2.5.
-#' @param inset Legend inset, default is 1.
-#' @param leg.title Legend title
-#' @param tit.col.leg Legend title color
-#' @param mode Plotting mode. Setting "s" is single group plot, while setting "m" is multiple groups plot. Default is "s".
-#' @param group Grouping factor in setting mode = "m".
-#' @param fill If fill color is needed, set "T". Default is "F".
-#' @param line If line is needed, set "T". Default is "F".
-#' @param density Fill density
-#' @param angle Fill stripe angle, default is 45 degree.
-#' @param warning If it is set with T and plot is not able to outputted with default settings, warning message is outputted
-#' @param mar mar, default is c(3.8,3.8,1,1).
-#' @param mgp mgp, default is c(2.5,0.5,0).
-#' @param tcl tcl, default is -0.2.
-#' @param inversion Inversion mode. If set "T", plot is drawn with inversion color. Default is "F".
-#' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
-#'
-#' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
-#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
-#' @importFrom stats density na.omit sd terms var
-#'
-#' @export
-#'
-plotn_m.default <- function(x = NULL, y = NULL,
-                            data = NULL, ...,
-                            xlim = NULL,
-                            ylim = NULL,
-                            las = 1,
-                            cex.axis = 1.1,
-                            cex.lab = 1.3,
-                            font.lab = 2,
-                            pch = 16,
-                            col.dot = NULL,
-                            col.fill = NULL,
-                            col.line = NULL,
-                            col.bor = "transparent",
-                            col.bg = "#FFFFFF",
-                            legend = F,
-                            pos.leg = "outright",
-                            pch.leg = NULL,
-                            bty.leg = "n",
-                            bg.leg = "transparent",
-                            lty = 1,
-                            lwd.dot = 1,
-                            lwd.line = 1,
-                            pt.cex.leg = 1.5,
-                            tx.cex.leg = 1.1,
-                            pt.col.leg = NULL,
-                            pt.bg.leg = NULL,
-                            lty.leg = NULL,
-                            pt.lwd.leg = NULL,
-                            ln.lwd.leg = NULL,
-                            tx.col.leg = NULL,
-                            leg.lab = NULL,
-                            leg.sp = 2.5,
-                            inset = 1,
-                            leg.title = NULL,
-                            tit.col.leg = NULL,
-                            mode = "s",
-                            group = NULL,
-                            fill = F,
-                            line = F,
-                            density = NA,
-                            angle = 45,
-                            warning = F,
-                            mar = c(3.8,3.8,1,1),
-                            mgp = c(2.5,0.5,0),
-                            tcl = -0.2,
-                            inversion = F,
-                            inv.col = "#FFFFFF"){
-
-  error1 <- NULL
-  error2 <- NULL
-  error1 <- try(.default_col, silent = T)
-  error2 <- try(.default_fill, silent = T)
-  if(class(error1) == "try-error" || class(error2) == "try-error")
-    theme_change()
-
-  if (inversion == T){
-    bg <- "#000000"
-    col <- inv.col
-  } else {
-    bg <- "#FFFFFF"
-    col <- "#000000"
-  }
-
-  if(legend == T){
-    switch (pos.leg,
-            "outtopright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outbottomright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outbottom" = eval(mar[1] <- mar[1]+leg.sp)
-    )
-  }
-
-  par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
-  on.exit(par(par.old))
-  assign(".plotn.par", list(mar = par()$mar,
-                            mgp = par()$mgp,
-                            tcl = par()$tcl,
-                            bg = par()$bg,
-                            fg = par()$fg), envir = .GlobalEnv)
-
-  if (length(col.dot) == 0)
-    col.dot <- .default_col
-
-  if (length(col.fill) == 0)
-    col.fill <- .default_fill
-
-  if (length(col.line) == 0)
-    col.line <- .default_col
-
-  if(is.character(group)){
-    g <- data[,group]
-  } else {
-    g <- group
-  }
-
-  names <- levels(as.factor(g))
-  col.dot <- rep(col.dot, length = length(names))
-  col.fill <- rep(col.fill, length = length(names))
-  col.line <- rep(col.line, length = length(names))
-  lty <- rep(lty, length = length(names))
-  pch <- rep(pch, length = length(names))
-  density <- rep(density, length = length(names))
-  angle <- rep(angle, length = length(names))
-
-
-  if(length(xlim)==0){
-    xlim <- range(x, na.rm = T)
-  }
-  if(length(ylim)==0){
-    ylim <- range(y, na.rm = T)
-  }
-
-  plot(x = x, y = y, ...,
-       las = las, cex.axis = cex.axis, xlim = xlim, ylim = ylim,
-       cex.lab = cex.lab, font.lab = font.lab, col = col.dot[as.factor(g)],
-       bg = col.bg, pch = pch[as.factor(g)], col.axis = col, col.lab = col,
-       lwd = lwd.dot)
-
-  for (i in 1:length(names)){
-    xx <- x[g == names[i]]
-    yy <- y[g == names[i]]
 
     if (fill == T) {
-      polygon(x = xx, y = yy, col = col.fill[i], border = col.bor[i],
-              density = density[i], angle = angle[i], lwd = lwd.line)
+      if (length(col.fill) == 0) col.fill <- paste(col, "7F", sep ="")
+
+      polygon(x, y, col = col.fill, border = col.bor,
+              density = density, angle = angle, lwd = lwd.line)
     }
+
     if (line == T) {
-      lines(x = xx, y = yy, col = col.line[i], lty = lty[i], lwd = lwd.line)
+      if (length(col.line) == 0) col.line <- col
+
+      lines(x, y, col = col.line, lty = lty, lwd = lwd.line)
     }
 
-  }
+  } else {
+
+    if (length(col.dot) == 0)
+      col.dot <- .default_col
+
+    if (length(col.fill) == 0)
+      col.fill <- .default_fill
+
+    if (length(col.line) == 0)
+      col.line <- .default_col
+
+    j <- (ncol(formula) > 1)||(ncol(y) > 1)
+    j[is.na(j)] <- F
+
+    if(j){
+
+      x <- as.matrix(x)
+
+      if(ncol(x) > 1){
+        n <- ncol(x)
+        names <- colnames(x)
+      } else {
+        n <- ncol(y)
+        names <- colnames(y)
+      }
+
+      col.dot <- rep(col.dot, length = n)
+      col.fill <- rep(col.fill, length = n)
+      col.line <- rep(col.line, length = n)
+      lty <- rep(lty, length = n)
+      pch <- rep(pch, length = n)
+      density <- rep(density, length = n)
+      angle <- rep(angle, length = n)
 
 
-  if(legend == T){
+      if(!length(y) == 0){
+        matplot(x = x, y = y, ..., pch = pch,
+                las = las, cex.axis = cex.axis, xlim = xlim, ylim = ylim,
+                cex.lab = cex.lab, font.lab = font.lab, col = col.dot,
+                col.axis = col, col.lab = col,
+                lty = lty, lwd = lwd.dot)
+      } else {
+        matplot(x = x, ..., pch = pch,
+                las = las, cex.axis = cex.axis, xlim = xlim, ylim = ylim,
+                cex.lab = cex.lab, font.lab = font.lab, col = col.dot,
+                col.axis = col, col.lab = col,
+                lty = lty, lwd = lwd.dot)
+      }
 
-    par(xpd = T)
-    par.old$xpd <- F
-
-    if (length(leg.lab) == 0){
-      if (j){
-        if(length(names) == 0){
-          leg.lab <- 1:n
+      for(i in 1:n){
+        if(ncol(x) > 1){
+          if(fill == T){
+            polygon(c(1:length(x[,1])), x[,i], col = col.fill[i], border = col.bor[i],
+                    density = density[i], angle = angle[i], lwd = lwd.line)
+          }
+          if(line == T){
+            lines(c(1:length(x[,1])), x[,i], col = col.line[i],
+                  lty = lty[i], lwd = lwd.line)
+          }
         } else {
-          leg.lab <- names
+          if(fill == T){
+            polygon(x, y[,i], col = col.fill[i], border = col.bor[i],
+                    density = density[i], angle = angle[i], lwd = lwd.line)
+          }
+          if(line == T){
+            lines(x, y[,i], col = col.line[i], lty = lty[i], lwd = lwd.line)
+          }
+
         }
-      } else {
-        leg.lab <- names
       }
-    }
 
-    if (length(pch.leg) == 0){
-      pch.leg <- pch
-    }
-
-    if (length(pt.col.leg) == 0){
-      pt.col.leg <- col.dot
-    }
-
-    if (length(pt.bg.leg) == 0){
-      pt.bg.leg <- bg
-    }
-
-    if (length(tx.col.leg) == 0){
-      tx.col.leg <- col
-    }
-
-    if (length(lty.leg) == 0){
-      if(line == T){
-        lty.leg <- lty
-      } else {
-        lty.leg <- 0
-      }
-    }
-
-    if (length(pt.lwd.leg) == 0){
-      pt.lwd.leg <- lwd.dot
-    }
-
-    if (length(ln.lwd.leg) == 0){
-      ln.lwd.leg <- lwd.line
-    }
-
-    if (length(tit.col.leg) == 0){
-      tit.col.leg <- col
-    }
-
-    x.intersp <- 1
-    if (lty.leg[1] == 0){
-      x.intersp <- 0
-    }
-
-    if(pos.leg =="outbottom"){
-      horiz <-  T
-      inset <- inset*1.1
     } else {
-      horiz <- F
-    }
 
-    ins <- 0
+      if(is.character(group)){
+        g <- data[,group]
+      } else {
+        g <- group
+      }
 
-    switch (pos.leg,
-            "outtopright" = eval(parse(text = "pos.leg <- 'topleft'; ins <- c(inset,0)")),
-            "outright" = eval(parse(text = "pos.leg <- 'left'; ins <- c(inset,0)")),
-            "outbottomright" = eval(parse(text = "pos.leg <- 'bottomleft'; ins <- c(inset,0)")),
-            "outbottom" = eval(parse(text = "pos.leg <- 'bottom'; ins <- c(0,inset)"))
-    )
+      names <- levels(as.factor(g))
+      col.dot <- rep(col.dot, length = length(names))
+      col.fill <- rep(col.fill, length = length(names))
+      col.line <- rep(col.line, length = length(names))
+      lty <- rep(lty, length = length(names))
+      pch <- rep(pch, length = length(names))
+      density <- rep(density, length = length(names))
+      angle <- rep(angle, length = length(names))
 
-    legend(pos.leg[1] , pos.leg[2], inset = ins,
-           legend = leg.lab, col = pt.col.leg, lty = lty.leg,
-           pt.bg = pt.bg.leg, pch = pch.leg, pt.lwd = pt.lwd.leg,
-           lwd = ln.lwd.leg, x.intersp = x.intersp,
-           bty = bty.leg, bg = bg.leg, text.col = tx.col.leg,
-           pt.cex = pt.cex.leg, cex = tx.cex.leg, horiz = horiz,
-           title = leg.title, title.col = tit.col.leg)
-  }
+      if(!is.formula(x)) {
 
-}
+        if(length(xlim)==0){
+          xlim <- range(x, na.rm = T)
+        }
+        if(length(ylim)==0){
+          ylim <- range(y, na.rm = T)
+        }
 
-#' Drawing a figure like plot()
-#'
-#' @param formula formula, e.g. y ~ x
-#' @param y If numeric vector is inputted in "formula" parameter, numeric vector is also inputted in y
-#' @param data If formula is inputted in "x" or "formula" parameter, a data.frame (or list) from which the variables in formula should be taken.
-#' @param ... Argument to be passed to methods. Please see plot().
-#' @param xlim x limit
-#' @param ylim y limit
-#' @param las las, defauls is 1
-#' @param cex.axis axis cex, default is 1.1
-#' @param cex.lab label cex, default is 1.3
-#' @param font.lab label font size, default is 2
-#' @param pch pch, default is 16
-#' @param col.dot points color
-#' @param col.fill fill color
-#' @param col.line line color
-#' @param col.bor border color
-#' @param col.bg background color
-#' @param legend If legend is needed, set "T". Default is "F".
-#' @param pos.leg Legend position. In addition to position of legend(), "outtopright, "outright", "outbottomright" and "outbottom" are able to select. Default is "outright".
-#' @param pch.leg Legend pch
-#' @param bty.leg Legend box type. Default is ""n.
-#' @param bg.leg Legend background
-#' @param lty lty
-#' @param lwd.dot Points lwd, default is 1.
-#' @param lwd.line Line lwd, default is 1.
-#' @param pt.cex.leg Points cex in legend, default is 1.5.
-#' @param tx.cex.leg Text cex in legend, default is 1.1.
-#' @param pt.col.leg Points color in legend.
-#' @param pt.bg.leg Points background color in legend.
-#' @param lty.leg lty in legend.
-#' @param pt.lwd.leg Points lwd in legend.
-#' @param ln.lwd.leg Line lwd in legend.
-#' @param tx.col.leg Text color in legend.
-#' @param leg.lab Legend label
-#' @param leg.sp Legend space, default is 2.5.
-#' @param inset Legend inset, default is 1.
-#' @param leg.title Legend title
-#' @param tit.col.leg Legend title color
-#' @param mode Plotting mode. Setting "s" is single group plot, while setting "m" is multiple groups plot. Default is "s".
-#' @param group Grouping factor in setting mode = "m".
-#' @param fill If fill color is needed, set "T". Default is "F".
-#' @param line If line is needed, set "T". Default is "F".
-#' @param density Fill density
-#' @param angle Fill stripe angle, default is 45 degree.
-#' @param warning If it is set with T and plot is not able to outputted with default settings, warning message is outputted
-#' @param mar mar, default is c(3.8,3.8,1,1).
-#' @param mgp mgp, default is c(2.5,0.5,0).
-#' @param tcl tcl, default is -0.2.
-#' @param inversion Inversion mode. If set "T", plot is drawn with inversion color. Default is "F".
-#' @param inv.col Inversion color, if set inversion = "T". Default is "#FFFFFF".
-#'
-#' @importFrom grDevices boxplot.stats colorRampPalette hcl rgb
-#' @importFrom graphics arrows axis barplot box boxplot hist lines matplot par plot points polygon abline
-#' @importFrom stats density na.omit sd terms var
-#'
-#' @export
-#'
-plotn_m.formula <- function(formula = NULL, y = NULL,
-                            data = NULL, ...,
-                            xlim = NULL,
-                            ylim = NULL,
-                            las = 1,
-                            cex.axis = 1.1,
-                            cex.lab = 1.3,
-                            font.lab = 2,
-                            pch = 16,
-                            col.dot = NULL,
-                            col.fill = NULL,
-                            col.line = NULL,
-                            col.bor = "transparent",
-                            col.bg = "#FFFFFF",
-                            legend = F,
-                            pos.leg = "outright",
-                            pch.leg = NULL,
-                            bty.leg = "n",
-                            bg.leg = "transparent",
-                            lty = 1,
-                            lwd.dot = 1,
-                            lwd.line = 1,
-                            pt.cex.leg = 1.5,
-                            tx.cex.leg = 1.1,
-                            pt.col.leg = NULL,
-                            pt.bg.leg = NULL,
-                            lty.leg = NULL,
-                            pt.lwd.leg = NULL,
-                            ln.lwd.leg = NULL,
-                            tx.col.leg = NULL,
-                            leg.lab = NULL,
-                            leg.sp = 2.5,
-                            inset = 1,
-                            leg.title = NULL,
-                            tit.col.leg = NULL,
-                            mode = "s",
-                            group = NULL,
-                            fill = F,
-                            line = F,
-                            density = NA,
-                            angle = 45,
-                            warning = F,
-                            mar = c(3.8,3.8,1,1),
-                            mgp = c(2.5,0.5,0),
-                            tcl = -0.2,
-                            inversion = F,
-                            inv.col = "#FFFFFF"){
+        plot(x = x, y = y, ...,
+             las = las, cex.axis = cex.axis, xlim = xlim, ylim = ylim,
+             cex.lab = cex.lab, font.lab = font.lab, col = col.dot[as.factor(g)],
+             bg = col.bg, pch = pch[as.factor(g)], col.axis = col, col.lab = col,
+             lwd = lwd.dot)
 
-  error1 <- NULL
-  error2 <- NULL
-  error1 <- try(.default_col, silent = T)
-  error2 <- try(.default_fill, silent = T)
-  if(class(error1) == "try-error" || class(error2) == "try-error")
-    theme_change()
+      } else {
 
-  if (inversion == T){
-    bg <- "#000000"
-    col <- inv.col
-  } else {
-    bg <- "#FFFFFF"
-    col <- "#000000"
-  }
+        formula <- x
 
-  if(legend == T){
-    switch (pos.leg,
-            "outtopright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outbottomright" = eval(mar[4] <- mar[4]+leg.sp),
-            "outbottom" = eval(mar[1] <- mar[1]+leg.sp)
-    )
-  }
+        if(is.null(data)){
 
-  par.old <- par(mar = mar, mgp = mgp, tcl = tcl, bg = bg, fg = col)
-  on.exit(par(par.old))
-  assign(".plotn.par", list(mar = par()$mar,
-                            mgp = par()$mgp,
-                            tcl = par()$tcl,
-                            bg = par()$bg,
-                            fg = par()$fg), envir = .GlobalEnv)
+          y <- eval(attr(terms(formula), "variables")[[2]])
+          x <- eval(attr(terms(formula), "variables")[[3]])
 
-  if (length(col.dot) == 0)
-    col.dot <- .default_col
+        } else {
 
-  if (length(col.fill) == 0)
-    col.fill <- .default_fill
+          y <- data[,as.character(attr(terms(formula), "variables")[[2]])]
+          x <- data[,as.character(attr(terms(formula), "variables")[[3]])]
 
-  if (length(col.line) == 0)
-    col.line <- .default_col
+        }
 
-  if(is.character(group)){
-    g <- data[,group]
-  } else {
-    g <- group
-  }
+        if(length(xlim)==0){
+          xlim <- range(x, na.rm = T)
+        }
+        if(length(ylim)==0){
+          ylim <- range(y, na.rm = T)
+        }
 
-  names <- levels(as.factor(g))
-  col.dot <- rep(col.dot, length = length(names))
-  col.fill <- rep(col.fill, length = length(names))
-  col.line <- rep(col.line, length = length(names))
-  lty <- rep(lty, length = length(names))
-  pch <- rep(pch, length = length(names))
-  density <- rep(density, length = length(names))
-  angle <- rep(angle, length = length(names))
+        plot(formula = formula, data = data, ...,
+             las = las, cex.axis = cex.axis, xlim = xlim, ylim = ylim,
+             cex.lab = cex.lab, font.lab = font.lab, col = col.dot[as.factor(g)],
+             bg = col.bg, pch = pch[as.factor(g)], col.axis = col, col.lab = col,
+             lwd = lwd.dot)
 
-  if(is.null(data)){
+      }
 
-    y <- eval(attr(terms(formula), "variables")[[2]])
-    x <- eval(attr(terms(formula), "variables")[[3]])
+      for (i in 1:length(names)){
+        xx <- x[g == names[i]]
+        yy <- y[g == names[i]]
 
-  } else {
+        if (fill == T) {
+          polygon(x = xx, y = yy, col = col.fill[i], border = col.bor[i],
+                  density = density[i], angle = angle[i], lwd = lwd.line)
+        }
+        if (line == T) {
+          lines(x = xx, y = yy, col = col.line[i], lty = lty[i], lwd = lwd.line)
+        }
 
-    y <- data[,as.character(attr(terms(formula), "variables")[[2]])]
-    x <- data[,as.character(attr(terms(formula), "variables")[[3]])]
+      }
 
-  }
-
-  if(length(xlim)==0){
-    xlim <- range(x, na.rm = T)
-  }
-  if(length(ylim)==0){
-    ylim <- range(y, na.rm = T)
-  }
-
-  plot(formula = formula, data = data, ...,
-       las = las, cex.axis = cex.axis, xlim = xlim, ylim = ylim,
-       cex.lab = cex.lab, font.lab = font.lab, col = col.dot[as.factor(g)],
-       bg = col.bg, pch = pch[as.factor(g)], col.axis = col, col.lab = col,
-       lwd = lwd.dot)
-
-
-  for (i in 1:length(names)){
-    xx <- x[g == names[i]]
-    yy <- y[g == names[i]]
-
-    if (fill == T) {
-      polygon(x = xx, y = yy, col = col.fill[i], border = col.bor[i],
-              density = density[i], angle = angle[i], lwd = lwd.line)
-    }
-    if (line == T) {
-      lines(x = xx, y = yy, col = col.line[i], lty = lty[i], lwd = lwd.line)
     }
 
   }
-
 
   if(legend == T){
 
@@ -1758,14 +538,18 @@ plotn_m.formula <- function(formula = NULL, y = NULL,
     par.old$xpd <- F
 
     if (length(leg.lab) == 0){
-      if (j){
-        if(length(names) == 0){
-          leg.lab <- 1:n
+      if(mode == "s"){
+        leg.lab <- 1
+      } else {
+        if (j){
+          if(length(names) == 0){
+            leg.lab <- 1:n
+          } else {
+            leg.lab <- names
+          }
         } else {
           leg.lab <- names
         }
-      } else {
-        leg.lab <- names
       }
     }
 
@@ -4744,19 +3528,6 @@ plotn_arrange <- function(..., row = NULL, column = NULL,
           }
         }
 
-      }
-      else {
-        w <- paste0(y[[1]][1], ", mar", z[[1]][1], ",", z[[1]][2], ", ",
-                    z[[1]][3], ",", z[[1]][4],
-                    substr(y[[1]][2], p + 2, nchar(y[[1]][2])))
-
-        for (l in 1:length(x)){
-          if (l == 1) {
-            cmd <- list(w)
-          } else {
-            cmd <- c(cmd, x[[l]])
-          }
-        }
       }
     } else {
       y <- as.character(c("3.8", "3.8", label.sp, "1"))

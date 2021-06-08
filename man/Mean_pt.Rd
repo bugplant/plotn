@@ -4,28 +4,11 @@
 \alias{Mean_pt}
 \title{Drawing mean points used with overdraw()}
 \usage{
-Mean_pt(
-  x = NULL,
-  formula = NULL,
-  data = NULL,
-  at = NULL,
-  SD = F,
-  SE = F,
-  group = NULL,
-  mean.column = 1,
-  dev.column = 2,
-  pch = 21,
-  cex = 1.5,
-  col.mean = NULL,
-  col.bg = NULL,
-  lwd.mean = 1,
-  col.bar = NULL,
-  lwd.bar = 1,
-  lty = 1,
-  length = 0.5,
-  horizontal = F,
-  plot = T
-)
+Mean_pt(x = NULL, formula = NULL, data = NULL, at = NULL, SD = F,
+  SE = F, group = NULL, mean.column = 1, dev.column = 2,
+  pch = 21, cex = 1.5, col.mean = NULL, col.bg = NULL,
+  lwd.mean = 1, col.bar = NULL, lwd.bar = 1, lty = 1,
+  length = 0.5, horizontal = F, plot = T)
 }
 \arguments{
 \item{x}{Data, e.g. numeric vector, formula, e.g. y ~ x, or other object containing analysis result}

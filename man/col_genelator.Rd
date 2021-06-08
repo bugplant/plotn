@@ -4,7 +4,8 @@
 \alias{col_genelator}
 \title{Genelating dafault color in plotn}
 \usage{
-col_genelator(palette = "d3", palette_types = NULL, number = 10, alpha = 1)
+col_genelator(palette = "d3", palette_types = NULL, number = 10,
+  alpha = 1)
 }
 \arguments{
 \item{palette}{Color palette, "default", "ggplot2" and palettes in ggsci}
