@@ -237,10 +237,6 @@ plotn <- function(x = NULL, y = NULL,
                   inversion = F,
                   inv.col = "#FFFFFF"){
 
-  is.formula <- function(x){
-    class(x)=="formula"
-  }
-
   error1 <- NULL
   error2 <- NULL
   error1 <- try(.default_col, silent = T)
@@ -755,10 +751,6 @@ boxplotn <- function(x = NULL, formula = NULL,
                      add = F,
                      inversion = F,
                      inv.col = "#FFFFFF"){
-
-  is.formula <- function(x){
-    class(x)=="formula"
-  }
 
   se  <-  function(x){
     y  <-  x[!is.na(x)]
@@ -1302,9 +1294,6 @@ barplotn <- function(x = NULL, formula = NULL,
                      inversion = F,
                      inv.col = "#FFFFFF"){
 
-  is.formula <- function(x){
-    class(x)=="formula"
-  }
 
   se  <-  function(x){
     y  <-  x[!is.na(x)]
@@ -1808,10 +1797,6 @@ histn <- function(x = NULL, formula = NULL,
                   inversion = F,
                   inv.col = "#FFFFFF"){
 
-  is.formula <- function(x){
-    class(x)=="formula"
-  }
-
   error1 <- NULL
   error2 <- NULL
   error1 <- try(.default_col, silent = T)
@@ -2266,10 +2251,6 @@ vioplotn <- function(x = NULL, formula = NULL,
                      tcl = -0.2,
                      inversion = F,
                      inv.col = "#FFFFFF"){
-
-  is.formula <- function(x){
-    class(x)=="formula"
-  }
 
   se  <-  function(x){
     y  <-  x[!is.na(x)]
@@ -2967,10 +2948,6 @@ Mean_pt <- function(x = NULL, formula = NULL,
                     horizontal = F,
                     plot = T){
 
-  is.formula <- function(x){
-    class(x)=="formula"
-  }
-
   se  <-  function(x){
     y  <-  x[!is.na(x)]
     sqrt(var(as.vector(y))/length(y))
@@ -3594,4 +3571,16 @@ print.plotn <- function(x, ..., plot = T){
   } else {
     UseMethod("print", "default")
   }
+}
+
+#' Check which object is formula
+#'
+#' @param x objects
+#'
+#' @examples is.formula(x)
+#'
+#' @export
+#'
+is.formula <- function(x){
+  class(x)[1] == "formula"
 }
