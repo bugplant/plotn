@@ -13,7 +13,7 @@ is.formula(x)
 Check which object is formula
 }
 \examples{
-x <- z ~ y
+x <- y ~ z
 is.formula(x)
 
 }

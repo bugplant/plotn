@@ -29,7 +29,7 @@ col_genelator <- function (palette = "d3",
   } else {
     if(palette == "ggplot2"){
 
-      if(length(palette_types) == 0){
+      if(is.null(palette_types)){
         palette_types <- "discrete"
       }
 
@@ -69,7 +69,7 @@ col_genelator <- function (palette = "d3",
                          "material" = palette_types,
                          stop("invalid palette name"))
 
-      if(length(palette_types) == 0){
+      if(is.null(palette_types) ){
         palette_types <- switch(palette,
                                 "d3" = "category10",
                                 "igv" = "default",
@@ -115,12 +115,12 @@ theme_change <- function(default_col = NULL,
                          col.alpha = 1,
                          fill.alpha = 0.5){
 
-  if(length(default_col) == 0)
+  if(is.null(default_col))
     default_col <- col_genelator(palette = palette,
                                  palette_types = palette_types,
                                  number = number,
                                  alpha = col.alpha)
-  if(length(default_fill) == 0)
+  if(is.null(default_fill))
     default_fill <- col_genelator(palette = palette,
                                   palette_types = palette_types,
                                   number = number,
@@ -275,20 +275,20 @@ plotn <- function(x = NULL, y = NULL,
                             bg = par()$bg,
                             fg = par()$fg), envir = .GlobalEnv)
 
-  if (length(x) == 0) x <- formula
+  if (is.null(x)) x <- formula
 
   if (mode == "s"){
 
     if(!is.formula(x)) {
 
-      if(!length(y) == 0){
+      if(!is.null(y)){
 
         if (is.factor(x)){
-          if (length(col.fill) == 0)
+          if (is.null(col.fill))
             col.fill <- .default_fill
           col.dot <- col.fill
         } else {
-          if (length(col.dot) == 0) col.dot <- col
+          if (is.null(col.dot)) col.dot <- col
         }
 
         plot(x = x, y = y, ..., xlim = xlim, ylim = ylim,
@@ -300,7 +300,7 @@ plotn <- function(x = NULL, y = NULL,
 
         if(is.factor(x)){
 
-          if (length(col.fill) == 0)
+          if (is.null(col.fill))
             col.fill <- .default_fill
 
           col.dot <- col.fill
@@ -312,7 +312,7 @@ plotn <- function(x = NULL, y = NULL,
 
         } else {
 
-          if (length(col.dot) == 0) col.dot <- col
+          if (is.null(col.dot)) col.dot <- col
 
           error <- NULL
           error <- try(plot(x, ..., xlim = xlim, ylim = ylim, las = las, cex.axis = cex.axis,
@@ -347,13 +347,13 @@ plotn <- function(x = NULL, y = NULL,
 
       if(is.factor(x)){
 
-        if (length(col.fill) == 0)
+        if (is.null(col.fill))
           col.fill <- .default_fill
 
         col.dot <- col.fill
 
       } else {
-        if (length(col.dot) == 0) col.dot <- col
+        if (is.null(col.dot)) col.dot <- col
       }
 
       plot(formula, data = data, ...,
@@ -364,27 +364,27 @@ plotn <- function(x = NULL, y = NULL,
     }
 
     if (fill == T) {
-      if (length(col.fill) == 0) col.fill <- paste(col, "7F", sep ="")
+      if (is.null(col.fill)) col.fill <- paste(col, "7F", sep ="")
 
       polygon(x, y, col = col.fill, border = col.bor,
               density = density, angle = angle, lwd = lwd.line)
     }
 
     if (line == T) {
-      if (length(col.line) == 0) col.line <- col
+      if (is.null(col.line)) col.line <- col
 
       lines(x, y, col = col.line, lty = lty, lwd = lwd.line)
     }
 
   } else {
 
-    if (length(col.dot) == 0)
+    if (is.null(col.dot))
       col.dot <- .default_col
 
-    if (length(col.fill) == 0)
+    if (is.null(col.fill))
       col.fill <- .default_fill
 
-    if (length(col.line) == 0)
+    if (is.null(col.line))
       col.line <- .default_col
 
     j <- (ncol(formula) > 1)||(ncol(y) > 1)
@@ -411,7 +411,7 @@ plotn <- function(x = NULL, y = NULL,
       angle <- rep(angle, length = n)
 
 
-      if(!length(y) == 0){
+      if(!is.null(y)){
         matplot(x = x, y = y, ..., pch = pch,
                 las = las, cex.axis = cex.axis, xlim = xlim, ylim = ylim,
                 cex.lab = cex.lab, font.lab = font.lab, col = col.dot,
@@ -466,10 +466,10 @@ plotn <- function(x = NULL, y = NULL,
 
       if(!is.formula(x)) {
 
-        if(length(xlim)==0){
+        if(is.null(xlim)){
           xlim <- range(x, na.rm = T)
         }
-        if(length(ylim)==0){
+        if(is.null(ylim)){
           ylim <- range(y, na.rm = T)
         }
 
@@ -495,10 +495,10 @@ plotn <- function(x = NULL, y = NULL,
 
         }
 
-        if(length(xlim)==0){
+        if(is.null(xlim)){
           xlim <- range(x, na.rm = T)
         }
-        if(length(ylim)==0){
+        if(is.null(ylim)){
           ylim <- range(y, na.rm = T)
         }
 
@@ -533,12 +533,12 @@ plotn <- function(x = NULL, y = NULL,
     par(xpd = T)
     par.old$xpd <- F
 
-    if (length(leg.lab) == 0){
+    if (is.null(leg.lab)){
       if(mode == "s"){
         leg.lab <- 1
       } else {
         if (j){
-          if(length(names) == 0){
+          if(is.null(names)){
             leg.lab <- 1:n
           } else {
             leg.lab <- names
@@ -549,23 +549,23 @@ plotn <- function(x = NULL, y = NULL,
       }
     }
 
-    if (length(pch.leg) == 0){
+    if (is.null(pch.leg)){
       pch.leg <- pch
     }
 
-    if (length(pt.col.leg) == 0){
+    if (is.null(pt.col.leg)){
       pt.col.leg <- col.dot
     }
 
-    if (length(pt.bg.leg) == 0){
+    if (is.null(pt.bg.leg)){
       pt.bg.leg <- bg
     }
 
-    if (length(tx.col.leg) == 0){
+    if (is.null(tx.col.leg)){
       tx.col.leg <- col
     }
 
-    if (length(lty.leg) == 0){
+    if (is.null(lty.leg)){
       if(line == T){
         lty.leg <- lty
       } else {
@@ -573,15 +573,15 @@ plotn <- function(x = NULL, y = NULL,
       }
     }
 
-    if (length(pt.lwd.leg) == 0){
+    if (is.null(pt.lwd.leg)){
       pt.lwd.leg <- lwd.dot
     }
 
-    if (length(ln.lwd.leg) == 0){
+    if (is.null(ln.lwd.leg)){
       ln.lwd.leg <- lwd.line
     }
 
-    if (length(tit.col.leg) == 0){
+    if (is.null(tit.col.leg)){
       tit.col.leg <- col
     }
 
@@ -772,7 +772,7 @@ boxplotn <- function(x = NULL, formula = NULL,
     col <- "#000000"
   }
 
-  if(length(col.stat) == 0){
+  if(is.null(col.stat)){
     col.stat <- col
   }
 
@@ -815,66 +815,66 @@ boxplotn <- function(x = NULL, formula = NULL,
                             bg = par()$bg,
                             fg = par()$fg), envir = .GlobalEnv)
 
-  if (length(x) == 0) x <- formula
+  if (is.null(x)) x <- formula
 
   if (!is.formula(x)){
     if (ncol(as.data.frame(x)) > 1) {
 
-      if (length(col.fill) == 0) col.fill <- .default_fill
-      if (length(col.bor) == 0) col.bor <- .default_col
-      if (length(col.dot) == 0) col.dot <- .default_col
+      if (is.null(col.fill)) col.fill <- .default_fill
+      if (is.null(col.bor)) col.bor <- .default_col
+      if (is.null(col.dot)) col.dot <- .default_col
 
       nn <- colnames(x)
 
     } else {
 
-      if (length(col.fill) == 0) col.fill <- paste(col, "7F", sep = "")
-      if (length(col.bor) == 0) col.bor <- col
-      if (length(col.dot) == 0) col.dot <- col
+      if (is.null(col.fill)) col.fill <- paste(col, "7F", sep = "")
+      if (is.null(col.bor)) col.bor <- col
+      if (is.null(col.dot)) col.dot <- col
 
       nn <- "x"
 
     }
 
-    if(length(names)==0){
+    if(is.null(names)){
       names <- nn
     }
 
     if(horizontal == T){
-      if(length(ylab)==0){
+      if(is.null(ylab)){
         ylab <- "group"
       }
-      if(length(xlab)==0){
+      if(is.null(xlab)){
         xlab <- "data"
       }
     } else {
-      if(length(xlab)==0){
+      if(is.null(xlab)){
         xlab <- "group"
       }
-      if(length(ylab)==0){
+      if(is.null(ylab)){
         ylab <- "data"
       }
     }
 
     if(horizontal == T){
       ylim_t <- ylim
-      if(length(xlim)==0){
+      if(is.null(xlim)){
         ylim <- range(x, na.rm = T)
       } else {
         ylim <- xlim
       }
       xlim <- ylim_t
     } else {
-      if(length(ylim)==0){
+      if(is.null(ylim)){
         ylim <- range(x, na.rm = T)
       }
     }
 
   } else {
 
-    if (length(col.fill) == 0) col.fill <- .default_fill
-    if (length(col.bor) == 0) col.bor <- .default_col
-    if (length(col.dot) == 0) col.dot <- .default_col
+    if (is.null(col.fill)) col.fill <- .default_fill
+    if (is.null(col.bor)) col.bor <- .default_col
+    if (is.null(col.dot)) col.dot <- .default_col
 
     if(is.null(data)){
 
@@ -893,12 +893,12 @@ boxplotn <- function(x = NULL, formula = NULL,
       group <- factor(group, levels = nn)
 
       if(horizontal == T){
-        if(length(xlab)==0){
+        if(is.null(xlab)){
           n <- as.character(attr(terms(x), "variables")[[2]])
           xlab <- paste(n[2], n[1], n[3], sep = "")
         }
       } else {
-        if(length(ylab)==0){
+        if(is.null(ylab)){
           n <- as.character(attr(terms(x), "variables")[[2]])
           ylab <- paste(n[2], n[1], n[3], sep = "")
         }
@@ -921,40 +921,40 @@ boxplotn <- function(x = NULL, formula = NULL,
       group <- factor(group, levels = nn)
 
       if(horizontal == T){
-        if(length(xlab)==0){
+        if(is.null(xlab)){
           xlab <- as.character(attr(terms(x), "variables")[[2]])
         }
       } else {
-        if(length(ylab)==0){
+        if(is.null(ylab)){
           ylab <- as.character(attr(terms(x), "variables")[[2]])
         }
       }
     }
 
-    if(length(names)==0){
+    if(is.null(names)){
       names <- nn
     }
 
     if(horizontal == T){
-      if(length(ylab)==0){
+      if(is.null(ylab)){
         ylab <- "group"
       }
     } else {
-      if(length(xlab)==0){
+      if(is.null(xlab)){
         xlab <- "group"
       }
     }
 
     if(horizontal == T){
       ylim_t <- ylim
-      if(length(xlim)==0){
+      if(is.null(xlim)){
         ylim <- range(y, na.rm = T)
       } else {
         ylim <- xlim
       }
       xlim <- ylim_t
     } else {
-      if(length(ylim)==0){
+      if(is.null(ylim)){
         ylim <- range(y, na.rm = T)
       }
     }
@@ -968,7 +968,8 @@ boxplotn <- function(x = NULL, formula = NULL,
 
   boxplot(x, data = data, ..., xlim = xlim, ylim = ylim,
           outline = F, las = las, horizontal = horizontal,
-          bty = "n", axes = F, add = add,
+          bty = "n", axes = F, add = add, cex.lab = cex.lab,
+          xlab = xlab, ylab = ylab, names = names,
           col = NA, border = NA)
 
   if((!xaxt == "n")&&(horizontal == F) || (!yaxt == "n")&&(horizontal == T)){
@@ -983,15 +984,15 @@ boxplotn <- function(x = NULL, formula = NULL,
   }
 
   boxplot(x, data = data, ..., xlim = xlim, ylim = ylim,
-          cex.axis = cex.axis, cex.lab = cex.lab,
+          cex.axis = cex.axis,
           col.axis = col, col.lab = col,
           font.lab = font.lab,
           lty = lty, outline = F, xaxt = xaxt, yaxt = yaxt,
           staplelwd = staplelwd, las = las,
           boxwex = boxwex, col = col.fill, lwd = lwd.bor,
           border = col.bor, notch = notch,
-          xaxt = xaxt, yaxt = yaxt, horizontal = horizontal,
-          xlab = xlab, ylab = ylab, names = names,
+          horizontal = horizontal,
+          xlab = "", ylab = "",
           add = T, at = (1+g):(length(names)+g))
 
   if(all == T){
@@ -1136,6 +1137,8 @@ boxplotn <- function(x = NULL, formula = NULL,
 
   }
 
+
+
   if(legend == T){
 
     if (!add == T){
@@ -1143,23 +1146,23 @@ boxplotn <- function(x = NULL, formula = NULL,
     }
     par.old$xpd <- F
 
-    if (length(leg.lab) == 0){
+    if (is.null(leg.lab)){
       leg.lab <- names
     }
 
-    if (length(pt.col.leg) == 0){
+    if (is.null(pt.col.leg)){
       pt.col.leg <- col.bor
     }
 
-    if (length(pt.bg.leg) == 0){
+    if (is.null(pt.bg.leg)){
       pt.bg.leg <- col.fill
     }
 
-    if (length(tx.col.leg) == 0){
+    if (is.null(tx.col.leg)){
       tx.col.leg <- col
     }
 
-    if (length(tit.col.leg) == 0){
+    if (is.null(tit.col.leg)){
       tit.col.leg <- col
     }
 
@@ -1315,11 +1318,11 @@ barplotn <- function(x = NULL, formula = NULL,
     col <- "#000000"
   }
 
-  if(length(col.stat) == 0){
+  if(is.null(col.stat)){
     col.stat <- col
   }
 
-  if(length(col.0) == 0){
+  if(is.null(col.0)){
     if (inversion == T){
       col.0 <- "#FFFFFF7F"
     } else {
@@ -1352,28 +1355,28 @@ barplotn <- function(x = NULL, formula = NULL,
                             bg = par()$bg,
                             fg = par()$fg), envir = .GlobalEnv)
 
-  if (length(x) == 0) x <- formula
+  if (is.null(x)) x <- formula
 
   if (!is.formula(x)){
     nn <- "x"
 
     if (is.vector(x)){
-      if (length(col.fill) == 0) col.fill <- paste(col, "7F", sep = "")
-      if (length(col.bor) == 0) col.bor <- col
+      if (is.null(col.fill)) col.fill <- paste(col, "7F", sep = "")
+      if (is.null(col.bor)) col.bor <- col
     } else {
       if(nrow(x) == 1) {
-        if (length(col.fill) == 0) col.fill <- paste(col, "7F", sep = "")
-        if (length(col.bor) == 0) col.bor <- col
+        if (is.null(col.fill)) col.fill <- paste(col, "7F", sep = "")
+        if (is.null(col.bor)) col.bor <- col
       } else {
-        if (length(col.fill) == 0) col.fill <- .default_fill
-        if (length(col.bor) == 0) col.bor <- .default_col
+        if (is.null(col.fill)) col.fill <- .default_fill
+        if (is.null(col.bor)) col.bor <- .default_col
       }
     }
 
 
-    if(length(names)==0){
+    if(is.null(names)){
       names <- colnames(x)
-      if(length(names)==0){
+      if(is.null(names)){
         matx <- x
         if(is.vector(matx)){
           matx <- matrix(x, nrow = 1)
@@ -1383,17 +1386,17 @@ barplotn <- function(x = NULL, formula = NULL,
     }
 
     if(horizontal == T){
-      if(length(ylab)==0){
+      if(is.null(ylab)){
         ylab <- "group"
       }
-      if(length(xlab)==0){
+      if(is.null(xlab)){
         xlab <- "data"
       }
     } else {
-      if(length(xlab)==0){
+      if(is.null(xlab)){
         xlab <- "group"
       }
-      if(length(ylab)==0){
+      if(is.null(ylab)){
         ylab <- "data"
       }
     }
@@ -1424,7 +1427,7 @@ barplotn <- function(x = NULL, formula = NULL,
     }
 
     if(horizontal == T){
-      if(length(xlim)==0){
+      if(is.null(xlim)){
         if(cross0 > 0) {
           if(max(x, na.rm = T) > 0) {
             xlim <- c(0 - MAX * 0.05, MAX * 1.05)
@@ -1436,7 +1439,7 @@ barplotn <- function(x = NULL, formula = NULL,
         }
       }
     } else {
-      if(length(ylim)==0){
+      if(is.null(ylim)){
         if(cross0 > 0) {
           if(max(x, na.rm = T) > 0) {
             ylim <- c(-MAX * 0.05, MAX * 1.05)
@@ -1452,8 +1455,8 @@ barplotn <- function(x = NULL, formula = NULL,
 
   } else {
 
-    if (length(col.fill) == 0) col.fill <- .default_fill
-    if (length(col.bor) == 0) col.bor <- .default_col
+    if (is.null(col.fill)) col.fill <- .default_fill
+    if (is.null(col.bor)) col.bor <- .default_col
 
     if(is.null(data)){
 
@@ -1472,12 +1475,12 @@ barplotn <- function(x = NULL, formula = NULL,
       group <- factor(group, levels = nn)
 
       if(horizontal == T){
-        if(length(xlab)==0){
+        if(is.null(xlab)){
           n <- as.character(attr(terms(x), "variables")[[2]])
           xlab <- paste(n[2], n[1], n[3], sep = "")
         }
       } else {
-        if(length(ylab)==0){
+        if(is.null(ylab)){
           n <- as.character(attr(terms(x), "variables")[[2]])
           ylab <- paste(n[2], n[1], n[3], sep = "")
         }
@@ -1500,26 +1503,26 @@ barplotn <- function(x = NULL, formula = NULL,
       group <- factor(group, levels = nn)
 
       if(horizontal == T){
-        if(length(xlab)==0){
+        if(is.null(xlab)){
           xlab <- as.character(attr(terms(x), "variables")[[2]])
         }
       } else {
-        if(length(ylab)==0){
+        if(is.null(ylab)){
           ylab <- as.character(attr(terms(x), "variables")[[2]])
         }
       }
     }
 
-    if(length(names)==0){
+    if(is.null(names)){
       names <- nn
     }
 
     if(horizontal == T){
-      if(length(ylab)==0){
+      if(is.null(ylab)){
         ylab <- "group"
       }
     } else {
-      if(length(xlab)==0){
+      if(is.null(xlab)){
         xlab <- "group"
       }
     }
@@ -1530,7 +1533,7 @@ barplotn <- function(x = NULL, formula = NULL,
     MAX <- max(tapply(y, list(group), mean, na.rm = T))
 
     if(horizontal == T){
-      if(length(xlim)==0){
+      if(is.null(xlim)){
         if(cross0 > 0) {
           if(MAX > 0) {
             xlim <- c(0 - max(tapply(y, list(group), sd, na.rm = T)) * 0.5,
@@ -1545,7 +1548,7 @@ barplotn <- function(x = NULL, formula = NULL,
         }
       }
     } else {
-      if(length(ylim)==0){
+      if(is.null(ylim)){
         if(cross0 > 0) {
           if(MAX > 0) {
             ylim <- c(-max(tapply(y, list(group), sd, na.rm = T)) * 0.5,
@@ -1648,23 +1651,23 @@ barplotn <- function(x = NULL, formula = NULL,
     par(xpd=T)
     par.old$xpd <- F
 
-    if (length(leg.lab) == 0){
+    if (is.null(leg.lab)){
       leg.lab <- names
     }
 
-    if (length(pt.col.leg) == 0){
+    if (is.null(pt.col.leg)){
       pt.col.leg <- col.bor
     }
 
-    if (length(pt.bg.leg) == 0){
+    if (is.null(pt.bg.leg)){
       pt.bg.leg <- col.fill
     }
 
-    if (length(tx.col.leg) == 0){
+    if (is.null(tx.col.leg)){
       tx.col.leg <- col
     }
 
-    if (length(tit.col.leg) == 0){
+    if (is.null(tit.col.leg)){
       tit.col.leg <- col
     }
 
@@ -1816,7 +1819,7 @@ histn <- function(x = NULL, formula = NULL,
     freq <- F
   }
 
-  if (length(ylab) == 0){
+  if (is.null(ylab)){
     if (!freq == T){
       ylab <- "Density"
     } else {
@@ -1841,15 +1844,15 @@ histn <- function(x = NULL, formula = NULL,
                             bg = par()$bg,
                             fg = par()$fg), envir = .GlobalEnv)
 
-  if (length(x) == 0) x <- formula
+  if (is.null(x)) x <- formula
 
   if (!is.formula(x)){
 
-    if (length(col.fill) == 0) col.fill <- paste(col, "7F", sep = "")
-    if (length(col.bor) == 0) col.bor <- col
-    if (length(col.line) == 0) col.line <- col
+    if (is.null(col.fill)) col.fill <- paste(col, "7F", sep = "")
+    if (is.null(col.bor)) col.bor <- col
+    if (is.null(col.line)) col.line <- col
 
-    if(length(xlab)==0){
+    if(is.null(xlab)){
       xlab <- "index"
     }
 
@@ -1858,9 +1861,9 @@ histn <- function(x = NULL, formula = NULL,
 
   } else {
 
-    if (length(col.fill) == 0) col.fill <- .default_fill
-    if (length(col.bor) == 0) col.bor <- .default_col
-    if (length(col.line) == 0) col.line <- .default_col
+    if (is.null(col.fill)) col.fill <- .default_fill
+    if (is.null(col.bor)) col.bor <- .default_col
+    if (is.null(col.line)) col.line <- .default_col
 
     if(is.null(data)){
 
@@ -1878,7 +1881,7 @@ histn <- function(x = NULL, formula = NULL,
       }
       group <- factor(group, levels = nn)
 
-      if(length(xlab)==0){
+      if(is.null(xlab)){
         n <- as.character(attr(terms(x), "variables")[[2]])
         xlab <- paste(n[2], n[1], n[3], sep = "")
       }
@@ -1899,7 +1902,7 @@ histn <- function(x = NULL, formula = NULL,
       }
       group <- factor(group, levels = nn)
 
-      if(length(xlab)==0){
+      if(is.null(xlab)){
         xlab <- as.character(attr(terms(x), "variables")[[2]])
       }
 
@@ -1910,7 +1913,7 @@ histn <- function(x = NULL, formula = NULL,
 
   }
 
-  if(length(breaks) == 0){
+  if(is.null(breaks)){
 
     if (!is.formula(x)){
       xx <- x
@@ -1981,7 +1984,7 @@ histn <- function(x = NULL, formula = NULL,
     ker.ang <- rep(ker.ang, length = n)
   }
 
-  if(length(ylim) == 0){
+  if(is.null(ylim)){
     for(i in 1:n){
       if (!is.formula(x)){
         xx <- x
@@ -2054,23 +2057,23 @@ histn <- function(x = NULL, formula = NULL,
     par(xpd=T)
     par.old$xpd <- F
 
-    if (length(leg.lab) == 0){
+    if (is.null(leg.lab)){
       leg.lab <- names
     }
 
-    if (length(pt.col.leg) == 0){
+    if (is.null(pt.col.leg)){
       pt.col.leg <- col.bor
     }
 
-    if (length(pt.bg.leg) == 0){
+    if (is.null(pt.bg.leg)){
       pt.bg.leg <- col.fill
     }
 
-    if (length(tx.col.leg) == 0){
+    if (is.null(tx.col.leg)){
       tx.col.leg <- col
     }
 
-    if (length(tit.col.leg) == 0){
+    if (is.null(tit.col.leg)){
       tit.col.leg <- col
     }
 
@@ -2281,7 +2284,7 @@ vioplotn <- function(x = NULL, formula = NULL,
     pos <- 1
   }
 
-  if(length(col.stat) == 0){
+  if(is.null(col.stat)){
     col.stat <- col
   }
 
@@ -2310,7 +2313,7 @@ vioplotn <- function(x = NULL, formula = NULL,
                             bg = par()$bg,
                             fg = par()$fg), envir = .GlobalEnv)
 
-  if (length(x) == 0) x <- formula
+  if (is.null(x)) x <- formula
 
   if(add == T){
     par(new = T)
@@ -2330,59 +2333,59 @@ vioplotn <- function(x = NULL, formula = NULL,
   if (!is.formula(x)){
     if (ncol(as.data.frame(x)) > 1){
 
-      if (length(col.fill) == 0) col.fill <- .default_fill
-      if (length(col.mar) == 0) col.mar <- .default_col
-      if (length(col.dot) == 0) col.dot <- .default_col
+      if (is.null(col.fill)) col.fill <- .default_fill
+      if (is.null(col.mar)) col.mar <- .default_col
+      if (is.null(col.dot)) col.dot <- .default_col
 
       nn <- colnames(x)
     } else {
 
-      if (length(col.fill) == 0) col.fill <- paste(col, "7F", sep = "")
-      if (length(col.mar) == 0) col.mar <- col
-      if (length(col.dot) == 0) col.dot <- col
+      if (is.null(col.fill)) col.fill <- paste(col, "7F", sep = "")
+      if (is.null(col.mar)) col.mar <- col
+      if (is.null(col.dot)) col.dot <- col
 
       nn <- "x"
     }
 
-    if(length(names)==0){
+    if(is.null(names)){
       names <- nn
     }
 
     if(horizontal == T){
-      if(length(ylab)==0){
+      if(is.null(ylab)){
         ylab <- "group"
       }
-      if(length(xlab)==0){
+      if(is.null(xlab)){
         xlab <- "data"
       }
     } else {
-      if(length(xlab)==0){
+      if(is.null(xlab)){
         xlab <- "group"
       }
-      if(length(ylab)==0){
+      if(is.null(ylab)){
         ylab <- "data"
       }
     }
 
     if(horizontal == T){
       ylim_t <- ylim
-      if(length(xlim)==0){
+      if(is.null(xlim)){
         ylim <- range(x, na.rm = T)
       } else {
         ylim <- xlim
       }
       xlim <- ylim_t
     } else {
-      if(length(ylim)==0){
+      if(is.null(ylim)){
         ylim <- range(x, na.rm = T)
       }
     }
 
   } else {
 
-    if (length(col.fill) == 0) col.fill <- .default_fill
-    if (length(col.mar) == 0) col.mar <- .default_col
-    if (length(col.dot) == 0) col.dot <- .default_col
+    if (is.null(col.fill)) col.fill <- .default_fill
+    if (is.null(col.mar)) col.mar <- .default_col
+    if (is.null(col.dot)) col.dot <- .default_col
 
     if(is.null(data)){
 
@@ -2401,12 +2404,12 @@ vioplotn <- function(x = NULL, formula = NULL,
       group <- factor(group, levels = nn)
 
       if(horizontal == T){
-        if(length(xlab)==0){
+        if(is.null(xlab)){
           n <- as.character(attr(terms(x), "variables")[[2]])
           xlab <- paste(n[2], n[1], n[3], sep = "")
         }
       } else {
-        if(length(ylab)==0){
+        if(is.null(ylab)){
           n <- as.character(attr(terms(x), "variables")[[2]])
           ylab <- paste(n[2], n[1], n[3], sep = "")
         }
@@ -2429,40 +2432,40 @@ vioplotn <- function(x = NULL, formula = NULL,
       group <- factor(group, levels = nn)
 
       if(horizontal == T){
-        if(length(xlab)==0){
+        if(is.null(xlab)){
           xlab <- as.character(attr(terms(x), "variables")[[2]])
         }
       } else {
-        if(length(ylab)==0){
+        if(is.null(ylab)){
           ylab <- as.character(attr(terms(x), "variables")[[2]])
         }
       }
     }
 
-    if(length(names)==0){
+    if(is.null(names)){
       names <- nn
     }
 
     if(horizontal == T){
-      if(length(ylab)==0){
+      if(is.null(ylab)){
         ylab <- "group"
       }
     } else {
-      if(length(xlab)==0){
+      if(is.null(xlab)){
         xlab <- "group"
       }
     }
 
     if(horizontal == T){
       ylim_t <- ylim
-      if(length(xlim)==0){
+      if(is.null(xlim)){
         ylim <- range(y, na.rm = T)
       } else {
         ylim <- xlim
       }
       xlim <- ylim_t
     } else {
-      if(length(ylim)==0){
+      if(is.null(ylim)){
         ylim <- range(y, na.rm = T)
       }
     }
@@ -2479,8 +2482,8 @@ vioplotn <- function(x = NULL, formula = NULL,
   density <- rep(density, length = length(names))
   angle <- rep(angle, length = length(names))
 
-  boxplot(x, data = data ,..., xlim = xlim, ylim = ylim, las = las,
-          outline = F, bty = "n", axes = F, add = F,
+  boxplot(x, data = data ,..., xlim = xlim, ylim = ylim, las = las, cex.lab = cex.lab,
+          outline = F, bty = "n", axes = F, add = F, xlab = xlab, ylab = ylab,
           col = NA, border = NA,  horizontal = horizontal)
 
   if((!xaxt == "n")&&(horizontal == F) || (!yaxt == "n")&&(horizontal == T)){
@@ -2563,9 +2566,9 @@ vioplotn <- function(x = NULL, formula = NULL,
   }
 
   boxplot(x, data = data, ..., xlim = xlim, ylim = ylim,
-          xlab = xlab, ylab = ylab,
+          xlab = "", ylab = "",
           lty = 1, outline = F, lwd = lwd.bor,
-          cex.axis = cex.axis, cex.lab = cex.lab,
+          cex.axis = cex.axis,
           col.axis = col, col.lab = col,
           font.lab = font.lab, las = las,
           staplelwd = staplelwd, boxwex = boxwex, horizontal = horizontal,
@@ -2722,23 +2725,23 @@ vioplotn <- function(x = NULL, formula = NULL,
     }
     par.old$xpd <- F
 
-    if (length(leg.lab) == 0){
+    if (is.null(leg.lab)){
       leg.lab <- names
     }
 
-    if (length(pt.col.leg) == 0){
+    if (is.null(pt.col.leg)){
       pt.col.leg <- col.mar
     }
 
-    if (length(pt.bg.leg) == 0){
+    if (is.null(pt.bg.leg)){
       pt.bg.leg <- col.fill
     }
 
-    if (length(tx.col.leg) == 0){
+    if (is.null(tx.col.leg)){
       tx.col.leg <- col
     }
 
-    if (length(tit.col.leg) == 0){
+    if (is.null(tit.col.leg)){
       tit.col.leg <- col
     }
 
@@ -2811,7 +2814,7 @@ month_axis <- function(leap = F,
   par.old <- par(.plotn.par)
   on.exit(par(par.old))
 
-  if(!length(year) == 0){
+  if(!is.null(year)){
     leap <- leap_year(year)
   }
 
@@ -2956,11 +2959,11 @@ Mean_pt <- function(x = NULL, formula = NULL,
   par.old <- par(.plotn.par)
   on.exit(par(par.old))
 
-  if (length(col.mean) == 0) col.mean <- par()$fg
-  if (length(col.bg) == 0) col.bg <- par()$bg
-  if (length(col.bar) == 0) col.bar <- par()$fg
+  if (is.null(col.mean)) col.mean <- par()$fg
+  if (is.null(col.bg)) col.bg <- par()$bg
+  if (is.null(col.bar)) col.bar <- par()$fg
 
-  if (length(x) == 0) x <- formula
+  if (is.null(x)) x <- formula
 
   calculate <- F
   if(is.formula(x)) {
@@ -3034,7 +3037,7 @@ Mean_pt <- function(x = NULL, formula = NULL,
 
     pos <- at
 
-    if(length(pos) == 0){
+    if(is.null(pos)){
       pos <- 1:n
     }
 
@@ -3084,7 +3087,7 @@ Mean_pt <- function(x = NULL, formula = NULL,
 
   i <- cbind(m,d)
 
-  name <- if(length(d) == 0){
+  name <- if(is.null(d)){
     NULL
   } else {
     if(SD == T){
@@ -3103,7 +3106,7 @@ Mean_pt <- function(x = NULL, formula = NULL,
 #' @param year The start year which experiments were conducted (e.g. 1999, 2001...).
 #'
 leap_year <- function(year){
-  if(!length(year) == 0){
+  if(!is.null(year)){
     if(year%%400 == 0){
       leap <- T
     } else {
@@ -3195,7 +3198,7 @@ category_axis <- function(main, sub, data = NULL,
 
   x1n <- rep(x1n, nx2n)
 
-  if (length(sub.axis.at) == 0){
+  if (is.null(sub.axis.at)){
     at1 <-  1:(nx1n*nx2n)
   } else {
     at1 <- sub.axis.at
@@ -3214,7 +3217,7 @@ category_axis <- function(main, sub, data = NULL,
 
   for(i in 1:nx2n){
 
-    if (length(main.axis.at) == 0){
+    if (is.null(main.axis.at)){
       at2 <- c((i - 1)*nx1n + 0.5 + x.intsp/2, i*nx1n + 0.5 - x.intsp/2)
     } else {
       at2 <- c(main.axis.at[i] - main.axis.length/2 + x.intsp/2, main.axis.at[i] + main.axis.length/2 - x.intsp/2)
@@ -3224,7 +3227,7 @@ category_axis <- function(main, sub, data = NULL,
          labels = F, cex.axis = cex.axis, col.axis = par()$fg)
   }
 
-  if (length(main.axis.at) == 0){
+  if (is.null(main.axis.at)){
     at3 <- seq((nx1n+1)/2, nx1n*(nx2n - 0.5) + 0.5, length = nx2n)
   } else {
     at3 <- main.axis.at
@@ -3304,7 +3307,7 @@ plotn_object <- function(..., insert = NULL, delete = NULL){
       obj_c <- obj_temp
 
 
-      if (length(grep("\\(", obj_c)) == 0) {
+      if (is.null(grep("\\(", obj_c))) {
         ls <- c(ls, as.list(eval(parse(text = obj_c))))
       } else {
         ls <- c(ls, obj_c)
@@ -3317,7 +3320,7 @@ plotn_object <- function(..., insert = NULL, delete = NULL){
 
     obj_c <- capture.output(obj[[1]])
 
-    if (length(grep("\\(", obj_c)) == 0) {
+    if (is.null(grep("\\(", obj_c))) {
       ls <- as.list(eval(parse(text = obj_c)))
     } else {
       ls <- obj_c
@@ -3332,7 +3335,7 @@ plotn_object <- function(..., insert = NULL, delete = NULL){
       ls2 <- NULL
       for (k in 1:(length(obj) - 1)) {
         obj_c <- capture.output(obj[[k + 1]])
-        if (length(grep("\\(", obj_c)) == 0) {
+        if (is.null(grep("\\(", obj_c))) {
           ls2 <- c(ls2, as.list(eval(parse(text = obj_c))))
         } else {
           ls2 <- c(ls2, obj_c)
@@ -3349,7 +3352,7 @@ plotn_object <- function(..., insert = NULL, delete = NULL){
 
       obj_c <- capture.output(obj[[1]])
 
-      if (length(grep("\\(", obj_c)) == 0) {
+      if (is.null(grep("\\(", obj_c))) {
         ls <- as.list(eval(parse(text = obj_c)))
       } else {
         ls <- obj_c
@@ -3362,7 +3365,7 @@ plotn_object <- function(..., insert = NULL, delete = NULL){
       ls1 <- NULL
       for (l in 1:(length(obj) - 1)) {
         obj_c <- capture.output(obj[[l + 1]])
-        if (length(grep("\\(", obj_c)) == 0) {
+        if (is.null(grep("\\(", obj_c))) {
           ls1 <- c(ls1, as.list(eval(parse(text = obj_c))))
         } else {
           ls1 <- c(ls1, obj_c)
@@ -3380,7 +3383,7 @@ plotn_object <- function(..., insert = NULL, delete = NULL){
       lsI <- NULL
       for (n in 1:(length(obj) - 1)) {
         obj_c <- capture.output(obj[[n + 1]])
-        if (length(grep("\\(", obj_c)) == 0) {
+        if (is.null(grep("\\(", obj_c))) {
           lsI <- c(lsI, as.list(eval(parse(text = obj_c))))
         } else {
           lsI <- c(lsI, obj_c)
@@ -3577,6 +3580,7 @@ print.plotn <- function(x, ..., plot = T){
 #'
 #' @param x objects
 #'
+#' @examples x <- y ~ z
 #' @examples is.formula(x)
 #'
 #' @export

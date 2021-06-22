@@ -4,8 +4,16 @@
 \alias{month_axis}
 \title{Drawing a month labeled axis used with overdraw()}
 \usage{
-month_axis(leap = F, period = 1, year = NULL, start = c(1, 1),
-  lwd = 1, month.lab = "a", cex.axis = 1.1, las = 1)
+month_axis(
+  leap = F,
+  period = 1,
+  year = NULL,
+  start = c(1, 1),
+  lwd = 1,
+  month.lab = "a",
+  cex.axis = 1.1,
+  las = 1
+)
 }
 \arguments{
 \item{leap}{If set "T", a year is treated as leap year.}

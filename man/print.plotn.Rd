@@ -5,6 +5,8 @@
 \title{Make figure using command made by plotn_object()}
 \usage{
 ## Default S3 method:
+
+print(x, ..., plot = T)
 }
 \arguments{
 \item{x}{plotn object made by plotn_object()}
